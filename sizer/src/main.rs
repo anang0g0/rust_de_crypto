@@ -19,14 +19,11 @@ fn str2S(str: &str) -> String {
 
 fn S2c(a: String) -> Vec<char> {
     let cs: Vec<char> = a.chars().collect();
-    //let ss:[char;32];
 
-    let _b: char;
-    _b = cs[0];
     for i in 0..a.len() - 1 {
         print!("{}", cs[i]);
     }
-    println!("{}", _b);
+
     return cs;
 }
 
