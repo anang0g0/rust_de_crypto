@@ -4,7 +4,7 @@ fn take(v: Vec<i32>) -> Vec<i32> {
     return v;
 }
 
-fn S2str(data:&'static String) -> &str{
+fn S2str(data:&String) -> &str{
     let v = &data[0..16];
     
     return v;
@@ -91,13 +91,12 @@ fn main() {
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
-    let v = &data[0..16];
-    let byte: &[u8] = v.as_bytes();
-    
+    //let v = &data[0..16];
+    //let byte: &[u8] = v.as_bytes();
     let byte:&str;
     let bite:&[u8];
     byte=S2str(&data);
-    bite=lill(byte);
+    bite=lill(byte);    
     
     for i in 0..bite.len() {
         println!("v[{}]={}", i, bite[i] as char);
