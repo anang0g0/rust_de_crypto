@@ -1,26 +1,19 @@
-use core::ascii;
-use std::io;
+
 
 fn take(v: Vec<i32>) -> Vec<i32> {
     return v;
 }
 
-fn inp() {}
-use std::io::*;
+fn S2str(data:&'static String) -> &str{
+    let v = &data[0..16];
+    
+    return v;
+}
 
-fn コンソール入力() -> String {
-    let mut バッファ = String::new();
-    let c: char = 'c';
-    let str: &str;
-    stdin().read_line(&mut バッファ).unwrap();
+fn lill(v:&str)-> &[u8]{
+    let byte: &[u8] = v.as_bytes();
 
-    //&str=&バッファ.to_string(); //.trim().to_string();
-    //c=&str;
-
-    let num: i32 = c as i32 - 48;
-    println!("{}", num); // 5
-
-    return バッファ;
+    return byte;
 }
 
 fn str2S(str: &str) -> String {
@@ -33,21 +26,23 @@ fn str2S(str: &str) -> String {
 fn S2c(a: String) -> Vec<char> {
     let cs: Vec<char> = a.chars().collect();
     //let ss:[char;32];
-    let i: i32;
-    let b: char;
-    b = cs[0];
+
+    let _b: char;
+    _b = cs[0];
     for i in 0..a.len() - 1 {
         print!("{}", cs[i]);
     }
+    println!("{}", _b);
     return cs;
 }
 
-fn c2S(c: Vec<char>) -> String {
+fn c2_S(c: Vec<char>) -> String {
     //let c: char = 'a';
     let cs: String = c.iter().collect();
     println!("{}", &cs); // → a
     return cs;
 }
+
 
 fn main() {
     //inp();
@@ -82,34 +77,39 @@ fn main() {
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
         176,
     ];
-    let SIZE:usize =16;
+    //let size: usize = 16;
 
     let _i: i32;
     let _j: i32;
     let a = 101;
-    const size: i32 = 256;
 
-    let mut c: [i32; 257]=[0;257];
-    let mut buf: [i32; 257]=[0;257];
-    let m: [i32; 257];
+
+    let mut c: [i32; 257] = [0; 257];
+    let mut buf: [i32; 257] = [0; 257];
 
     println!("何か入力を");
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
-    let v = &data[0..SIZE];
-    let byte:&[u8]=v.as_bytes();
-    let i: i32;
-    for i in 0..byte.len() {
-        println!("v[{}]={}", i, byte[i] as char);
-    }
+    let v = &data[0..16];
+    let byte: &[u8] = v.as_bytes();
     
-    let mut j;
-    let mut ii:i32;
+    let byte:&str;
+    let bite:&[u8];
+    byte=S2str(&data);
+    bite=lill(byte);
+    
+    for i in 0..bite.len() {
+        println!("v[{}]={}", i, bite[i] as char);
+    }
+
+    let j;
+
     //x=S2c(data);
+    
     j = byte.len();
     for ii in 0..j {
-        c[ii] = (gf[(((byte[ii]) as usize) + (a )) % 256]);
+        c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256];
     }
 
     for i in 0..(j as usize) {
@@ -117,17 +117,17 @@ fn main() {
     }
     println!("");
 
-    print!("{}\n", byte[(j) - 1]);
+    print!("{}\n", bite[(j) - 1]);
 
     for i in 0..(j) {
         buf[i] = (fg[(c[i] as usize)]) - (a as i32);
     }
-    let mut w:[u8;257]=[0;257];
-    for i in 0..j{
-        w[i]=(buf[i]%256) as u8;
+    let mut w: [u8; 257] = [0; 257];
+    for i in 0..j {
+        w[i] = (buf[i] % 256) as u8;
     }
-    for i in 0..16{
-    print!("{} ", w[i] as char);
+    for i in 0..16 {
+        print!("{} ", w[i] as char);
     }
     print!("\n");
 }
