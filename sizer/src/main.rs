@@ -1,16 +1,10 @@
+fn S2str(data: &String) -> &str {
+    let v = &data[0..data.len()];
 
-
-fn take(v: Vec<i32>) -> Vec<i32> {
     return v;
 }
 
-fn S2str(data:&String) -> &str{
-    let v = &data[0..16];
-    
-    return v;
-}
-
-fn lill(v:&str)-> &[u8]{
+fn lill(v: &str) -> &[u8] {
     let byte: &[u8] = v.as_bytes();
 
     return byte;
@@ -42,7 +36,6 @@ fn c2_S(c: Vec<char>) -> String {
     println!("{}", &cs); // → a
     return cs;
 }
-
 
 fn main() {
     //inp();
@@ -81,8 +74,7 @@ fn main() {
 
     let _i: i32;
     let _j: i32;
-    let a = 101;
-
+    let a = 1010;
 
     let mut c: [i32; 257] = [0; 257];
     let mut buf: [i32; 257] = [0; 257];
@@ -93,19 +85,17 @@ fn main() {
     println!("{}", data);
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
-    let byte:&str;
-    let bite:&[u8];
-    byte=S2str(&data);
-    bite=lill(byte);    
-    
-    for i in 0..bite.len() {
+    let byte: &str;
+    let bite: &[u8];
+    byte = S2str(&data);
+    bite = lill(byte);
+
+    for i in 0..bite.len() - 1 {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
     let j;
 
-    //x=S2c(data);
-    
     j = byte.len();
     for ii in 0..j {
         c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256];
