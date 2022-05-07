@@ -82,48 +82,7 @@ fn main() {
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
         176,
     ];
-
-    let mut str1: String = String::from("5");
-    let num: i32 = str1.parse().unwrap();
-    println!("{}", num); // 5
-    let mut str: &str;
-    let c: Vec<char> = "ajin".chars().collect();
-    let mut x:Vec<char>;
-    let num: i32 = c[0] as i32 - 48;
-    println!("{}", num); // 5
-    str = "fuck!";
-    str1 = str2S(str);
-    let ss3: &str = &str1;
-    println!("{}", ss3);
-    //exit();
-    //use scanf::sscanf;
-
-    let input: &str = "Candy: 2.75";
-    let s2: String = String::from(input);
-    //let s3:&str=&s2;
-    let sa: Vec<char>;
-    sa = S2c(s2);
-
-    let i: i32;
-    println!("");
-    for i in 0..10 {
-        println!("char? {}", sa[i]);
-    }
-    //let mut s3:&str=&s2;
-    //println!("{}",s3);
-    let mut product: String = String::new();
-    let mut wo: String = String::new();
-    let r: Vec<char>;
-    std::io::stdin().read_line(&mut wo).ok();
-    let answer = wo.trim().to_string();
-    r = S2c(answer);
-    let i: i32;
-    for i in 0..r.len() {
-        println!("ans={}", r[i]);
-    }
-
-    str1 = c2S(c);
-    println!("{}", str1); // abcdef
+    let SIZE:usize =16;
 
     let _i: i32;
     let _j: i32;
@@ -134,17 +93,11 @@ fn main() {
     let mut buf: [i32; 257]=[0;257];
     let m: [i32; 257];
 
-    let mut guess = String::new();
-    io::stdin()
-        .read_line(&mut guess)
-        .expect("Failed to read line.");
-    println!("You guess: {}", guess);
-    //let parsed = sscanf::scanf!(&mut m, "Hello {}{}!", str, usize);
     println!("何か入力を");
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
-    let v = &data[0..15];
+    let v = &data[0..SIZE];
     let byte:&[u8]=v.as_bytes();
     let i: i32;
     for i in 0..byte.len() {
