@@ -20,7 +20,7 @@ fn str2S(str: &str) -> String {
 fn S2c(a: String) -> Vec<char> {
     let cs: Vec<char> = a.chars().collect();
 
-    for i in 0..a.len() - 1 {
+    for i in 0..a.len()  {
         print!("{}", cs[i]);
     }
 
