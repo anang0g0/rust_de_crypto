@@ -118,11 +118,13 @@ fn main() {
     }
 
     println!("\n何か入力を");
-    let mut data = String::from("");
+    let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
+    data=String::from(data.trim());
+
     if data.len()<16 {
-        for _i in data.len()..16{
-            data.push_str(",");
+        for _i in (data.len())..16{
+            data.push_str( "\0");
         }
     }
 
