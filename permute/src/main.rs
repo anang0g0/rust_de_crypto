@@ -120,6 +120,12 @@ fn main() {
     println!("\n何か入力を");
     let mut data = String::from("");
     std::io::stdin().read_line(&mut data).ok();
+    if data.len()<16 {
+        for _i in data.len()..16{
+            data.push_str(",");
+        }
+    }
+
     println!("{}", data);
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
@@ -128,15 +134,8 @@ fn main() {
     byte = S2str(&data);
     bite = lill(&byte);
     //let mut xx=0str;
-    if bite.len()<16 {
-        for _i in 0..bite.len(){
-            print!("{},",bite[_i]);
-            //bite[_i]= &" ".as_bytes();
-        }
-        println!("");
-    }
 
-    for i in 0..bite.len() - 1 {
+    for i in 0..bite.len()  {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
