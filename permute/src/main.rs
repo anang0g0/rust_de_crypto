@@ -111,8 +111,8 @@ fn main() {
     let a = 1010;
     let mut array:[usize;16]=[0;16];
     let mut p:[usize;16]=[0;16];
-    let mut c: [i32; 257] = [0; 257];
-    let mut buf: [i32; 257] = [0; 257];
+    let mut c: [u8; 16] = [0; 16];
+    let mut buf: [i32; 16] = [0; 16];
     for _i in 0..16
     {
         array[_i]=_i;
@@ -141,12 +141,12 @@ fn main() {
     let j;
     j = byte.len()-1;
     for ii in 0..j {
-        c[ii] = gf[(((bite[array[ii]]) as usize) + (a)) % 256];
+        c[ii] = gf[(((bite[array[ii]]) as usize) + (a)) % 256] as u8;
     }
 
     println!("cipher text:");
     for i in 0..(j as usize) {
-        print!("{},", c[i] as usize);
+        print!("{},", c[i] as char);
     }
     println!("");
 
