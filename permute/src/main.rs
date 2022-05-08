@@ -20,7 +20,7 @@ fn str2S(str: &str) -> String {
 fn S2c(a: String) -> Vec<char> {
     let cs: Vec<char> = a.chars().collect();
 
-    for i in 0..a.len()  {
+    for i in 0..a.len() {
         print!("{}", cs[i]);
     }
 
@@ -43,33 +43,28 @@ fn SWAP(a:usize, b:usize)-> usize
   }
 */
 
-  use rand::prelude::*;
-  extern crate rand;
-  use rand::Rng;
+use rand::prelude::*;
+extern crate rand;
+use rand::Rng;
 
-  
-  /*
+/*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
 */
-fn random_shuffle(mut array:[usize;16])->[usize;16]
-{
+fn random_shuffle(mut array: [usize; 16]) -> [usize; 16] {
     let mut rng = rand::thread_rng();
-    let mut i:u16=16;
+    let i: u16 = 16;
     println!("Integer: {}", rng.gen_range(0..16));
-  for i in (1..16).rev()
-  {
-    let mut a:usize = i - 1;
-    let mut b:usize = rng.gen_range(0..16) % i;
-    let mut c:usize;
-    c=array[a] as usize;
-    array[a]=array[b];
-    array[b]=c;
-
-  }
-  return array;
+    for i in (1..16).rev() {
+        let a: usize = i - 1;
+        let b: usize = rng.gen_range(0..16) % i;
+        let c: usize;
+        c = array[a] as usize;
+        array[a] = array[b];
+        array[b] = c;
+    }
+    return array;
 }
-
 
 fn main() {
     //inp();
@@ -106,42 +101,52 @@ fn main() {
     ];
     //let size: usize = 16;
 
-    let _i: i32;
-    let _j: i32;
+    let mut _i: i32=0;
+    let mut _j: i32=0;
     let a = 1010;
-    let mut array:[usize;16]=[0;16];
-    let mut p:[usize;16]=[0;16];
-    let mut c: [u8; 16] = [0; 16];
-    let mut buf: [i32; 16] = [0; 16];
-    for _i in 0..16
-    {
-        array[_i]=_i;
+    let mut array: [usize;16]=[0;16];
+    let mut p: [i32;16]=[0;16];
+    let mut c: [u8;16]=[0;16];
+    let mut buf: [i32;16]=[0;16];
+    for _i in 0..16 {
+        array[_i] = _i;
     }
-    array=random_shuffle(array);
-    for _i in 0..16{
-        print!("{},",array[_i]);
-        p[array[_i]]=_i;
+    array = random_shuffle(array);
+    for _i in 0..16 {
+        print!("{},", array[_i]);
+        p[array[_i]] = _i as i32;
     }
-    
+
     println!("\n何か入力を");
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
-    let byte: &str;
-    let bite: &[u8];
+    let mut byte: &str="                ";
+    let mut bite: &[u8];
     byte = S2str(&data);
-    bite = lill(byte);
+    bite = lill(&byte);
+    //let mut xx=0str;
+    if bite.len()<16 {
+        for _i in 0..bite.len(){
+            print!("{},",bite[_i]);
+            //bite[_i]= &" ".as_bytes();
+        }
+        println!("");
+    }
 
     for i in 0..bite.len() - 1 {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
-    let j;
+    let mut j=0;
+    _i=0;
     j = byte.len()-1;
-    for ii in 0..j {
-        c[ii] = gf[(((bite[array[ii]]) as usize) + (a)) % 256] as u8;
+    println!("j={}",j);
+    for _i in 0..16 {
+        print!("{} {} \n",_i,array[_i]);
+        c[_i] = gf[(((bite[array[_i]]) as usize) + (a)) % 256] as u8;
     }
 
     println!("cipher text:");
@@ -159,7 +164,7 @@ fn main() {
 
     println!("plain text:");
     for i in 0..j {
-        w[i] = (buf[p[i]] % 256) as u8;
+        w[i] = (buf[p[i] as usize] % 256) as u8;
     }
     for i in 0..bite.len() {
         print!("{} ", w[i] as char);
