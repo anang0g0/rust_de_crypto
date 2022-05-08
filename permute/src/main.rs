@@ -53,11 +53,11 @@ use rand::Rng;
 */
 fn random_shuffle(mut array: [usize; 16]) -> [usize; 16] {
     let mut rng = rand::thread_rng();
-    let i: u16 = 16;
+    //let i: u16 = rng.gen_range(0..15);
     println!("Integer: {}", rng.gen_range(0..16));
     for i in (1..16).rev() {
         let a: usize = i - 1;
-        let b: usize = rng.gen_range(0..16) % i;
+        let b: usize = rng.gen_range(0..16);
         let c: usize;
         c = array[a] as usize;
         array[a] = array[b];
@@ -118,13 +118,13 @@ fn main() {
     }
 
     println!("\n何か入力を");
-    let mut data = String::new();
+    let mut data = String::from("");
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
-    let mut byte: &str="                ";
-    let mut bite: &[u8];
+    let mut byte: &str;
+    let mut bite: &[u8]=&[0;16];
     byte = S2str(&data);
     bite = lill(&byte);
     //let mut xx=0str;
