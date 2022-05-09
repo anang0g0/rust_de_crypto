@@ -121,18 +121,19 @@ fn main() {
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     data = String::from(data.trim());
-    for (_i, &item) in data.as_bytes().iter().enumerate() {
-        if  item == b'\0' as u8 {
-            println!("aa={}",_i);
-            //data[_i] as u8 = "\0"u8;
-        }
-    }
-
     if data.len() < 16 {
         for _i in (data.len())..16 {
             data.push_str("\0");
         }
     }
+
+    for (_i, &item) in data.as_bytes().iter().enumerate() {
+        if  item == '\0' as u8 {
+            println!("{}",_i);
+            //data[_i] as u8 = "\0"u8;
+        }
+    }
+
 
     println!("{}", data);
     //let v = &data[0..16];
@@ -157,8 +158,9 @@ fn main() {
     }
 
     println!("cipher text:");
-    for i in 0..(j as usize) {
-        print!("{},", c[i] as char);
+    for i in 0..(j as usize)
+     {
+        print!("{},", c[i]);
     }
     println!("");
 
