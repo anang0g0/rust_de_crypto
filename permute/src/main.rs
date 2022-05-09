@@ -47,7 +47,6 @@ use rand::Rng;
 fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut rng = rand::thread_rng();
     let mut i:u32;
-    //let i: u16 = rng.gen_range(0..15);
     //println!("Integer: {}", rng.gen_range(0..N));
     for i in (1..N+1).rev() {
         let mut a: usize = i - 1;
