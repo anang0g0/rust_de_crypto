@@ -128,12 +128,11 @@ fn main() {
     }
 
     for (_i, &item) in data.as_bytes().iter().enumerate() {
-        if  item == '\0' as u8 {
-            println!("{}",_i);
+        if item == '\0' as u8 {
+            println!("{}", _i);
             //data[_i] as u8 = "\0"u8;
         }
     }
-
 
     println!("{}", data);
     //let v = &data[0..16];
@@ -150,10 +149,10 @@ fn main() {
 
     let mut j = 0;
     _i = 0;
-    if byte.len()>16{
-    j=16;
-    }else{
-    j = byte.len();
+    if byte.len() > 16 {
+        j = 16;
+    } else {
+        j = byte.len();
     }
     println!("j={}", j);
     for _i in 0..16 {
@@ -162,8 +161,7 @@ fn main() {
     }
 
     println!("cipher text:");
-    for i in 0..(j as usize)
-     {
+    for i in 0..(j as usize) {
         print!("{},", c[i]);
     }
     println!("");
