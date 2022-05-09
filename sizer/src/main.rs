@@ -12,7 +12,6 @@ fn lill(v: &str) -> &[u8] {
     return byte;
 }
 
-
 /*
 fn str2S(str: &str) -> String {
     let s1: String = String::from(str);
@@ -40,8 +39,8 @@ fn c2_S(c: Vec<char>) -> String {
 */
 
 extern crate base64;
+use base64::{decode, encode};
 use std::str;
-use base64::{encode, decode};
 
 fn main() {
     //inp();
@@ -77,7 +76,6 @@ fn main() {
         176,
     ];
 
-
     let _i: i32;
     let _j: i32;
     let a = 1010;
@@ -89,7 +87,7 @@ fn main() {
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
- 
+
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let encoded = encode(data.as_bytes());
     let decoded = decode(&encoded).unwrap();
@@ -100,24 +98,24 @@ fn main() {
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
     /*
-    let v:String = String::from("日本語入力");
-    let bytes:&[u8] = v.as_bytes();
-    let s = v.chars().collect::<Vec<char>>();
-    println!("{:?}\n",s);
-*/
+        let v:String = String::from("日本語入力");
+        let bytes:&[u8] = v.as_bytes();
+        let s = v.chars().collect::<Vec<char>>();
+        println!("{:?}\n",s);
+    */
     let byte: &str;
     let bite: &[u8];
     let l: &[u8];
     byte = S2_str(&data);
-    bite = encoded.as_bytes(); 
+    bite = encoded.as_bytes();
     //l=lill(byte);
 
     for i in 0..bite.len() - 1 {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
-    let mut j:usize;
-    j = bite.len()-1;
+    let mut j: usize;
+    j = bite.len() - 1;
     for ii in 0..j {
         c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256];
     }
@@ -133,9 +131,9 @@ fn main() {
     for i in 0..(j) {
         buf[i] = (fg[(c[i] as usize)]) - (a as i32);
     }
-    let mut w: [u8;257]=[0;257];
-    
-    let mut o:String; //=&encoded;
+    let mut w: [u8; 257] = [0; 257];
+
+    let mut o: String; //=&encoded;
 
     println!("plain text:");
     for i in 0..j {
@@ -143,17 +141,9 @@ fn main() {
     }
     let o: String = String::from_utf8(w.to_vec()).unwrap();
 
-    println!("{}",&o[0..j]);
+    println!("{}", &o[0..j]);
 
-    let converted:&str=&o;
-  /*
-    for _i in 0..j{
-       &converted[_i] = &o[0..j]; //String::from_utf8(l.to_vec()).unwrap();
-    } 
-    */
+    let converted: &str = &o;
     let decoded = decode(&o[0..j]).unwrap();
     println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
-
-    println!("\n{}",converted);
-    print!("\n");
 }
