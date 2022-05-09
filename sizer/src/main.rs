@@ -1,4 +1,6 @@
-fn S2str(data: &String) -> &str {
+#![allow(non_snake_case)]
+
+fn S2_str(data: &String) -> &str {
     let v = &data[0..data.len()];
 
     return v;
@@ -10,6 +12,8 @@ fn lill(v: &str) -> &[u8] {
     return byte;
 }
 
+
+/*
 fn str2S(str: &str) -> String {
     let s1: String = String::from(str);
     println!("{}", s1);
@@ -33,6 +37,11 @@ fn c2_S(c: Vec<char>) -> String {
     println!("{}", &cs); // → a
     return cs;
 }
+*/
+
+extern crate base64;
+use std::str;
+use base64::{encode, decode};
 
 fn main() {
     //inp();
@@ -67,7 +76,7 @@ fn main() {
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
         176,
     ];
-    //let size: usize = 16;
+
 
     let _i: i32;
     let _j: i32;
@@ -80,19 +89,35 @@ fn main() {
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
+ 
+    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    let encoded = encode(data.as_bytes());
+    let decoded = decode(&encoded).unwrap();
+
+    println!("base64 encoded: {}", encoded);
+    println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
+
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
+    /*
+    let v:String = String::from("日本語入力");
+    let bytes:&[u8] = v.as_bytes();
+    let s = v.chars().collect::<Vec<char>>();
+    println!("{:?}\n",s);
+*/
     let byte: &str;
     let bite: &[u8];
-    byte = S2str(&data);
-    bite = lill(byte);
+    let l: &[u8];
+    byte = S2_str(&data);
+    bite = encoded.as_bytes(); 
+    //l=lill(byte);
 
     for i in 0..bite.len() - 1 {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
-    let j;
-    j = byte.len()-1;
+    let mut j:usize;
+    j = bite.len()-1;
     for ii in 0..j {
         c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256];
     }
@@ -108,14 +133,27 @@ fn main() {
     for i in 0..(j) {
         buf[i] = (fg[(c[i] as usize)]) - (a as i32);
     }
-    let mut w: [u8; 257] = [0; 257];
+    let mut w: [u8;257]=[0;257];
+    
+    let mut o:String; //=&encoded;
 
     println!("plain text:");
     for i in 0..j {
-        w[i] = (buf[i] % 256) as u8;
+        w[i] = ((buf[i] % 256) as u8);
     }
-    for i in 0..bite.len() {
-        print!("{} ", w[i] as char);
-    }
+    let o: String = String::from_utf8(w.to_vec()).unwrap();
+
+    println!("{}",&o[0..j]);
+
+    let converted:&str=&o;
+  /*
+    for _i in 0..j{
+       &converted[_i] = &o[0..j]; //String::from_utf8(l.to_vec()).unwrap();
+    } 
+    */
+    let decoded = decode(&o[0..j]).unwrap();
+    println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
+
+    println!("\n{}",converted);
     print!("\n");
 }
