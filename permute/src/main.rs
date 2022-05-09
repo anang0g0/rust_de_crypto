@@ -101,13 +101,13 @@ fn main() {
     ];
     //let size: usize = 16;
 
-    let mut _i: i32=0;
-    let mut _j: i32=0;
+    let mut _i: i32 = 0;
+    let mut _j: i32 = 0;
     let a = 1010;
-    let mut array: [usize;16]=[0;16];
-    let mut p: [i32;16]=[0;16];
-    let mut c: [u8;16]=[0;16];
-    let mut buf: [i32;16]=[0;16];
+    let mut array: [usize; 16] = [0; 16];
+    let mut p: [i32; 16] = [0; 16];
+    let mut c: [u8; 16] = [0; 16];
+    let mut buf: [i32; 16] = [0; 16];
     for _i in 0..16 {
         array[_i] = _i;
     }
@@ -120,11 +120,17 @@ fn main() {
     println!("\n何か入力を");
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
-    data=String::from(data.trim());
+    data = String::from(data.trim());
+    for (_i, &item) in data.as_bytes().iter().enumerate() {
+        if  item == b'\0' as u8 {
+            println!("aa={}",_i);
+            //data[_i] as u8 = "\0"u8;
+        }
+    }
 
-    if data.len()<16 {
-        for _i in (data.len())..16{
-            data.push_str( "\0");
+    if data.len() < 16 {
+        for _i in (data.len())..16 {
+            data.push_str("\0");
         }
     }
 
@@ -132,21 +138,21 @@ fn main() {
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
     let mut byte: &str;
-    let mut bite: &[u8]=&[0;16];
+    let mut bite: &[u8] = &[0; 16];
     byte = S2str(&data);
     bite = lill(&byte);
     //let mut xx=0str;
 
-    for i in 0..bite.len()  {
+    for i in 0..bite.len() {
         println!("v[{}]={}", i, bite[i] as char);
     }
 
-    let mut j=0;
-    _i=0;
-    j = byte.len()-1;
-    println!("j={}",j);
+    let mut j = 0;
+    _i = 0;
+    j = byte.len();
+    println!("j={}", j);
     for _i in 0..16 {
-        print!("{} {} \n",_i,array[_i]);
+        print!("{} {} \n", _i, array[_i]);
         c[_i] = gf[(((bite[array[_i]]) as usize) + (a)) % 256] as u8;
     }
 
