@@ -1,4 +1,4 @@
-const N:  usize = 16;
+const N:  usize = 20;
 
 fn S2str(data: &String) -> &str {
     let v = &data[0..data.len()];
@@ -36,6 +36,8 @@ fn c2_S(c: Vec<char>) -> String {
     return cs;
 }
 
+use std::array;
+//extern crate rand;
 use rand::Rng;
 
 /*
@@ -44,12 +46,13 @@ use rand::Rng;
 */
 fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut rng = rand::thread_rng();
+    let mut i:u32;
     //let i: u16 = rng.gen_range(0..15);
-    println!("Integer: {}", rng.gen_range(0..N));
+    //println!("Integer: {}", rng.gen_range(0..N));
     for i in (1..N).rev() {
-        let a: usize = i - 1;
-        let b: usize = rng.gen_range(0..N);
-        let c: usize;
+        let mut a: usize = i - 1;
+        let mut b: usize = (rng.gen::<usize>() % N).try_into().unwrap();//  (0..1024) % i;
+        let mut c: usize;
         c = array[a] as usize;
         array[a] = array[b];
         array[b] = c;
