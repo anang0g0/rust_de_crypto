@@ -37,7 +37,7 @@ fn c2_S(c: Vec<char>) -> String {
 }
 
 use std::array;
-extern crate rand;
+//extern crate rand;
 use rand::Rng;
 
 /*
