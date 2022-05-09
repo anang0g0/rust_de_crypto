@@ -49,9 +49,9 @@ fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut i:u32;
     //let i: u16 = rng.gen_range(0..15);
     //println!("Integer: {}", rng.gen_range(0..N));
-    for i in (1..N).rev() {
+    for i in (1..N+1).rev() {
         let mut a: usize = i - 1;
-        let mut b: usize = (rng.gen::<usize>() % N).try_into().unwrap();//  (0..1024) % i;
+        let mut b: usize = rng.gen_range(0..N);
         let mut c: usize;
         c = array[a] as usize;
         array[a] = array[b];
