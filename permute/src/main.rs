@@ -34,17 +34,6 @@ fn c2_S(c: Vec<char>) -> String {
     return cs;
 }
 
-/*
-fn SWAP(a:usize, b:usize)-> usize
-  {
-    let mut work:usize = a;
-    a = b;
-    b = work;
-  }
-*/
-
-use rand::prelude::*;
-extern crate rand;
 use rand::Rng;
 
 /*
