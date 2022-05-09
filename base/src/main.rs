@@ -3,7 +3,7 @@ extern crate base64;
 use std::str;
 use base64::{encode, decode};
 
-fn run() -> Result<()> {
+fn run<E: std::convert::From<std::str::Utf8Error>>() -> Result<(),E> {
     let hello = b"hello rustaceans";
     let encoded = encode(hello);
     let decoded = decode(&encoded)?;
@@ -16,6 +16,6 @@ fn run() -> Result<()> {
 }
 
 fn main() {
-    run();
+    run::<E>();
     println!("Hello, world!");
 }
