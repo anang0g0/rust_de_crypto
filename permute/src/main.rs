@@ -1,3 +1,5 @@
+const N:  usize = 16;
+
 fn S2str(data: &String) -> &str {
     let v = &data[0..data.len()];
 
@@ -40,13 +42,13 @@ use rand::Rng;
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
 */
-fn random_shuffle(mut array: [usize; 16]) -> [usize; 16] {
+fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut rng = rand::thread_rng();
     //let i: u16 = rng.gen_range(0..15);
-    println!("Integer: {}", rng.gen_range(0..16));
-    for i in (1..16).rev() {
+    println!("Integer: {}", rng.gen_range(0..N));
+    for i in (1..N).rev() {
         let a: usize = i - 1;
-        let b: usize = rng.gen_range(0..16);
+        let b: usize = rng.gen_range(0..N);
         let c: usize;
         c = array[a] as usize;
         array[a] = array[b];
@@ -93,15 +95,15 @@ fn main() {
     let mut _i: i32 = 0;
     let mut _j: i32 = 0;
     let a = 1010;
-    let mut array: [usize; 16] = [0; 16];
-    let mut p: [i32; 16] = [0; 16];
-    let mut c: [u8; 16] = [0; 16];
-    let mut buf: [i32; 16] = [0; 16];
-    for _i in 0..16 {
+    let mut array: [usize; N] = [0; N];
+    let mut p: [i32; N] = [0; N];
+    let mut c: [u8; N] = [0; N];
+    let mut buf: [i32; N] = [0; N];
+    for _i in 0..N {
         array[_i] = _i;
     }
     array = random_shuffle(array);
-    for _i in 0..16 {
+    for _i in 0..N {
         print!("{},", array[_i]);
         p[array[_i]] = _i as i32;
     }
@@ -110,8 +112,8 @@ fn main() {
     let mut data = String::new();
     std::io::stdin().read_line(&mut data).ok();
     data = String::from(data.trim());
-    if data.len() < 16 {
-        for _i in (data.len())..16 {
+    if data.len() < N {
+        for _i in (data.len())..N {
             data.push_str("\0");
         }
     }
@@ -127,7 +129,7 @@ fn main() {
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
     let mut byte: &str;
-    let mut bite: &[u8] = &[0; 16];
+    let mut bite: &[u8] = &[0; N];
     byte = S2str(&data);
     bite = lill(&byte);
     //let mut xx=0str;
@@ -138,13 +140,13 @@ fn main() {
 
     let mut j = 0;
     _i = 0;
-    if byte.len() > 16 {
-        j = 16;
+    if byte.len() > N {
+        j = N;
     } else {
         j = byte.len();
     }
     println!("j={}", j);
-    for _i in 0..16 {
+    for _i in 0..N {
         print!("{} {} \n", _i, array[_i]);
         c[_i] = gf[(((bite[array[_i]]) as usize) + (a)) % 256] as u8;
     }
