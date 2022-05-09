@@ -1,21 +1,20 @@
-extern crate base64;
 
+
+extern crate base64;
 use std::str;
 use base64::{encode, decode};
-
-fn run<E: std::convert::From<std::str::Utf8Error>>() -> Result<(),E> {
-    let hello = b"hello rustaceans";
-    let encoded = encode(hello);
-    let decoded = decode(&encoded)?;
-
-    println!("origin: {}", str::from_utf8(hello)?);
-    println!("base64 encoded: {}", encoded);
-    println!("back to origin: {}", str::from_utf8(&decoded)?);
-
-    Ok(())
-}
-
 fn main() {
-    run::<E>();
-    println!("Hello, world!");
+let hello = "日本語".as_bytes();
+
+println!("何か入力を");
+let mut data = String::new();
+std::io::stdin().read_line(&mut data).ok();
+println!("{}", data);
+
+println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+let encoded = encode(data.as_bytes());
+let decoded = decode(&encoded).unwrap();
+
+println!("base64 encoded: {}", encoded);
+println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
 }
