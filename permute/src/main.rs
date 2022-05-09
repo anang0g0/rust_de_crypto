@@ -6,12 +6,6 @@ fn S2str(data: &String) -> &str {
     return v;
 }
 
-fn lill(v: &str) -> &[u8] {
-    let byte: &[u8] = v.as_bytes();
-
-    return byte;
-}
-
 fn str2S(str: &str) -> String {
     let s1: String = String::from(str);
     println!("{}", s1);
@@ -130,11 +124,9 @@ fn main() {
     println!("{}", data);
     //let v = &data[0..16];
     //let byte: &[u8] = v.as_bytes();
-    let mut byte: &str;
-    let mut bite: &[u8] = &[0; N];
-    byte = S2str(&data);
-    bite = lill(&byte);
-    //let mut xx=0str;
+    let byte: &str = S2str(&data);
+    let bite: &[u8] = byte.as_bytes();
+
 
     for i in 0..bite.len() {
         println!("v[{}]={}", i, bite[i] as char);
