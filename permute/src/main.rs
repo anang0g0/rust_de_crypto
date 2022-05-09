@@ -150,7 +150,11 @@ fn main() {
 
     let mut j = 0;
     _i = 0;
+    if byte.len()>16{
+    j=16;
+    }else{
     j = byte.len();
+    }
     println!("j={}", j);
     for _i in 0..16 {
         print!("{} {} \n", _i, array[_i]);
