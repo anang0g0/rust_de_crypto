@@ -139,11 +139,10 @@ fn main() {
     for i in 0..j {
         w[i] = ((buf[i] % 256) as u8);
     }
+
     let o: String = String::from_utf8(w.to_vec()).unwrap();
+    println!("base64 = {}", &o[0..j]);
 
-    println!("{}", &o[0..j]);
-
-    let converted: &str = &o;
     let decoded = decode(&o[0..j]).unwrap();
     println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
 }
