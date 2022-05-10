@@ -128,12 +128,8 @@ fn dec(cc:String,a:usize)-> String {
 }
 
 fn main() {
-    //inp();
 
-    let _i: i32;
-    let _j: i32;
     let a = 1010;
-    let mut j;
     let mut l=String::new();
     let mut data = String::new(); //from("日本語入力");
 
@@ -143,8 +139,6 @@ fn main() {
     data=data.trim().to_string();
     println!("{}", data);
 
-    let encoded = encode(data.as_bytes());
-    j=encoded.len();
     let cc=enc(&data,a);
     println!("{}",(cc));
     let l=dec(cc,a);
