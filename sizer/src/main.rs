@@ -87,7 +87,7 @@ fn enc(data:&String,a:usize)-> String {
     return encode(&c[0..j]);
 }
 
-fn dec(cc:String,j:usize,a:usize)-> String {
+fn dec(cc:String,a:usize)-> String {
     let mut buf: [i32; 257] = [0; 257];
     let fg: [i32; 256] = [
         0, 1, 2, 26, 3, 51, 27, 199, 4, 224, 52, 239, 28, 105, 200, 76, 5, 101, 225, 15, 53, 142,
@@ -134,7 +134,7 @@ fn main() {
     let _j: i32;
     let a = 1010;
     let mut j;
-    let mut cc: String;
+    //let mut cc: String;
     let mut l=String::new();
     let mut data = String::new(); //from("日本語入力");
 
@@ -146,9 +146,9 @@ fn main() {
 
     let encoded = encode(data.as_bytes());
     j=encoded.len();
-    cc=enc(&data,a);
+    let cc=enc(&data,a);
     println!("{}",(cc));
-    let l=dec(cc,j,a);
+    let l=dec(cc,a);
     println!("back to origin: {}", l);
 
 }
