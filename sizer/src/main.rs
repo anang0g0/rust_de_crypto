@@ -1,49 +1,9 @@
 #![allow(non_snake_case)]
 
-fn S2_str(data: &String) -> &str {
-    let v = &data[0..data.len()];
-
-    return v;
-}
-
-fn lill(v: &str) -> &[u8] {
-    let byte: &[u8] = v.as_bytes();
-
-    return byte;
-}
-
-/*
-fn str2S(str: &str) -> String {
-    let s1: String = String::from(str);
-    println!("{}", s1);
-
-    return s1;
-}
-
-fn S2c(a: String) -> Vec<char> {
-    let cs: Vec<char> = a.chars().collect();
-
-    for i in 0..a.len()  {
-        print!("{}", cs[i]);
-    }
-
-    return cs;
-}
-
-fn c2_S(c: Vec<char>) -> String {
-    //let c: char = 'a';
-    let cs: String = c.iter().collect();
-    println!("{}", &cs); // → a
-    return cs;
-}
-*/
-
-extern crate base64;
 use base64::{decode, encode};
 use std::str;
 
-fn enc(data:&String,a:usize)-> String {
-
+fn enc(data: &String, a: usize) -> String {
     let gf: [i32; 256] = [
         0, 1, 2, 4, 8, 16, 32, 64, 128, 29, 58, 116, 232, 205, 135, 19, 38, 76, 152, 45, 90, 180,
         117, 234, 201, 143, 3, 6, 12, 24, 48, 96, 192, 157, 39, 78, 156, 37, 74, 148, 53, 106, 212,
@@ -60,24 +20,20 @@ fn enc(data:&String,a:usize)-> String {
         203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142
     ];
 
-    //let a = 1010;
     let mut c: [u8; 257] = [0; 257];
-    let bite: &[u8];
+    let byte: &[u8];
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
-    let encoded = encode(data.as_bytes());
-    bite = data.as_bytes(); //encoded.as_bytes();
-    //l=lill(byte);
-    
-    for i in 0..bite.len() - 1 {
-        println!("v[{}]={}", i, bite[i] as char);
+    byte = data.as_bytes(); //encoded.as_bytes();
+                            //l=lill(byte);
+    let j = byte.len();
+    for i in 0..j {
+        println!("v[{}]={}", i, byte[i] as char);
     }
 
-    let mut j: usize;
-    j = bite.len();
     for ii in 0..j {
-        c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256] as u8;
+        c[ii] = gf[(((byte[ii]) as usize) + (a)) % 256] as u8;
     }
-    
+
     println!("cipher text:");
     for i in 0..(j as usize) {
         print!("{},", c[i] as usize);
@@ -87,7 +43,7 @@ fn enc(data:&String,a:usize)-> String {
     return encode(&c[0..j]);
 }
 
-fn dec(cc:String,a:usize)-> String {
+fn dec(cc: String, a: usize) -> String {
     let mut buf: [i32; 257] = [0; 257];
     let fg: [i32; 256] = [
         0, 1, 2, 26, 3, 51, 27, 199, 4, 224, 52, 239, 28, 105, 200, 76, 5, 101, 225, 15, 53, 142,
@@ -105,20 +61,18 @@ fn dec(cc:String,a:usize)-> String {
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
         176
     ];
-    
-    println!("encode = {}",cc.trim());
+
+    println!("{}", cc);
     let aa = decode(&cc).unwrap();
-    println!("{:?}",aa);
+    println!("{:?}", aa);
     for i in 0..aa.len() {
         buf[i] = (fg[(aa[i] as usize)]) - (a as i32);
     }
     let mut w: [u8; 257] = [0; 257];
 
-    let mut o: String=String::new(); //=&encoded;
-
     println!("plain text:");
     for i in 0..aa.len() {
-        w[i] = ((buf[i] % 256) as u8);
+        w[i] = (buf[i] % 256) as u8;
     }
 
     let o: String = String::from_utf8(w.to_vec()).unwrap();
@@ -128,20 +82,15 @@ fn dec(cc:String,a:usize)-> String {
 }
 
 fn main() {
-
     let a = 1010;
-    let mut l=String::new();
     let mut data = String::new(); //from("日本語入力");
-
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
-    data=data.trim().to_string();
     println!("{}", data);
 
-    let cc=enc(&data,a);
-    println!("{}",(cc));
-    let l=dec(cc,a);
+    let cc = enc(&data, a);
+    println!("{}", (cc));
+    let l = dec(cc, a);
     println!("back to origin: {}", l);
-
 }
