@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 ascii = "1.0.0"
+base64 = "0.13.0"
 scanf = "1.2.1"
 sscanf = "0.2.1"
