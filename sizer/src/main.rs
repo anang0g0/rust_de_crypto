@@ -27,7 +27,7 @@ fn enc(data: &String, a: usize) -> String {
                             //l=lill(byte);
     let j = byte.len();
     for i in 0..j {
-        println!("v[{}]={}", i, byte[i] as char);
+        println!("v[{}]={}", i, byte[i] as u8);
     }
 
     for ii in 0..j {
@@ -84,13 +84,13 @@ fn dec(cc: String, a: usize) -> String {
 fn main() {
     let a = 1010;
     let mut data = String::new(); //from("日本語入力");
-
+  
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
-
-    let cc = enc(&data, a);
+    let mut p:&str=&data;
+    let cc = enc(&data, a).to_string();
     println!("{}", (cc));
-    let l = dec(cc, a);
+    let l = dec(cc.to_string(), a);
     println!("back to origin: {}", l);
 }
