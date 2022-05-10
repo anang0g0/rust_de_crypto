@@ -134,7 +134,6 @@ fn main() {
     let _j: i32;
     let a = 1010;
     let mut j;
-    //let mut cc: String;
     let mut l=String::new();
     let mut data = String::new(); //from("日本語入力");
 
