@@ -136,12 +136,12 @@ fn main() {
     let mut j;
     let mut cc: String;
     let mut l=String::new();
-    let mut data = String::from("日本語入力");
+    let mut data = String::new(); //from("日本語入力");
 
 
     println!("何か入力を");
-    //std::io::stdin().read_line(&mut data).ok();
-
+    std::io::stdin().read_line(&mut data).ok();
+    data=data.trim().to_string();
     println!("{}", data);
 
     let encoded = encode(data.as_bytes());
