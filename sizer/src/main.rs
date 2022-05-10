@@ -42,8 +42,8 @@ extern crate base64;
 use base64::{decode, encode};
 use std::str;
 
-fn main() {
-    //inp();
+fn enc(data:&String,a:usize)-> String {
+
     let gf: [i32; 256] = [
         0, 1, 2, 4, 8, 16, 32, 64, 128, 29, 58, 116, 232, 205, 135, 19, 38, 76, 152, 45, 90, 180,
         117, 234, 201, 143, 3, 6, 12, 24, 48, 96, 192, 157, 39, 78, 156, 37, 74, 148, 53, 106, 212,
@@ -57,8 +57,38 @@ fn main() {
         227, 219, 171, 75, 150, 49, 98, 196, 149, 55, 110, 220, 165, 87, 174, 65, 130, 25, 50, 100,
         200, 141, 7, 14, 28, 56, 112, 224, 221, 167, 83, 166, 81, 162, 89, 178, 121, 242, 249, 239,
         195, 155, 43, 86, 172, 69, 138, 9, 18, 36, 72, 144, 61, 122, 244, 245, 247, 243, 251, 235,
-        203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142,
+        203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142
     ];
+
+    //let a = 1010;
+    let mut c: [u8; 257] = [0; 257];
+    let bite: &[u8];
+    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    let encoded = encode(data.as_bytes());
+    bite = data.as_bytes(); //encoded.as_bytes();
+    //l=lill(byte);
+    
+    for i in 0..bite.len() - 1 {
+        println!("v[{}]={}", i, bite[i] as char);
+    }
+
+    let mut j: usize;
+    j = bite.len();
+    for ii in 0..j {
+        c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256] as u8;
+    }
+    
+    println!("cipher text:");
+    for i in 0..(j as usize) {
+        print!("{},", c[i] as usize);
+    }
+    println!("");
+
+    return encode(&c[0..j]);
+}
+
+fn dec(cc:String,j:usize,a:usize)-> String {
+    let mut buf: [i32; 257] = [0; 257];
     let fg: [i32; 256] = [
         0, 1, 2, 26, 3, 51, 27, 199, 4, 224, 52, 239, 28, 105, 200, 76, 5, 101, 225, 15, 53, 142,
         240, 130, 29, 194, 106, 249, 201, 9, 77, 114, 6, 139, 102, 48, 226, 37, 16, 34, 54, 148,
@@ -73,76 +103,52 @@ fn main() {
         124, 165, 119, 197, 24, 74, 237, 128, 13, 112, 247, 109, 162, 60, 83, 42, 158, 86, 171,
         252, 97, 135, 178, 188, 205, 63, 91, 204, 90, 96, 177, 157, 170, 161, 82, 12, 246, 23, 236,
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
-        176,
+        176
     ];
-
-    let _i: i32;
-    let _j: i32;
-    let a = 1010;
-
-    let mut c: [i32; 257] = [0; 257];
-    let mut buf: [i32; 257] = [0; 257];
-
-    println!("何か入力を");
-    let mut data = String::new();
-    std::io::stdin().read_line(&mut data).ok();
-    println!("{}", data);
-
-    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
-    let encoded = encode(data.as_bytes());
-    let decoded = decode(&encoded).unwrap();
-
-    println!("base64 encoded: {}", encoded);
-    println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
-
-    //let v = &data[0..16];
-    //let byte: &[u8] = v.as_bytes();
-    /*
-        let v:String = String::from("日本語入力");
-        let bytes:&[u8] = v.as_bytes();
-        let s = v.chars().collect::<Vec<char>>();
-        println!("{:?}\n",s);
-    */
-    let byte: &str;
-    let bite: &[u8];
-    let l: &[u8];
-    byte = S2_str(&data);
-    bite = encoded.as_bytes();
-    //l=lill(byte);
-
-    for i in 0..bite.len() - 1 {
-        println!("v[{}]={}", i, bite[i] as char);
-    }
-
-    let mut j: usize;
-    j = bite.len() - 1;
-    for ii in 0..j {
-        c[ii] = gf[(((bite[ii]) as usize) + (a)) % 256];
-    }
-
-    println!("cipher text:");
-    for i in 0..(j as usize) {
-        print!("{},", c[i] as usize);
-    }
-    println!("");
-
-    print!("{}\n", bite[(j) - 1]);
-
-    for i in 0..(j) {
-        buf[i] = (fg[(c[i] as usize)]) - (a as i32);
+    
+    println!("encode = {}",cc.trim());
+    let aa = decode(&cc).unwrap();
+    println!("{:?}",aa);
+    for i in 0..aa.len() {
+        buf[i] = (fg[(aa[i] as usize)]) - (a as i32);
     }
     let mut w: [u8; 257] = [0; 257];
 
-    let mut o: String; //=&encoded;
+    let mut o: String=String::new(); //=&encoded;
 
     println!("plain text:");
-    for i in 0..j {
+    for i in 0..aa.len() {
         w[i] = ((buf[i] % 256) as u8);
     }
 
     let o: String = String::from_utf8(w.to_vec()).unwrap();
-    println!("base64 = {}", &o[0..j]);
+    println!("base64 = {}", &o[0..aa.len()]);
 
-    let decoded = decode(&o[0..j]).unwrap();
-    println!("back to origin: {}", str::from_utf8(&decoded).unwrap());
+    return o[0..aa.len()].to_string();
+}
+
+fn main() {
+    //inp();
+
+    let _i: i32;
+    let _j: i32;
+    let a = 1010;
+    let mut j;
+    let mut cc: String;
+    let mut l=String::new();
+    let mut data = String::from("日本語入力");
+
+
+    println!("何か入力を");
+    //std::io::stdin().read_line(&mut data).ok();
+
+    println!("{}", data);
+
+    let encoded = encode(data.as_bytes());
+    j=encoded.len();
+    cc=enc(&data,a);
+    println!("{}",(cc));
+    let l=dec(cc,j,a);
+    println!("back to origin: {}", l);
+
 }
