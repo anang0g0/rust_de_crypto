@@ -1,4 +1,4 @@
-const N:  usize = 20;
+const N: usize = 20;
 
 fn S2str(data: &String) -> &str {
     let v = &data[0..data.len()];
@@ -46,30 +46,30 @@ use rand::Rng;
 */
 fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut rng = rand::thread_rng();
-    let mut i:i32; //=rng.gen();
-    let mut j:i32;
+    let mut i: i32; //=rng.gen();
+    let mut j: i32;
     //println!("Integer: {}", rng.gen_range(0..N));
     for i in (1..N).rev() {
         let mut a: usize = i - 1;
         let mut b: usize = rng.gen_range(0..N); //  (0..1024) % i;
         let mut c: usize;
+
         c = array[a] as usize;
         array[a] = array[b];
         array[b] = c;
     }
-    
+
     return array;
 }
 
-fn chkarr(mut array:[usize;N])->bool {
-
+fn chkarr(mut array: [usize; N]) -> bool {
     for i in 0..N {
-        if array[i]==i {
+        if array[i] == i {
             return false;
         }
     }
 
-    return true;    
+    return true;
 }
 
 fn main() {
@@ -117,16 +117,16 @@ fn main() {
     for _i in 0..N {
         array[_i] = _i;
     }
-    
+
     array = random_shuffle(array);
     while true {
-        if chkarr(array)==true{
+        if chkarr(array) == true {
             break;
         }
         for i in 0..N {
-            array[i]=i;
+            array[i] = i;
         }
-        array=random_shuffle(array);
+        array = random_shuffle(array);
     }
 
     for _i in 0..N {
