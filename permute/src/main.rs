@@ -12,6 +12,7 @@ fn lill(v: &str) -> &[u8] {
     return byte;
 }
 
+/*
 fn str2S(str: &str) -> String {
     let s1: String = String::from(str);
     println!("{}", s1);
@@ -35,6 +36,7 @@ fn c2_S(c: Vec<char>) -> String {
     println!("{}", &cs); // → a
     return cs;
 }
+*/
 
 use std::array;
 //extern crate rand;
@@ -51,7 +53,7 @@ fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     //println!("Integer: {}", rng.gen_range(0..N));
     for i in (1..N).rev() {
         let mut a: usize = i - 1;
-        let mut b: usize = rng.gen_range(0..N); //  (0..1024) % i;
+        let mut b: usize = rng.gen_range(1..N); //  (0..1024) % i;
         let mut c: usize;
 
         c = array[a] as usize;
@@ -119,6 +121,7 @@ fn main() {
     }
 
     array = random_shuffle(array);
+
     while true {
         if chkarr(array) == true {
             break;
@@ -129,7 +132,7 @@ fn main() {
         array = random_shuffle(array);
     }
 
-    for _i in 0..N {
+    for _i in 1..N {
         print!("{},", array[_i]);
         p[array[_i]] = _i as i32;
     }
