@@ -17,7 +17,7 @@ fn enc(data: &String, a: usize) -> String {
         227, 219, 171, 75, 150, 49, 98, 196, 149, 55, 110, 220, 165, 87, 174, 65, 130, 25, 50, 100,
         200, 141, 7, 14, 28, 56, 112, 224, 221, 167, 83, 166, 81, 162, 89, 178, 121, 242, 249, 239,
         195, 155, 43, 86, 172, 69, 138, 9, 18, 36, 72, 144, 61, 122, 244, 245, 247, 243, 251, 235,
-        203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142
+        203, 139, 11, 22, 44, 88, 176, 125, 250, 233, 207, 131, 27, 54, 108, 216, 173, 71, 142,
     ];
 
     let mut c: [u8; 257] = [0; 257];
@@ -30,21 +30,24 @@ fn enc(data: &String, a: usize) -> String {
         print!("{},", byte[i] as u8);
     }
     println!("");
-    
+
     for ii in 0..j {
         c[ii] = gf[(((byte[ii]) as usize) + (a)) % 256] as u8;
     }
 
-    println!("cipher text:");
     for i in 0..(j as usize) {
         print!("{},", c[i] as usize);
     }
     println!("");
+    let encoded = encode(&c[0..j]);
 
-    return encode(&c[0..j]);
+    println!("cipher text:");
+    println!("{}", encoded);
+
+    return encoded;
 }
 
-fn dec(cc: String, a: usize) -> String {
+fn dec(encoded: String, a: usize) -> String {
     let mut buf: [i32; 257] = [0; 257];
     let fg: [i32; 256] = [
         0, 1, 2, 26, 3, 51, 27, 199, 4, 224, 52, 239, 28, 105, 200, 76, 5, 101, 225, 15, 53, 142,
@@ -60,37 +63,38 @@ fn dec(cc: String, a: usize) -> String {
         124, 165, 119, 197, 24, 74, 237, 128, 13, 112, 247, 109, 162, 60, 83, 42, 158, 86, 171,
         252, 97, 135, 178, 188, 205, 63, 91, 204, 90, 96, 177, 157, 170, 161, 82, 12, 246, 23, 236,
         123, 118, 45, 216, 80, 175, 214, 234, 231, 232, 174, 233, 117, 215, 245, 235, 169, 81, 89,
-        176
+        176,
     ];
 
     //println!("{}", cc);
-    let aa = decode(&cc).unwrap();
-    println!("{:?}", aa);
-    for i in 0..aa.len() {
-        buf[i] = (fg[(aa[i] as usize)]) - (a as i32);
+    let decoded = decode(&encoded).unwrap();
+    println!("{:?}", decoded);
+    for i in 0..decoded.len() {
+        buf[i] = (fg[(decoded[i] as usize)]) - (a as i32);
     }
     let mut w: [u8; 257] = [0; 257];
 
     println!("plain text:");
-    for i in 0..aa.len() {
+    for i in 0..decoded.len() {
         w[i] = (buf[i] % 256) as u8;
     }
 
-    let o: String = String::from_utf8(w.to_vec()).unwrap();
-    println!("base64 = {}", &o[0..aa.len()]);
+    let mut plain: String = String::from_utf8(w.to_vec()).unwrap();
+    println!("base64 = {}", encode(&plain[0..decoded.len()]));
+    plain = plain[0..decoded.len()].to_string();
 
-    return o[0..aa.len()].to_string();
+
+    return plain;
 }
 
 fn main() {
     let a = 1010;
     let mut data = String::new(); //from("日本語入力");
-  
+
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     println!("{}", data);
-    let mut p:&str=&data;
-    let cc = enc(&data, a).to_string();
+    let cc = enc(&data, a);
     println!("{}", (cc));
     let l = dec(cc.to_string(), a);
     println!("back to origin: {}", l);
