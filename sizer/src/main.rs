@@ -21,11 +21,9 @@ fn enc(data: &String, a: usize) -> String {
     ];
 
     let mut c: [u8; 257] = [0; 257];
-    let byte: &[u8];
+    let byte: &[u8] = data.as_bytes();
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
 
-    byte = data.as_bytes(); //encoded.as_bytes();
-                            //l=lill(byte);
     let j = byte.len();
 
     for ii in 0..j {
@@ -38,7 +36,7 @@ fn enc(data: &String, a: usize) -> String {
     println!("cipher text:");
     println!("{}", encoded);
 
-    return encoded;
+    encoded
 }
 
 fn dec(encoded: String, a: usize) -> String {
@@ -74,12 +72,10 @@ fn dec(encoded: String, a: usize) -> String {
         w[i] = (buf[i] % 256) as u8;
     }
     println!("decrypted = {:?}", &w[0..decoded.len()]);
-    let mut plain: String = String::from_utf8(w.to_vec()).unwrap();
-    //println!("base64 = {}", encode(&plain[0..decoded.len()]));
-    plain = plain[0..decoded.len()].to_string();
-
-
-    return plain;
+    match String::from_utf8(w.to_vec()) {
+        Err(_why) => { println!("復号できませんでした"); "復号失敗".to_string() },
+        Ok(str) => str
+    }
 }
 
 fn main() {
@@ -92,8 +88,8 @@ fn main() {
     println!("{}", data);
     
     let cc = enc(&data, a);
-    println!("");
-    let l = dec(cc.to_string(), a);
+    println!(" ");
+    let l = dec(cc, a);
     
     println!("back to origin: {}", l);
 }
