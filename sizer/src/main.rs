@@ -29,7 +29,7 @@ fn enc(data: &String, a: usize) -> String {
     for ii in 0..j {
         c[ii] = gf[(((byte[ii]) as usize) + (a)) % 256] as u8;
     }
-    println!("encryptod = {:?}",&c[0..j]);
+    println!("encryptod = {:?}", &c[0..j]);
 
     let encoded = encode(&c[0..j]);
 
@@ -58,7 +58,6 @@ fn dec(encoded: String, a: usize) -> String {
         176,
     ];
 
-
     let decoded = decode(&encoded).unwrap();
 
     for i in 0..decoded.len() {
@@ -73,8 +72,11 @@ fn dec(encoded: String, a: usize) -> String {
     }
     println!("decrypted = {:?}", &w[0..decoded.len()]);
     match String::from_utf8(w.to_vec()) {
-        Err(_why) => { println!("復号できませんでした"); "復号失敗".to_string() },
-        Ok(str) => str
+        Err(_why) => {
+            println!("復号できませんでした");
+            "へげええええ！".to_string()
+        }
+        Ok(str) => str,
     }
 }
 
@@ -84,12 +86,12 @@ fn main() {
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
-    data =data.trim_end().to_owned();
+    data = data.trim_end().to_owned();
     println!("{}", data);
-    
+
     let cc = enc(&data, a);
     println!(" ");
     let l = dec(cc, a);
-    
+
     println!("back to origin: {}", l);
 }
