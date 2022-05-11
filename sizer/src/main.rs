@@ -22,8 +22,8 @@ fn enc(data: &String, a: usize) -> String {
 
     let mut c: [u8; 257] = [0; 257];
     let byte: &[u8];
-    print!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
-    let data =data.trim_end().to_owned(); 
+    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+
     byte = data.as_bytes(); //encoded.as_bytes();
                             //l=lill(byte);
     let j = byte.len();
@@ -88,6 +88,7 @@ fn main() {
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
+    data =data.trim_end().to_owned();
     println!("{}", data);
     
     let cc = enc(&data, a);
