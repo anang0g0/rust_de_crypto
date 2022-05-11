@@ -27,9 +27,10 @@ fn enc(data: &String, a: usize) -> String {
                             //l=lill(byte);
     let j = byte.len();
     for i in 0..j {
-        println!("v[{}]={}", i, byte[i] as u8);
+        print!("{},", byte[i] as u8);
     }
-
+    println!("");
+    
     for ii in 0..j {
         c[ii] = gf[(((byte[ii]) as usize) + (a)) % 256] as u8;
     }
@@ -62,7 +63,7 @@ fn dec(cc: String, a: usize) -> String {
         176
     ];
 
-    println!("{}", cc);
+    //println!("{}", cc);
     let aa = decode(&cc).unwrap();
     println!("{:?}", aa);
     for i in 0..aa.len() {
