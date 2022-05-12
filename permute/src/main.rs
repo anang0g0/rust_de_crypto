@@ -1,5 +1,12 @@
 const N: usize = 20;
 
+//use rand::prelude::*;
+use rand::rngs::adapter::ReseedingRng;
+use rand::rngs::OsRng;
+use rand_chacha::rand_core::RngCore;
+use rand_chacha::rand_core::SeedableRng;
+use rand_chacha::ChaCha20Core;
+
 fn S2str(data: &String) -> &str {
     let v = &data[0..data.len()];
 
@@ -38,22 +45,30 @@ fn c2_S(c: Vec<char>) -> String {
 }
 */
 
-use std::array;
+//use std::array;
 //extern crate rand;
 use rand::Rng;
+
+fn generate_random_numbers_with_a_seed(seed: u64) {
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    println!("Deterministic Random numbers with seed:{}", rng.next_u32());
+}
 
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
 */
 fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
-    let mut rng = rand::thread_rng();
-    let mut i: i32; //=rng.gen();
-    let mut j: i32;
+ //   let mut rng = rand::thread_rng();
+ //   let mut i: i32; //=rng.gen();
+ //   let mut j: i32;
     //println!("Integer: {}", rng.gen_range(0..N));
+    let prng = ChaCha20Core::from_entropy();
+    let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
+
     for i in (1..N).rev() {
         let mut a: usize = i - 1;
-        let mut b: usize = rng.gen_range(1..N); //  (0..1024) % i;
+        let mut b: usize = reseeding_rng.gen_range(1..N);
         let mut c: usize;
 
         c = array[a] as usize;
@@ -119,6 +134,13 @@ fn main() {
     for _i in 0..N {
         array[_i] = _i;
     }
+
+    generate_random_numbers_with_a_seed(200);
+    //Result : -416273517
+    let prng = ChaCha20Core::from_entropy();
+    let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
+    println!("Random number: {}", reseeding_rng.gen::<u64>());
+    
 
     array = random_shuffle(array);
 
