@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 base64 = "0.13.0"
 rand = "0.8.5"
+rand_chacha = "0.3.1"
 rustfix = "0.6.0"
 rustfmt = "0.10.0"
