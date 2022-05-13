@@ -1,6 +1,5 @@
 const N: usize = 20;
 
-//use rand::prelude::*;
 use rand::rngs::adapter::ReseedingRng;
 use rand::rngs::OsRng;
 use rand_chacha::rand_core::RngCore;
@@ -46,7 +45,7 @@ fn c2_S(c: Vec<char>) -> String {
 */
 
 //use std::array;
-//extern crate rand;
+
 use rand::Rng;
 
 fn generate_random_numbers_with_a_seed(seed: u64) {
@@ -54,22 +53,46 @@ fn generate_random_numbers_with_a_seed(seed: u64) {
     println!("Deterministic Random numbers with seed:{}", rng.next_u32());
 }
 
+fn random_permutation(mut a: [usize; N]) -> [usize; N] {
+    let mut _i: usize;
+    let mut j: usize;
+    let mut x: usize;
+    let prng = ChaCha20Core::from_entropy();
+    let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
+
+    for i in 1..N {
+        a[i] = i;
+    }
+    for i in 1..N - 1 {
+        // rand from i+1 to F-1
+        j = reseeding_rng.gen_range(1..(N - i) + i);
+        //() % (N - 1 - i)) + i + 1;
+
+        // swap a[i] and a[j]
+        x = a[j as usize];
+        a[j as usize] = a[i as usize];
+        a[i as usize] = x;
+    }
+    if a[(N - 1) as usize] == (N - 1) {
+        a[(N - 1) as usize] = a[N - 2];
+        a[(N - 2) as usize] = N - 1;
+    }
+
+    return a;
+}
+
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
 */
 fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
- //   let mut rng = rand::thread_rng();
- //   let mut i: i32; //=rng.gen();
- //   let mut j: i32;
-    //println!("Integer: {}", rng.gen_range(0..N));
     let prng = ChaCha20Core::from_entropy();
     let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
 
     for i in (1..N).rev() {
-        let mut a: usize = i - 1;
-        let mut b: usize = reseeding_rng.gen_range(1..N);
-        let mut c: usize;
+        let a: usize = i - 1;
+        let b: usize = reseeding_rng.gen_range(1..N);
+        let c: usize;
 
         c = array[a] as usize;
         array[a] = array[b];
@@ -140,20 +163,24 @@ fn main() {
     let prng = ChaCha20Core::from_entropy();
     let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
     println!("Random number: {}", reseeding_rng.gen::<u64>());
-    
 
-    array = random_shuffle(array);
-
-    while true {
-        if chkarr(array) == true {
-            break;
-        }
-        for i in 0..N {
-            array[i] = i;
-        }
-        array = random_shuffle(array);
+    for i in 1..N {
+        array[i] = i;
     }
+    //array = random_shuffle(array);
+    array = random_permutation(array); //不動点を作らない
+                                       /*
 
+                                           while true {
+                                               if chkarr(array) == true {
+                                                   break;
+                                               }
+                                               for i in 0..N {
+                                                   array[i] = i;
+                                               }
+                                               array = random_shuffle(array);
+                                           }
+                                       */
     for _i in 1..N {
         print!("{},", array[_i]);
         p[array[_i]] = _i as i32;
