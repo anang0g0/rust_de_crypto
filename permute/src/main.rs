@@ -90,12 +90,12 @@ fn random_shuffle(mut array: [usize; N]) -> [usize; N] {
     let mut reseeding_rng = ReseedingRng::new(prng, 0, OsRng); //Reseeding
 
     for i in (1..N).rev() {
-        let a: usize = i - 1;
+        //let a: usize = i - 1;
         let b: usize = reseeding_rng.gen_range(1..N);
         let c: usize;
 
-        c = array[a] as usize;
-        array[a] = array[b];
+        c = array[i] as usize;
+        array[i] = array[b];
         array[b] = c;
     }
 
@@ -167,20 +167,20 @@ fn main() {
     for i in 1..N {
         array[i] = i;
     }
-    //array = random_shuffle(array);
-    array = random_permutation(array); //不動点を作らない
-                                       /*
+    array = random_shuffle(array);
+    //array = random_permutation(array); //不動点を作らない
+    /*
 
-                                           while true {
-                                               if chkarr(array) == true {
-                                                   break;
-                                               }
-                                               for i in 0..N {
-                                                   array[i] = i;
-                                               }
-                                               array = random_shuffle(array);
-                                           }
-                                       */
+        while true {
+            if chkarr(array) == true {
+                break;
+            }
+            for i in 0..N {
+                array[i] = i;
+            }
+            array = random_shuffle(array);
+        }
+    */
     for _i in 1..N {
         print!("{},", array[_i]);
         p[array[_i]] = _i as i32;
