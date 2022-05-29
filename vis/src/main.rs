@@ -6,11 +6,11 @@ use std::str;
 
 
 
-fn enc(data: &String, a: usize) -> String {
+fn enc(data: &String, a:[u8;32]) -> String {
 /*
  * S-box transformation table
  */
-const s_box: [u8;256] = [
+const S_BOX: [u8;256] = [
     // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,  // 0
     0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,  // 1
@@ -31,17 +31,16 @@ const s_box: [u8;256] = [
 
  
     let mut buf: [u8; 257] = [0; 257];
-    let mut byte = data.as_bytes();
-    let mask = 0xff;
+    let byte = data.as_bytes();
+    let _mask = 0xff;
 
 
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
 
     let j = byte.len();
-
     for ii in 0..j {
-        buf[ii]=buf[ii]+(ii+1) as u8;
-        buf[ii] = buf[ii]+s_box[(((byte[ii]%16)+(byte[ii]>>4)*16 ) as usize)]; //+ (a)) % 256] as u8;
+        //buf[ii]=buf[ii]+(ii+1) as u8;
+        buf[ii] = a[ii%32]^S_BOX[(((byte[ii]%16)+(byte[ii]>>4)*16 ) as usize)] 
     }
     println!("encryptod = {:?}", &buf[0..j]);
 
@@ -53,12 +52,12 @@ const s_box: [u8;256] = [
     encoded
 }
 
-fn dec(encoded: String, a: usize) -> String {
+fn dec(encoded: String, a:[u8;32]) -> String {
     let mut buf: [u8; 257] = [0; 257];
 /*
  * Inverse S-box transformation table
  */
-const inv_s_box: [u8;256] = [
+const INV_S_BOX: [u8;256] = [
     // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,  // 0
     0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,  // 1
@@ -79,12 +78,13 @@ const inv_s_box: [u8;256] = [
 
 
     let mut decoded = decode(&encoded).unwrap();
-    let mask:u8=0xff;
+    let _mask:u8=0xff;
+
 
     for i in 0..decoded.len() {
-        decoded[i]=decoded[i]-(i+1) as u8;
-        println!("dec {}",((decoded[i]%16))); //+(decoded[i]>>4)*16 );
-        buf[i] = inv_s_box[(((decoded[i]%16)+(decoded[i]>>4)*16 ) as usize)]; // -(a) as u8;
+        decoded[i]=decoded[i]^a[i%32] as u8;
+        println!("dec {}",((decoded[i]%16))); 
+        buf[i] = INV_S_BOX[(((decoded[i]%16)+(decoded[i]>>4)*16 ) as usize)]; 
         //buf[i] = (inv_s_box[((((decoded[i]&mask)+(decoded[i]>>4)*16) as usize)) % 256]) - (a as u8);
     }
 
@@ -105,7 +105,7 @@ const inv_s_box: [u8;256] = [
 }
 
 fn main() {
-    let a = 1010;
+    let mut a:[u8;32]=[0;32];
     let mut data = String::new(); //from("日本語入力");
 
     println!("何か入力を");
@@ -113,6 +113,9 @@ fn main() {
     data = data.trim_end().to_owned();
     println!("{}", data);
 
+    for i in 0..32{
+        a[i]=rand::random::<u8>();
+    }
     let cc = enc(&data, a);
     println!(" ");
     let l = dec(cc, a);
