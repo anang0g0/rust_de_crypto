@@ -39,7 +39,6 @@ const S_BOX: [u8;256] = [
 
     let j = byte.len();
     for ii in 0..j {
-        //buf[ii]=buf[ii]+(ii+1) as u8;
         buf[ii] = a[ii%32]^S_BOX[(((byte[ii]%16)+(byte[ii]>>4)*16 ) as usize)] 
     }
     println!("encryptod = {:?}", &buf[0..j]);
@@ -85,17 +84,11 @@ const INV_S_BOX: [u8;256] = [
         decoded[i]=decoded[i]^a[i%32] as u8;
         println!("dec {}",((decoded[i]%16))); 
         buf[i] = INV_S_BOX[(((decoded[i]%16)+(decoded[i]>>4)*16 ) as usize)]; 
-        //buf[i] = (inv_s_box[((((decoded[i]&mask)+(decoded[i]>>4)*16) as usize)) % 256]) - (a as u8);
     }
-
-    let mut w: [u8; 257] = [0; 257];
 
     println!("plain text:");
-    for i in 0..decoded.len() {
-        w[i] = buf[i]; //% (256 as u8)) as u8;
-    }
-    println!("decrypted = {:?}", &w[0..decoded.len()]);
-    match String::from_utf8(w.to_vec()) {
+    println!("decrypted = {:?}", &buf[0..decoded.len()]);
+    match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
             "へげええええ！".to_string()
