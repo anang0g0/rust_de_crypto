@@ -31,7 +31,7 @@ const s_box: [u8;256] = [
 
  
     let mut buf: [u8; 257] = [0; 257];
-    let byte: &[u8] = data.as_bytes();
+    let mut byte = data.as_bytes();
     let mask = 0xff;
 
 
@@ -40,7 +40,8 @@ const s_box: [u8;256] = [
     let j = byte.len();
 
     for ii in 0..j {
-        buf[ii] = s_box[(((byte[ii]%16)+(byte[ii]>>4)*16 ) as usize)]; //+ (a)) % 256] as u8;
+        buf[ii]=buf[ii]+(ii+1) as u8;
+        buf[ii] = buf[ii]+s_box[(((byte[ii]%16)+(byte[ii]>>4)*16 ) as usize)]; //+ (a)) % 256] as u8;
     }
     println!("encryptod = {:?}", &buf[0..j]);
 
@@ -77,10 +78,11 @@ const inv_s_box: [u8;256] = [
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d]; // f
 
 
-    let decoded = decode(&encoded).unwrap();
+    let mut decoded = decode(&encoded).unwrap();
     let mask:u8=0xff;
 
     for i in 0..decoded.len() {
+        decoded[i]=decoded[i]-(i+1) as u8;
         println!("dec {}",((decoded[i]%16))); //+(decoded[i]>>4)*16 );
         buf[i] = inv_s_box[(((decoded[i]%16)+(decoded[i]>>4)*16 ) as usize)]; // -(a) as u8;
         //buf[i] = (inv_s_box[((((decoded[i]&mask)+(decoded[i]>>4)*16) as usize)) % 256]) - (a as u8);
