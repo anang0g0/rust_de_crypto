@@ -10,5 +10,10 @@ base64 = "0.13.0"
 nanorand = "0.7.0"
 ndarray = "0.15.4"
 rand = "0.8.5"
+<<<<<<< HEAD
 rand_chacha = "0.3.1"
 rng = "0.1.0"
+=======
+ndarray = "0.15.4"
+rand_chacha = "0.3.1"
+>>>>>>> 641ec8f2a8ff96d95526a4b4d191598a9327bcd7

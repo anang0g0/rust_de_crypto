@@ -1,5 +1,3 @@
-
-
 extern crate base64;
 use std::str;
 use base64::{encode, decode};
