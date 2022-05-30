@@ -12,7 +12,7 @@ use std::str;
     配列の要素をランダムシャッフルする
 */
 fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
-    let mut _i: usize;
+    let _i: usize;
     let mut a: usize;
     let mut b: usize;
     let seed2: [u8; 32] = [1;32]; 
@@ -64,7 +64,7 @@ fn enc(data: &String, a: [u8; 256]) -> String {
     let mut buf: [u8; 257] = [0; 257];
     let byte = data.as_bytes();
 
-    
+
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
 
     let j = byte.len();
