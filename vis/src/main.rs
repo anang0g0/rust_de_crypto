@@ -1,10 +1,8 @@
 #![allow(non_snake_case)]
 
 use base64::{decode, encode};
-// use ndarray::prelude::*;
-// use rand::prelude::*;
 use rand::{Rng, SeedableRng};
-use rand_chacha::ChaCha8Rng;
+//use rand_chacha::ChaCha8Rng;
 use std::str;
 
 /*
@@ -25,7 +23,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        _c = (rng.next_u32() % 256) as usize; //暗号理論的に安全だが初期値が小さい、再現あり
+        _c = (rng.gen_range(1..256)) as usize; //暗号理論的に安全だが初期値が小さい、再現あり
         //b=c as usize;
         be = rng2.gen::<u8>() as usize; // 32バイトシードで再現あり
         it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
