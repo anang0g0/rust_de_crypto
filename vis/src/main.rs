@@ -15,19 +15,21 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     let mut _i: usize;
     let mut a: usize;
     let mut b: usize;
-    let seed2: [u8; 32] = [0; 32];
+    let seed2: [u8; 32] = [1;32]; //[1,2,3,4,5,6,7,8,9,0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut seed: u64 = 1;
     let mut _c: u32;
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    let mut it: u8 = 0; // genはRng traitに定義されている
+    let mut it: usize = 0; // genはRng traitに定義されている
+    let mut be;
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        _c = rng.next_u32() % 256;
+        _c = rng.next_u32() % 256; //暗号理論的に安全だが初期値が小さい、再現あり
         //b=c as usize;
-        //rng2.gen::<u8>() as usize; //
-        b = rand::thread_rng().gen_range(1..256) % _i as usize;
+        be = rng2.gen::<u8>() as usize; // 32バイトシードで再現あり
+        it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
+        b = be;
         // ソートするキーの型
         (array[a], array[b]) = (array[b], array[a])
     }
