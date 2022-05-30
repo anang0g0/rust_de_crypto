@@ -6,10 +6,6 @@ use rand::prelude::*;
 use rand::Rng;
 use std::str;
 
-fn generate_random_numbers_with_a_seed(seed: u64) {
-    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    println!("Deterministic Random numbers with seed:{}", rng.next_u32());
-}
 
 /*
     Fisher-Yates shuffle による方法
