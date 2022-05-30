@@ -64,7 +64,7 @@ fn enc(data: &String, a: &mut Array2<u8>) -> String {
     
         let j = byte.len();
         for ii in 0..j {
-            buf[ii] = a[[1,S_BOX[(((byte[ii]%16)+(byte[ii]>>4)*16 )) as usize] as usize]];
+            buf[ii] = S_BOX[(((byte[ii]%16)+(byte[ii]>>4)*16 )) as usize];
         }
         println!("encryptod = {:?}", &buf[0..j]);
     
@@ -110,7 +110,7 @@ fn enc(data: &String, a: &mut Array2<u8>) -> String {
         }
     
         for i in 0..decoded.len() {
-            decoded[i]=inv_P[decoded[i] as usize] as u8;
+            //decoded[i]=inv_P[decoded[i] as usize] as u8;
             println!("dec {}",((decoded[i]%16))); 
             buf[i] = INV_S_BOX[(((decoded[i]%16)+(decoded[i]>>4)*16 ) as usize)]; 
         }
