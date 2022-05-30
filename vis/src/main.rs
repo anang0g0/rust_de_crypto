@@ -37,7 +37,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     array
 }
 
-fn enc(data: &String, a: [u8; 256]) -> String {
+fn enc(data:&mut String, a: [u8; 256]) -> String {
     /*
      * S-box transformation table
      */
@@ -62,15 +62,21 @@ fn enc(data: &String, a: [u8; 256]) -> String {
     ]; 
 
     let mut buf: [u8; 257] = [0; 257];
-    let byte = data.as_bytes();
+    let mut byte = data.as_bytes();
     let _mask = 0xff;
 
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
 
     let j = byte.len();
-    for ii in 0..j {
-        buf[ii] = a[(S_BOX[((byte[ii] % 16) + (byte[ii] >> 4) * 16) as usize] ^ a[ii]) as usize];
+    for i in 0..j{
+        buf[i]=a[(S_BOX[((byte[i] % 16) + (byte[i] >> 4) * 16) as usize] ^ a[i]) as usize];
     }
+    for k in 1..16{
+    for ii in 0..j {
+        buf[ii] = a[(S_BOX[((buf[ii] % 16) + (buf[ii] >> 4) * 16) as usize] ^ a[ii]) as usize];
+    }
+    }
+
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
@@ -114,11 +120,16 @@ fn dec(encoded: String, a: [u8; 256]) -> String {
         inv_P[a[i as usize] as usize] = i as usize;
     }
 
+    for j in 0..16{
     for i in 0..decoded.len() {
         decoded[i] = inv_P[decoded[i] as usize] as u8;
         decoded[i] = decoded[i] ^ a[i] as u8;
-        println!("dec {}", (decoded[i] % 16));
-        buf[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
+        //println!("dec {}", (decoded[i] % 16));
+        decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
+    }
+    }
+    for i in 0..decoded.len() {
+        buf[i]=decoded[i];
     }
 
     println!("plain text:");
@@ -176,7 +187,7 @@ fn main() {
             a[i]=rand::random::<u8>();
         }
     */
-    let cc = enc(&data, a);
+    let cc = enc(&mut data, a);
     println!(" ");
     let l = dec(cc, a);
 
