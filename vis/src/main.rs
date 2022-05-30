@@ -68,7 +68,7 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
     let j = byte.len();
     for i in 0..j {
         buf[i] = a[(S_BOX[((byte[i] % 16) + (byte[i] >> 4) * 16) as usize] ^ a[i]) as usize];
-        //buf[i]=mat[[a[i] as usize, buf[i] as usize]] as u8;
+        buf[i]=mat[[1 as usize, buf[i] as usize]] as u8;
     }
     /* 
     for k in 1..16 {
@@ -116,14 +116,21 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
     let mut decoded = decode(&encoded).unwrap();
     let _mask: u8 = 0xff;
     let mut inv_P: [usize; 256] = [0; 256];
+    let mut t:[usize;256]=[0;256];
 
     for i in 1..256 {
         inv_P[a[i as usize] as usize] = i as usize;
     }
 
+    for i in 0..256{
+        t[mat[[1,i]] as usize]=i as usize;
+    }
     for j in 0..1 {
         for i in 0..decoded.len() {
-            //decoded[i]=mat[[a[i] as usize, decoded[i] as usize]];
+            //for k in 0..256
+            {
+                decoded[i]=t[decoded[i] as usize] as u8;
+            }
             decoded[i] = inv_P[decoded[i] as usize] as u8;
             decoded[i] = decoded[i] ^ a[i] as u8;
             //println!("dec {}", (decoded[i] % 16));
