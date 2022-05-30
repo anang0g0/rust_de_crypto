@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 base64 = "0.13.0"
 rand = "0.8.5"
+ndarray = "0.15.4"
+rand_chacha = "0.3.1"
