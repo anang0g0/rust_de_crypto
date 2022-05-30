@@ -15,21 +15,21 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     let mut _i: usize;
     let mut a: usize;
     let mut b: usize;
-    let seed2: [u8; 32] = [1;32]; //[1,2,3,4,5,6,7,8,9,0,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32];
+    let seed2: [u8; 32] = [1;32]; 
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    let mut seed: u64 = 1;
-    let mut _c: u32;
+    let seed: u64 = 1;
+    let mut _c: usize;
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    let mut it: usize = 0; // genはRng traitに定義されている
+    let mut it: usize; // genはRng traitに定義されている
     let mut be;
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        _c = rng.next_u32() % 256; //暗号理論的に安全だが初期値が小さい、再現あり
+        _c = (rng.next_u32() % 256) as usize; //暗号理論的に安全だが初期値が小さい、再現あり
         //b=c as usize;
         be = rng2.gen::<u8>() as usize; // 32バイトシードで再現あり
         it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
-        b = be;
+        b = it^be&_c;
         // ソートするキーの型
         (array[a], array[b]) = (array[b], array[a])
     }
@@ -37,7 +37,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     array
 }
 
-fn enc(data:&mut String, a: [u8; 256]) -> String {
+fn enc(data: &String, a: [u8; 256]) -> String {
     /*
      * S-box transformation table
      */
@@ -62,9 +62,9 @@ fn enc(data:&mut String, a: [u8; 256]) -> String {
     ]; 
 
     let mut buf: [u8; 257] = [0; 257];
-    let mut byte = data.as_bytes();
-    let _mask = 0xff;
+    let byte = data.as_bytes();
 
+    
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
 
     let j = byte.len();
@@ -109,7 +109,7 @@ fn dec(encoded: String, a: [u8; 256]) -> String {
         0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f, // c
         0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, // d
         0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, // e
-        0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d // f
+        0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d  // f
     ];
 
     let mut decoded = decode(&encoded).unwrap();
@@ -187,7 +187,7 @@ fn main() {
             a[i]=rand::random::<u8>();
         }
     */
-    let cc = enc(&mut data, a);
+    let cc = enc(&data, a);
     println!(" ");
     let l = dec(cc, a);
 
