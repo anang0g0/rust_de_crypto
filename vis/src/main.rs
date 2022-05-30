@@ -3,7 +3,7 @@
 use base64::{decode, encode};
 use rand::{Rng, SeedableRng};
 //use rand_chacha::ChaCha8Rng;
-use std::str;
+use std::{str, process::exit};
 
 /*
     Fisher-Yates shuffle による方法
@@ -35,7 +35,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     array
 }
 
-fn enc(data: &String, a: [u8; 256]) -> String {
+fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
     /*
      * S-box transformation table
      */
@@ -59,7 +59,7 @@ fn enc(data: &String, a: [u8; 256]) -> String {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16 // f
     ];
 
-    let mut buf: [u8; 257] = [0; 257];
+    let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
 
 
@@ -68,13 +68,16 @@ fn enc(data: &String, a: [u8; 256]) -> String {
     let j = byte.len();
     for i in 0..j {
         buf[i] = a[(S_BOX[((byte[i] % 16) + (byte[i] >> 4) * 16) as usize] ^ a[i]) as usize];
+        //buf[i]=mat[[a[i] as usize, buf[i] as usize]] as u8;
     }
+    /* 
     for k in 1..16 {
         for ii in 0..j {
             buf[ii] = a[(S_BOX[((buf[ii] % 16) + (buf[ii] >> 4) * 16) as usize] ^ a[ii]) as usize];
+            //buf[ii]=mat[[a[ii] as usize,buf[ii] as usize]] as u8;
         }
     }
-
+    */
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
@@ -85,7 +88,7 @@ fn enc(data: &String, a: [u8; 256]) -> String {
     encoded
 }
 
-fn dec(encoded: String, a: [u8; 256]) -> String {
+fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
     let mut buf: [u8; 257] = [0; 257];
     /*
      * Inverse S-box transformation table
@@ -118,12 +121,14 @@ fn dec(encoded: String, a: [u8; 256]) -> String {
         inv_P[a[i as usize] as usize] = i as usize;
     }
 
-    for j in 0..16 {
+    for j in 0..1 {
         for i in 0..decoded.len() {
+            //decoded[i]=mat[[a[i] as usize, decoded[i] as usize]];
             decoded[i] = inv_P[decoded[i] as usize] as u8;
             decoded[i] = decoded[i] ^ a[i] as u8;
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
+
         }
     }
     for i in 0..decoded.len() {
@@ -141,22 +146,33 @@ fn dec(encoded: String, a: [u8; 256]) -> String {
     }
 }
 
-//use ndarray::Array;
 
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力");
-
+    let mut mat: Array2<u8> = Array2::zeros((256, 256));
     let mut a: [u8; 256] = [0; 256];
-    let mut it: Array2<u8> = Array2::zeros((32, 256));
+    let mut _it: Array2<u8> = Array2::zeros((256, 256));
     let mut _i: usize;
     let mut _j: usize;
 
+for j in 0..256{
     for _i in 1..256 {
         a[_i] = _i as u8;
     }
     a = random_shuffule(a, 256);
+    for k in 0..256{
+    mat[[j,k]]=a[k];
+    }
+}
+for i in 0..256{
+    for j in 0..256{
+        print!("{},",mat[[i,j]]);
+    }
+    println!("");
+}
+//exit(1);
 
     /*
         for _j in 1..32{
@@ -175,6 +191,7 @@ fn main() {
         }
     */
 
+    
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
@@ -185,9 +202,9 @@ fn main() {
             a[i]=rand::random::<u8>();
         }
     */
-    let cc = enc(&data, a);
+    let cc = enc(&data, a, &mat);
     println!(" ");
-    let l = dec(cc, a);
+    let l = dec(cc, a, &mat);
 
     println!("back to origin: {}", l);
 }
