@@ -27,7 +27,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
         //b=c as usize;
         be = rng2.gen::<u8>() as usize; // 32バイトシードで再現あり
         it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
-        b = it^be&_c;
+        b = it; //be&_c;
         // ソートするキーの型
         (array[a], array[b]) = (array[b], array[a])
     }
@@ -88,7 +88,7 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
     let j = byte.len();
     for i in 0..j{
         buf[i]=byte[i];
-        buf[i]^=(rng.gen_range(1..256)) as u8;
+        //buf[i]^=(rng.gen_range(1..256)) as u8;
 
     }
     for k in 0..16{
@@ -100,7 +100,7 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
         //buf[i]^=i as u8;
         me[i] = a[ buf[i] as usize] as u8;
         
-        buf[i]=mat[[k as usize, me[i] as usize]] as u8;
+        buf[i]=mat[[a[i] as usize as usize, me[i] as usize]] as u8;
         //buf[i] ^= i as u8;//a[i];    
     }
     }
@@ -175,7 +175,7 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
             //for k in 0..256
             //
             //decoded[i] = decoded[i] ^ i  as u8; //a[i] as u8;
-            decoded[i]=mat[[j as usize,decoded[i] as usize]];
+            decoded[i]=mat[[a[i] as usize,decoded[i] as usize]];
 
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
@@ -186,8 +186,7 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
     }
     for i in 0..decoded.len() {
         buf[i] = decoded[i];
-        buf[i]^=(rng.gen_range(1..256)) as u8;
-
+        //buf[i]^=(rng.gen_range(1..256)) as u8;
     }
 
     println!("plain text:");
@@ -215,16 +214,16 @@ fn main() {
     let seed2: [u8; 32] = [1;32]; 
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
-for j in 0..256{
-    for _i in 0..256 {
-        a[_i] = _i as u8;
-    }
-    a = random_shuffule(a, 256);
-    for k in 0..256{
+    for j in 0..256{
+        for _i in 0..256 {
+            a[_i] = _i as u8;
+        }
+        a = random_shuffule(a, 256);
+        for k in 0..256{
     mat[[j,k]]=a[k];
     }
 }
-for i in 0..32{
+for i in 0..256{
     for j in 0..256{
         print!("{},",mat[[i,j]]);
     }
@@ -254,6 +253,11 @@ for i in 0..256{
         }
     */
 
+        for _i in 0..256 {
+            a[_i] = _i as u8;
+        }
+        a = random_shuffule(a, 256);
+        let u=a.clone();
     
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
@@ -264,7 +268,7 @@ for i in 0..256{
 
     let cc = enc(&data, a, &mat);
     println!(" ");
-    let l = dec(cc, a, &mat2);
+    let l = dec(cc, u, &mat2);
 
 
     println!("back to origin: {}", l);
