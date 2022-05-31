@@ -61,23 +61,31 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
+    let seed2: [u8; 32] = [1;32]; 
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
-
+    println!("len = {}",byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    let mut me:[u8;256]=[0;256];
 
     let j = byte.len();
+    for i in 0..j{
+        buf[i]=byte[i];
+    }
+    for k in 0..16{
     for i in 0..j {
-        buf[i] = a[(S_BOX[((byte[i] % 16) + (byte[i] >> 4) * 16) as usize] ^ a[i]) as usize];
-        buf[i]=mat[[1 as usize, buf[i] as usize]] as u8;
+        
+        //buf[i]^=i as u8;
+        buf[i]=S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
+        //buf[i]^=rng2.gen::<u8>() as u8; // 32バイトシードで再現あり
+        //buf[i]^=i as u8;
+        me[i] = a[ buf[i] as usize] as u8;
+        
+        buf[i]=mat[[k as usize, me[i] as usize]] as u8;
+        //buf[i] ^= i as u8;//a[i];    
     }
-    /* 
-    for k in 1..16 {
-        for ii in 0..j {
-            buf[ii] = a[(S_BOX[((buf[ii] % 16) + (buf[ii] >> 4) * 16) as usize] ^ a[ii]) as usize];
-            //buf[ii]=mat[[a[ii] as usize,buf[ii] as usize]] as u8;
-        }
     }
-    */
+
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
@@ -89,7 +97,7 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
 }
 
 fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
-    let mut buf: [u8; 257] = [0; 257];
+    let mut buf: [u8; 256] = [0; 256];
     /*
      * Inverse S-box transformation table
      */
@@ -114,28 +122,29 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
     ];
 
     let mut decoded = decode(&encoded).unwrap();
-    let _mask: u8 = 0xff;
     let mut inv_P: [usize; 256] = [0; 256];
-    let mut t:[usize;256]=[0;256];
+    let seed2: [u8; 32] = [1;32]; 
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
+    let mut tmp:[u8;256]=[0;256];
+    
+    println!("len = {}",decoded.len());
 
-    for i in 1..256 {
+    for i in 0..256 {
         inv_P[a[i as usize] as usize] = i as usize;
     }
 
-    for i in 0..256{
-        t[mat[[1,i]] as usize]=i as usize;
-    }
-    for j in 0..1 {
+    for j in (0..16).rev() {
         for i in 0..decoded.len() {
             //for k in 0..256
-            {
-                decoded[i]=t[decoded[i] as usize] as u8;
-            }
-            decoded[i] = inv_P[decoded[i] as usize] as u8;
-            decoded[i] = decoded[i] ^ a[i] as u8;
-            //println!("dec {}", (decoded[i] % 16));
-            decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
+            //
+            //decoded[i] = decoded[i] ^ i  as u8; //a[i] as u8;
+            decoded[i]=mat[[j as usize,decoded[i] as usize]];
 
+            tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
+
+            //println!("dec {}", (decoded[i] % 16));
+            decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
+           //decoded[i]^=i as u8;
         }
     }
     for i in 0..decoded.len() {
@@ -161,8 +170,11 @@ fn main() {
     let mut mat: Array2<u8> = Array2::zeros((256, 256));
     let mut a: [u8; 256] = [0; 256];
     let mut _it: Array2<u8> = Array2::zeros((256, 256));
+    let mut mat2:Array2<u8>=Array2::zeros((256,256));
     let mut _i: usize;
     let mut _j: usize;
+    let seed2: [u8; 32] = [1;32]; 
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
 for j in 0..256{
     for _i in 1..256 {
@@ -173,11 +185,16 @@ for j in 0..256{
     mat[[j,k]]=a[k];
     }
 }
-for i in 0..256{
+for i in 0..32{
     for j in 0..256{
         print!("{},",mat[[i,j]]);
     }
     println!("");
+}
+for i in 0..32{
+    for j in 0..256{
+        mat2[[i,mat[[i,j]] as usize]]=j as u8;
+    }
 }
 //exit(1);
 
@@ -204,14 +221,12 @@ for i in 0..256{
     data = data.trim_end().to_owned();
     println!("{}", data);
 
-    /*
-        for i in 0..32{
-            a[i]=rand::random::<u8>();
-        }
-    */
+    
+
     let cc = enc(&data, a, &mat);
     println!(" ");
-    let l = dec(cc, a, &mat);
+    let l = dec(cc, a, &mat2);
+
 
     println!("back to origin: {}", l);
 }
