@@ -2,7 +2,6 @@
 
 use base64::{decode, encode};
 use rand::{Rng, SeedableRng};
-//use rand_chacha::ChaCha8Rng;
 use std::{str, process::exit};
 
 /*
@@ -18,7 +17,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     //let mut _c: usize;
-    let mut it: usize; // genはRng traitに定義されている
+    //let mut it: usize; // genはRng traitに定義されている
     //let be;
 
     for _i in (1..size).rev() {
@@ -26,7 +25,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16) -> [u8; 256] {
         //_c = (rng.gen_range(1..256)) as usize; //暗号理論的に安全だが初期値が小さい、再現あり
         //b=c as usize;
         //be = rng2.gen::<u8>() as usize; // 32バイトシードで再現あり
-        it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
+        let it =(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる
         b = it; //be&_c;
         // ソートするキーの型
         (array[a], array[b]) = (array[b], array[a])
@@ -76,14 +75,16 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
-    //let seed2: [u8; 32] = [1;32]; 
-    //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
+    let seed2: [u8; 32] = [1;32]; 
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
 
     println!("len = {}",byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut me:[u8;256]=[0;256];
+    let cycle=rng2.gen_range(1..255);
+
 
     let j = byte.len();
     for i in 0..j{
@@ -94,7 +95,7 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
     for i in 0..j {
         buf[i]=S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
         me[i] = a[ buf[i] as usize] as u8;        
-        buf[i]=mat[[a[i] as usize as usize, me[i] as usize]] as u8;
+        buf[i]=mat[[a[(16*i+i)%cycle] as usize as usize, me[i] as usize]] as u8;
     }
     }
 
@@ -151,12 +152,12 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
 
     let mut decoded = decode(&encoded).unwrap();
     let mut inv_P: [usize; 256] = [0; 256];
-    //let seed2: [u8; 32] = [1;32]; 
-    //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
+    let seed2: [u8; 32] = [1;32]; 
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut tmp:[u8;256]=[0;256];
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    
+    let cycle=rng2.gen_range(1..255);
     println!("len = {}",decoded.len());
 
     for i in 0..256 {
@@ -165,7 +166,7 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
 
     for j in (0..16).rev() {
         for i in 0..decoded.len() {
-            decoded[i]=mat[[a[i] as usize,decoded[i] as usize]];
+            decoded[i]=mat[[a[(16*i+i)%cycle] as usize,decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
@@ -225,23 +226,6 @@ for i in 0..256{
     }
 }
 //exit(1);
-
-    /*
-        for _j in 1..32{
-        for _i in 1..256{
-        {
-        a[_i]= _i as u8;
-        }
-        //exit(1);
-        a=random_shuffule(a,256);
-
-        for _i in 1..256{
-            print!("{},",a[_i]);
-        }
-        println!("\n");
-        it[[_j,_i]] =a[_i];
-        }
-    */
 
         for _i in 0..256 {
             a[_i] = _i as u8;
