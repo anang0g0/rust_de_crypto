@@ -89,19 +89,12 @@ fn enc(data: &String, a: [u8; 256],mat:&Array2<u8>) -> String {
     for i in 0..j{
         buf[i]=byte[i];
         //buf[i]^=(rng.gen_range(1..256)) as u8;
-
     }
     for k in 0..16{
     for i in 0..j {
-        
-        //buf[i]^=i as u8;
         buf[i]=S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
-        //buf[i]^=rng2.gen::<u8>() as u8; // 32バイトシードで再現あり
-        //buf[i]^=i as u8;
-        me[i] = a[ buf[i] as usize] as u8;
-        
+        me[i] = a[ buf[i] as usize] as u8;        
         buf[i]=mat[[a[i] as usize as usize, me[i] as usize]] as u8;
-        //buf[i] ^= i as u8;//a[i];    
     }
     }
 
@@ -172,16 +165,11 @@ fn dec(encoded: String, a: [u8; 256],mat:&Array2<u8>) -> String {
 
     for j in (0..16).rev() {
         for i in 0..decoded.len() {
-            //for k in 0..256
-            //
-            //decoded[i] = decoded[i] ^ i  as u8; //a[i] as u8;
             decoded[i]=mat[[a[i] as usize,decoded[i] as usize]];
-
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
-           //decoded[i]^=i as u8;
         }
     }
     for i in 0..decoded.len() {
@@ -223,12 +211,14 @@ fn main() {
     mat[[j,k]]=a[k];
     }
 }
+/* 
 for i in 0..256{
     for j in 0..256{
         print!("{},",mat[[i,j]]);
     }
     println!("");
 }
+*/
 for i in 0..256{
     for j in 0..256{
         mat2[[i,mat[[i,j]] as usize]]=j as u8;
