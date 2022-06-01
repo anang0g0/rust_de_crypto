@@ -278,7 +278,7 @@ for i in 0..256{
 
     let cc = enc(&data, &sk, &mat);
     println!(" ");
-    let l = dec(cc, &sk2, &mat2);
+    let l = dec(&data, &sk2, &mat2);
 
 
     println!("back to origin: {}", l);
