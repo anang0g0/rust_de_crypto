@@ -31,27 +31,12 @@ fn random_shuffule(mut array: [u8; 256], size: u16,seed:u64) -> [u8; 256] {
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
   
-    //Result : -416273517
- 
 
-    //let mut _c: usize;
     let mut it: usize; // genはRng traitに定義されている
-    //let be;
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        //_c = (rng.gen_range(1..256)) as usize; //暗号理論的に安全だが初期値が小さい、再現あり
-        //b=c as usize;
-        //let be = rng2.reseeding_rng.gen::<u8>() as usize; // 32バイトシードで再現あり
-        
-        //reseeding_rng.gen::<u8>();
-        //(rand::thread_rng().gen_range(1..256) % _i) as usize; //毎回変わる        
-        //let it=rng.gen_range(1..255);
-        //for i in 1..1000{
-            print!("{},",rng.gen_range(1..255));
-        // }
-        // exit(1);
-        
+        print!("{},",rng.gen_range(1..255));
         b =  rng.gen_range(1..255) as usize; //be&_c;
         // ソートするキーの型
         (array[a], array[b]) = (array[b], array[a])
@@ -108,13 +93,13 @@ fn enc(data: &String, a: &[u8; 256],mat:&Array2<u8>) -> String {
         for i in 0..j {
             buf[i]=S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[ buf[i] as usize] as u8;        
-            buf[i]=mat[[a[(16*k+i)%cycle] as usize, me[i] as usize]] as u8;
+            //buf[i]=mat[[a[(16*k+i)%cycle] as usize, me[i] as usize]] as u8;
         }
         }
     
     println!("encryptod = {:?}", &buf[0..j]);
 
-    let encoded = encode(&buf[0..j]);
+    let encoded = encode(&me[0..j]);
 
     println!("cipher text:");
     println!("{}", encoded);

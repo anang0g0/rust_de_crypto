@@ -94,9 +94,8 @@ fn dec(encoded: String, a: &[u8; 256],mat:&Array2<u8>) -> String {
     let l=decoded.len();
     for j in (0..16).rev() {
         for i in 0..l {
-            decoded[i]=mat[[a[(16*j+i)%cycle] as usize,decoded[i] as usize]];
+            //decoded[i]=mat[[a[(16*j+i)%cycle] as usize,decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
-
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
         }
@@ -120,34 +119,47 @@ fn dec(encoded: String, a: &[u8; 256],mat:&Array2<u8>) -> String {
 
 use ndarray::Array2;
 fn main() {
-    //let mut key:[u8;256]=[0;256];
-    let mut data = String::new(); //from("日本語入力");
-    let mut mat: Array2<u8> = Array2::zeros((256, 256));
-    let mut sk: [u8; 256] = [0; 256];
-    //let mut _it: Array2<u8> = Array2::zeros((256, 256));
-    let mut mat2:Array2<u8>=Array2::zeros((256,256));
-    let mut _i: usize;
-    let mut _j: usize;
-    //let seed2: [u8; 32] = [1;32]; 
-    //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    //let mut _it: Array2<u8> = Array2::zeros((256, 256));
-    let mut seed:u64=0;
-    let seed2: [u8; 32] = [17;32]; 
-    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-
-    for j in 0..256{
-        for _i in 0..256 {
-            sk[_i] = _i as u8;
-        }
-        seed= rng2.gen::<u64>(); // 32バイトシードで再現あり
-        sk = random_shuffule(sk, 256, seed);
-        for k in 0..256{
-    mat[[j,k]]=sk[k];
-    print!("{}, ",mat[[j,k]]);
-    }
-    println!("");
-}
-//exit(1);
+     //let mut key:[u8;256]=[0;256];
+     let mut data = String::new(); //from("日本語入力");
+     let mut mat: Array2<u8> = Array2::zeros((256, 256));
+     let mut sk: [u8; 256] = [0; 256];
+     //let mut _it: Array2<u8> = Array2::zeros((256, 256));
+     let mut mat2:Array2<u8>=Array2::zeros((256,256));
+     let mut _i: usize;
+     let mut _j: usize;
+     let mut seed:u64=0;
+     let seed2: [u8; 32] = [17;32]; 
+     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
+ 
+ 
+     for j in 0..256{
+         for _i in 0..256 {
+             sk[_i] = _i as u8;
+         }
+         seed= rng2.gen::<u64>(); // 32バイトシードで再現あり
+         sk = random_shuffule(sk, 256, seed);
+         for k in 0..256{
+     mat[[j,k]]=sk[k];
+     print!("{},",mat[[j,k]]);
+     }
+     println!("");
+ }
+ //exit(1);
+ 
+ /* 
+ for i in 0..256{
+     for j in 0..256{
+         print!("{},",mat[[i,j]]);
+     }
+     println!("");
+ }
+ */
+ for i in 0..256{
+     for j in 0..256{
+         mat2[[i,mat[[i,j]] as usize]]=j as u8;
+     }
+ }
+ //exit(1);
 /* 
 for i in 0..256{
     for j in 0..256{
