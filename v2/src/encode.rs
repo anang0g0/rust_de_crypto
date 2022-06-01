@@ -1,40 +1,37 @@
 #![allow(non_snake_case)]
 
 use base64::{decode, encode};
-use rand::{Rng, SeedableRng};
-use std::{str, process::exit};
-use rand_chacha::rand_core::RngCore;
-use rand::rngs::OsRng;
-use rand::rngs::adapter::ReseedingRng;
 use rand::prelude::*;
-use rand_chacha::ChaCha20Core; 
-
-
+use rand::rngs::adapter::ReseedingRng;
+use rand::rngs::OsRng;
+use rand::{Rng, SeedableRng};
+use rand_chacha::rand_core::RngCore;
+use rand_chacha::ChaCha20Core;
+use std::{process::exit, str};
 
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
 */
-fn random_shuffule(mut array: [u8; 256], size: u16, seed:u64) -> [u8; 256] {
+fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
     let _i: usize;
     let mut a: usize;
     let mut b: usize;
-    //let seed2: [u8; 32] = [17;32]; 
+    //let seed2: [u8; 32] = [17;32];
     //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     //let seed: u64 = 1;
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        let b = rng.gen::<u8>()% _i as u8; // 32バイトシードで再現あり
+        let b = rng.gen::<u8>() % _i as u8; // 32バイトシードで再現あり
         (array[a], array[b as usize]) = (array[b as usize], array[a])
     }
 
     array
 }
 
-
-fn enc(data: &String, a: &[u8; 256],mat:&Array2<u8>) -> String {
+fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
      */
@@ -55,36 +52,35 @@ fn enc(data: &String, a: &[u8; 256],mat:&Array2<u8>) -> String {
         0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f, 0x4b, 0xbd, 0x8b, 0x8a, // c
         0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, // d
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, // e
-        0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16 // f
+        0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
     ];
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
-    let mut seed2: [u8; 32]=[17;32]; 
+    let mut seed2: [u8; 32] = [17; 32];
     // お好みの乱数で
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    
-    println!("len = {}",byte.len());
-    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
-    let mut me:[u8;256]=[0;256];
-    let cycle=rng2.gen_range(1..255);
 
+    println!("len = {}", byte.len());
+    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    let mut me: [u8; 256] = [0; 256];
+    let cycle = rng2.gen_range(1..255);
 
     let j = byte.len();
-    for i in 0..j{
-        buf[i]=byte[i];
+    for i in 0..j {
+        buf[i] = byte[i];
         //buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    for k in 0..16{
+    for k in 0..16 {
         for i in 0..j {
-            buf[i]=S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
-            me[i] = a[ buf[i] as usize] as u8;        
-            buf[i]=mat[[a[(16*k+i)%cycle] as usize, me[i] as usize]] as u8;
+            buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
+            me[i] = a[buf[i] as usize] as u8;
+            buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
         }
-        }
-    
+    }
+
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
@@ -95,7 +91,6 @@ fn enc(data: &String, a: &[u8; 256],mat:&Array2<u8>) -> String {
     encoded
 }
 
-
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
@@ -103,53 +98,48 @@ fn main() {
     let mut mat: Array2<u8> = Array2::zeros((256, 256));
     let mut sk: [u8; 256] = [0; 256];
     //let mut _it: Array2<u8> = Array2::zeros((256, 256));
-    let mut mat2:Array2<u8>=Array2::zeros((256,256));
+    let mut mat2: Array2<u8> = Array2::zeros((256, 256));
     let mut _i: usize;
     let mut _j: usize;
-    let mut seed:u64=1234567890;
-    let seed2: [u8; 32] = [17;32]; 
+    let mut seed: u64 = 1234567890;
+    let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
-    
-    for j in 0..256{
+    for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
         }
-        let seed= rng2.gen::<u64>();
+        let seed = rng2.gen::<u64>();
         //rng2.gen::<u64>(); // 32バイトシードで再現あり
         sk = random_shuffule(sk, 256, seed);
-        for k in 0..256{
-    mat[[j,k]]=sk[k];
-    print!("{}, ",mat[[j,k]]);
-    }
-    println!("");
-}
-
-for i in 0..256{
-    for j in 0..256{
-        mat2[[i,mat[[i,j]] as usize]]=j as u8;
-    }
-}
-//exit(1);
-
-        for _i in 0..256 {
-            sk[_i] = _i as u8;
+        for k in 0..256 {
+            mat[[j, k]] = sk[k];
+            print!("{}, ", mat[[j, k]]);
         }
-        sk = random_shuffule(sk, 256, seed);
-        let sk2=sk.clone();
-    
+        println!("");
+    }
+
+    for i in 0..256 {
+        for j in 0..256 {
+            mat2[[i, mat[[i, j]] as usize]] = j as u8;
+        }
+    }
+    //exit(1);
+
+    for _i in 0..256 {
+        sk[_i] = _i as u8;
+    }
+    sk = random_shuffule(sk, 256, seed);
+    let sk2 = sk.clone();
+
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
 
-    
-
     let cc = enc(&data, &sk, &mat);
     println!(" ");
     //let l = dec(cc, &sk2, &mat2);
 
-
     println!("back to origin: {}", cc);
 }
-
