@@ -94,6 +94,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
+    //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力");
     let mut mat: Array2<u8> = Array2::zeros((256, 256));
     let mut sk: [u8; 256] = [0; 256];
@@ -101,10 +102,15 @@ fn main() {
     let mut mat2: Array2<u8> = Array2::zeros((256, 256));
     let mut _i: usize;
     let mut _j: usize;
+    let mut seedA: u64 = 1234567890;
     let mut seed: u64 = 1234567890;
     let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-
+    let seedB: u64 = 1234567890;
+    let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
+    let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
+ 
+ 
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
