@@ -63,7 +63,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let mut tmp: [u8; 256] = [0; 256];
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    let cycle = rng2.gen_range(0..255);
+    let cycle = rng2.gen_range(1..256);
     println!("len = {}", decoded.len());
 
     for i in 0..256 {
@@ -71,7 +71,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     let l = decoded.len();
     for j in (0..16).rev() {
-        for i in 0..l {
+        for i in 0..256 {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
