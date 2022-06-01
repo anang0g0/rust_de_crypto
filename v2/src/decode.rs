@@ -10,8 +10,6 @@ use rand::prelude::*;
 use rand_chacha::ChaCha20Core; 
 
 
-
-
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
@@ -27,13 +25,12 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed:u64) -> [u8; 256] {
 
     for _i in (1..size).rev() {
         a = (_i) as usize;
-        let b = rng.gen::<u8>()% _i as u8; // 32バイトシードで再現あり
-        (array[a], array[b as usize]) = (array[b as usize], array[a])
+        let b:usize = (rng.gen::<u8>()% _i as u8) as usize; // 32バイトシードで再現あり
+        (array[a], array[b]) = (array[b], array[a])
     }
 
     array
 }
-
 
 
 fn dec(encoded: String, a: &[u8; 256],mat:&Array2<u8>) -> String {
@@ -68,7 +65,7 @@ fn dec(encoded: String, a: &[u8; 256],mat:&Array2<u8>) -> String {
     let mut tmp:[u8;256]=[0;256];
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    let cycle=rng2.gen_range(1..255);
+    let cycle=rng2.gen_range(0..255);
     println!("len = {}",decoded.len());
     
 
@@ -87,7 +84,7 @@ fn dec(encoded: String, a: &[u8; 256],mat:&Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        //buf[i]^=(rng.gen_range(0..256)) as u8;
     }
 
     println!("plain text:");
@@ -124,7 +121,7 @@ fn main() {
         let seed= rng2.gen::<u64>();
         //rng2.gen::<u64>(); // 32バイトシードで再現あり
         sk = random_shuffule(sk, 256, seed);
-        for k in 1..256{
+        for k in 0..256{
     mat[[j,k]]=sk[k];
     print!("{}, ",mat[[j,k]]);
     }
@@ -159,3 +156,4 @@ for i in 0..256{
 
     println!("back to origin: {}", l);
 }
+
