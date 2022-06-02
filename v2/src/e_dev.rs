@@ -59,8 +59,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let byte = data.as_bytes();
     let mut seed2: [u8; 32] = [17; 32];
     // お好みの乱数で
-    //let seed: u64 = 1;
-    //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let seed: u64 = 1;
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut Q:[u8;256]=[0;256];
     let mut inv_Q:[u8;256]=[0;256];
@@ -77,7 +77,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..j {
         buf[i] = byte[i];
-        buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(0..256)) as u8;
     }
     for k in 0..16 {
         for i in 0..j {
