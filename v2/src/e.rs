@@ -71,9 +71,13 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let cycle = rng2.gen_range(1..255);
 
     let j = byte.len();
+    if j>256 {
+        println!("message size is over");
+        exit(1);
+    }
     for i in 0..j {
         buf[i] = byte[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
     for k in 0..16 {
         for i in 0..j {

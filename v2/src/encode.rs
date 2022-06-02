@@ -71,7 +71,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let j = byte.len();
     for i in 0..j {
         buf[i] = byte[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
     //for i in j..256{
     //    buf[i]^=(rng.gen_range(1..256)) as u8;

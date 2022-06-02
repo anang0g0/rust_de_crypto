@@ -19,9 +19,8 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
     let _i: usize;
     let mut a: usize;
     let mut b: usize;
-    //let seed2: [u8; 32] = [17;32];
-    //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    //let seed: u64 = 1;
+    let seed2: [u8; 32] = [17;32];
+    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
 
     for _i in (1..size).rev() {
@@ -83,7 +82,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
     //for i in l..256 {
     //    buf[i]^=(rng.gen_range(1..256)) as u8;
