@@ -73,7 +73,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     let l = decoded.len();
     for j in (0..16).rev() {
-        for i in 0..256 {
+        for i in 0..l {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
@@ -83,20 +83,20 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        buf[i]^=(rng.gen_range(1..256)) as u8;
+        //buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    for i in l..256 {
-        buf[i]^=(rng.gen_range(1..256)) as u8;
-    }
+    //for i in l..256 {
+    //    buf[i]^=(rng.gen_range(1..256)) as u8;
+    //}
     let mut hasher = Keccak256::new();
-    /*
+    
     // write input message
     hasher.update(buf);
 
     // read hash digest
     let result = hasher.finalize();
     println!("\n\n{:0x}",result);
-    */
+    
     println!(" ");
 
     println!("plain text:");
