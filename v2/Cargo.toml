@@ -36,8 +36,12 @@ path="src/hash.rs"
 
 [[bin]]
 name ="eee"
-path="src/e_dev.rs"
+path="src/E_dev.rs"
 
 [[bin]]
 name="ddd"
-path="src/d_dev.rs"
+path="src/D_dev.rs"
+
+[[bin]]
+name="dev"
+path="src/M_dev.rs"
