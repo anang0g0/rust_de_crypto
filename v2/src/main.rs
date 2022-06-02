@@ -96,7 +96,7 @@ fn random_shuffule2(mut array: [u8; 256], size: u16) -> [u8; 256] {
     array
 }
 
-fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
+fn enc(data: &[u8;256], a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
      */
@@ -120,25 +120,26 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
     ];
 
-    let mut buf: [u8; 256] = [0; 256];
-    let byte = data.as_bytes();
+    let mut buf: [u8;256] = [0;256];
+    //let byte = data.as_bytes();
     let mut seed2: [u8; 32] = [17; 32];
     // お好みの乱数で
     let seed: u64 = 1;
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
-    println!("len = {}", byte.len());
-    println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    println!("len = {}", data.len());
+    println!("origin: {}", str::from_utf8(data).unwrap());
     let mut me: [u8; 256] = [0; 256];
     let cycle = rng2.gen_range(1..255);
 
-    let j = byte.len();
+    let j = data.len();
+    let mut t=0;
     for i in 0..j {
-        buf[i] = byte[i];
+        buf[i] = data[i];
         buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    /*
+    
     for k in 0..16 {
         for i in 0..j {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
@@ -146,19 +147,20 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
         }
     }
-    */
+    
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
-
+    
     println!("cipher text:");
     println!("{}", encoded);
-
+    
     encoded
 }
 
+
 fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
-    let mut buf: [u8; 256] = [0; 256];
+    let mut buf: [u8;256] = [0;256];
     /*
      * Inverse S-box transformation table
      */
@@ -196,7 +198,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         inv_P[a[i as usize] as usize] = i as usize;
     }
     let l = decoded.len();
-    /*
+    
     for j in (0..16).rev() {
         for i in 0..l {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
@@ -206,14 +208,18 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
         }
     }
-    */
+    
+    let mut t=0;
+    while t<l{
     for i in 0..l {
-        buf[i] = decoded[i];
+        buf[i] = decoded[t];
         buf[i]^=(rng.gen_range(1..256)) as u8;
+        t+=1;
     }
-
+    }
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..l]);
+
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
@@ -221,6 +227,8 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         }
         Ok(str) => str,
     }
+
+
 }
 
 use ndarray::Array2;
@@ -236,13 +244,8 @@ fn main() {
     let mut seed: u64 = 0;
     let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    //let mut key:[u8;256]=[0;256];
-    //let mut key:[u8;256]=[0;256];
-    let mut data = String::new(); //from("日本語入力");
-    let mut mat: Array2<u8> = Array2::zeros((256, 256));
-    let mut sk: [u8; 256] = [0; 256];
-    //let mut _it: Array2<u8> = Array2::zeros((256, 256));
-    let mut mat2: Array2<u8> = Array2::zeros((256, 256));
+    let mut buf:&[u8];
+    let mut byte:[u8;256]=[0;256];
     let mut seedA: u64 = 1234567890;
     let seedB: u64 = 1234567890;
     let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
@@ -279,11 +282,33 @@ fn main() {
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
-    println!("{}", data);
+    println!("datas==  {},{}", data,data.len());
+    let j=data.len()/256+1;
+    let mut t=0;
+    let mut u=data.len();
+    while t<j{
+    buf=data.as_bytes();
+    for i in 0..256 {
+        byte[i]=buf[t*256+i];
+        u-=1;
+        if u==0{
+            if i<256 {
+                for o in (i+1)..256{
+                byte[o]=0;
+                }
+            }
+            break;
+        }
+    }
 
-    let cc = enc(&data, &sk, &mat);
+    let cc = enc(&byte, &sk, &mat);
+    let _t=cc.len();
+    let _i=byte.len();
     println!(" ");
+ 
     let l = dec(cc, &sk2, &mat2);
-
     println!("back to origin: {}", l);
+    t+=1;
+}
+
 }
