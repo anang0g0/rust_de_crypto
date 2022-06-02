@@ -147,7 +147,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
-            "へげええええ！".to_string()
+            "baka".to_string()
         }
         Ok(str) => str,
     }
