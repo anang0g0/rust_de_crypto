@@ -8,6 +8,8 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
 use std::{process::exit, str};
+use sha3::{Digest, Keccak256};
+
 
 /*
     Fisher-Yates shuffle による方法
@@ -61,8 +63,8 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let mut seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut tmp: [u8; 256] = [0; 256];
-    //let seed: u64 = 1;
-    //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let seed: u64 = 1;
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let cycle = rng2.gen_range(1..256);
     println!("len = {}", decoded.len());
 
@@ -81,8 +83,21 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=(rng.gen_range(0..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
+    for i in l..256 {
+        buf[i]^=(rng.gen_range(1..256)) as u8;
+    }
+    let mut hasher = Keccak256::new();
+    /*
+    // write input message
+    hasher.update(buf);
+
+    // read hash digest
+    let result = hasher.finalize();
+    println!("\n\n{:0x}",result);
+    */
+    println!(" ");
 
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..l]);
@@ -112,7 +127,10 @@ fn main() {
     let seedB: u64 = 1234567890;
     let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
     let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
- 
+
+    // create a SHA3-256 object
+
+
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;

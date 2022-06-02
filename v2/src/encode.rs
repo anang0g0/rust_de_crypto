@@ -59,8 +59,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let byte = data.as_bytes();
     let mut seed2: [u8; 32] = [17; 32];
     // お好みの乱数で
-    //let seed: u64 = 1;
-    //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let seed: u64 = 1;
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     println!("len = {}", byte.len());
@@ -71,7 +71,10 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let j = byte.len();
     for i in 0..j {
         buf[i] = byte[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
+    }
+    for i in j..256{
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
     for k in 0..16 {
         for i in 0..256 {
@@ -137,6 +140,7 @@ fn main() {
     }
     sk = random_shuffule(sk, 256, seed);
     let sk2 = sk.clone();
+    let bb:[u8;256]=[0;256];
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
@@ -144,6 +148,22 @@ fn main() {
     println!("{}", data);
 
     let cc = enc(&data, &sk, &mat);
+    
+    //use sha3::{Digest, Sha3_256};
+    use sha3::{Digest, Keccak256};
+
+    // create a SHAKE256 object
+    //let mut hasher = Keccak256::default();
+    // create a SHA3-256 object
+    let mut hasher = Keccak256::new();
+
+    // write input message
+    hasher.update(cc.as_bytes());
+
+    // read hash digest
+    let result = hasher.finalize();
+    println!("\n\n{:0x}",result);
+
     println!(" ");
     //let l = dec(cc, &sk2, &mat2);
 
