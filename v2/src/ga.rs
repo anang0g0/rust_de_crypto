@@ -8,6 +8,7 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
 use std::{process::exit, str};
+use sha3::{Digest, Keccak256};
 
 /*
     Fisher-Yates shuffle による方法
@@ -131,7 +132,7 @@ fn enc(data: &[u8;256], a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!("len = {}", data.len());
     println!("origin: {}", str::from_utf8(data).unwrap());
     let mut me: [u8; 256] = [0; 256];
-    let cycle = rng2.gen_range(1..255);
+    let cycle = rng2.gen_range(1..256);
 
     let j = data.len();
     let mut t=0;
@@ -191,7 +192,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let mut tmp: [u8; 256] = [0; 256];
     let seed: u64 = 1;
     let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
-    let cycle = rng2.gen_range(1..255);
+    let cycle = rng2.gen_range(1..256);
     println!("len = {}", decoded.len());
 
     for i in 0..256 {

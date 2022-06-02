@@ -45,3 +45,7 @@ path="src/D_dev.rs"
 [[bin]]
 name="dev"
 path="src/M_dev.rs"
+
+[[bin]]
+name="test"
+path="src/ga.rs"
