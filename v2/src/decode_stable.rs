@@ -82,11 +82,8 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    for i in l..256 {
-        buf[i]^=(rng.gen_range(1..256)) as u8;
-    }
+    
     let mut hasher = Keccak256::new();
     
     // write input message
