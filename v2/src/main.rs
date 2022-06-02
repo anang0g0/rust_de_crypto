@@ -124,8 +124,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let byte = data.as_bytes();
     let mut seed2: [u8; 32] = [17; 32];
     // お好みの乱数で
-    //let seed: u64 = 1;
-    //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let seed: u64 = 1;
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     println!("len = {}", byte.len());
@@ -136,8 +136,9 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let j = byte.len();
     for i in 0..j {
         buf[i] = byte[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
+    /*
     for k in 0..16 {
         for i in 0..j {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
@@ -145,7 +146,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
         }
     }
-
+    */
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
@@ -187,7 +188,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut tmp: [u8; 256] = [0; 256];
     let seed: u64 = 1;
-    //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let cycle = rng2.gen_range(1..255);
     println!("len = {}", decoded.len());
 
@@ -195,6 +196,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         inv_P[a[i as usize] as usize] = i as usize;
     }
     let l = decoded.len();
+    /*
     for j in (0..16).rev() {
         for i in 0..l {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
@@ -204,9 +206,10 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
         }
     }
+    */
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=(rng.gen_range(1..256)) as u8;
+        buf[i]^=(rng.gen_range(1..256)) as u8;
     }
 
     println!("plain text:");
