@@ -73,20 +73,20 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         buf[i] = byte[i];
         buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    //for i in j..256{
-    //    buf[i]^=(rng.gen_range(1..256)) as u8;
-    //}
+    for i in j..256{
+        buf[i]^=(rng.gen_range(1..256)) as u8;
+    }
     for k in 0..16 {
-        for i in 0..j {
+        for i in 0..256 {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[buf[i] as usize] as u8;
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
         }
     }
 
-    println!("encryptod = {:?}", &buf[0..j]);
+    println!("encryptod = {:?}", &buf[0..256]);
 
-    let encoded = encode(&buf[0..j]);
+    let encoded = encode(&buf[0..256]);
 
     println!("cipher text:");
     println!("{}", encoded);

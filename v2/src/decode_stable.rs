@@ -72,7 +72,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     let l = decoded.len();
     for j in (0..16).rev() {
-        for i in 0..l {
+        for i in 0..256 {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
@@ -84,9 +84,9 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         buf[i] = decoded[i];
         buf[i]^=(rng.gen_range(1..256)) as u8;
     }
-    //for i in l..256 {
-    //    buf[i]^=(rng.gen_range(1..256)) as u8;
-    //}
+    for i in l..256 {
+        buf[i]^=(rng.gen_range(1..256)) as u8;
+    }
     let mut hasher = Keccak256::new();
     
     // write input message
@@ -99,7 +99,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!(" ");
 
     println!("plain text:");
-    println!("decrypted = {:?}", &buf[0..l]);
+    println!("decrypted = {:?}", &buf[0..256]);
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
