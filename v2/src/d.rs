@@ -95,6 +95,26 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
 }
 
+
+fn router(mut o:[u8;256],mut r:[u8;256])->[u8;256]{
+    let mut inv_o:[u8;256]=[0;256];
+    let mut s:[u8;256]=[0;256];
+
+    
+    for i in 0..256{
+        inv_o[o[i] as usize]=i as u8;
+    }
+    for i in 0..256{
+        s[i]=inv_o[r[o[i] as usize] as usize];
+    }
+    for i in 0..256{
+        o[i]=s[i];
+    }
+    
+    o
+}
+
+
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];

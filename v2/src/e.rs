@@ -62,7 +62,9 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //let seed: u64 = 1;
     //let mut rng = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-
+    let mut Q:[u8;256]=[0;256];
+    let mut inv_Q:[u8;256]=[0;256];
+    
     println!("len = {}", byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut me: [u8; 256] = [0; 256];
@@ -89,6 +91,24 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!("{}", encoded);
 
     encoded
+}
+
+fn router(mut o:[u8;256],mut r:[u8;256])->[u8;256]{
+    let mut inv_o:[u8;256]=[0;256];
+    let mut s:[u8;256]=[0;256];
+
+    
+    for i in 0..256{
+        inv_o[o[i] as usize]=i as u8;
+    }
+    for i in 0..256{
+        s[i]=inv_o[r[o[i] as usize] as usize];
+    }
+    for i in 0..256{
+        o[i]=s[i];
+    }
+    
+    o
 }
 
 use ndarray::Array2;
@@ -131,6 +151,14 @@ fn main() {
     }
     sk = random_shuffule(sk, 256, seed);
     let sk2 = sk.clone();
+    println!("{:?}",&sk);
+
+    let mut tmp:[u8;256]=[0;256];
+    for i in 0..256{
+       tmp[i]=sk[sk[i] as usize];
+    }
+    println!("\n\ntwice {:?}",tmp);
+    //exit(1);
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
