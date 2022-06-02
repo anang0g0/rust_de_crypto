@@ -81,7 +81,7 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        buf[i]^=(rng.gen_range(0..256)) as u8;
+        //buf[i]^=(rng.gen_range(0..256)) as u8;
     }
 
     println!("plain text:");
