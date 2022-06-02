@@ -20,24 +20,24 @@ sha3 = "0.10.1"
 
 [[bin]]
 name = "decode"
-path="src/decode.rs"
+path="src/decode_stable.rs"
 
 [[bin]]
 name = "encode"
-path="src/encode.rs"
+path="src/encode_stable.rs"
 
 [[bin]]
 name ="main"
 path="src/main.rs"
 
 [[bin]]
-name="aaa"
+name="hash"
 path="src/hash.rs"
 
 [[bin]]
 name ="eee"
-path="src/e.rs"
+path="src/e_dev.rs"
 
 [[bin]]
 name="ddd"
-path="src/d.rs"
+path="src/d_dev.rs"
