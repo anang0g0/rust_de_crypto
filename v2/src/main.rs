@@ -114,7 +114,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     for k in 0..16 {
 
         for i in 0..j {
-            buf[i]^=result[i];
+            //buf[i]^=result[i];
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[buf[i] as usize] as u8;
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
@@ -184,7 +184,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
-            decoded[i]^=result[i];
+            //decoded[i]^=result[i];
         }
     }
     for i in 0..l {
