@@ -7,9 +7,8 @@ use rand::rngs::OsRng;
 use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
-use std::{process::exit, str};
 use sha3::{Digest, Keccak256};
-
+use std::{process::exit, str};
 
 /*
     Fisher-Yates shuffle による方法
@@ -30,7 +29,6 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
 
     array
 }
-
 
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
@@ -58,7 +56,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
-    let seed2: [u8; 32] = [17;32];
+    let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     println!("len = {}", byte.len());
@@ -70,7 +68,6 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     for i in 0..j {
         buf[i] = byte[i];
     }
-    
     for k in 0..16 {
         for i in 0..j {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
@@ -115,13 +112,12 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     ];
 
     let mut decoded = decode(&encoded).unwrap();
-    let mut inv_P: [usize; 256] = [0;256];
+    let mut inv_P: [usize; 256] = [0; 256];
     let mut tmp: [u8; 256] = [0; 256];
-    let seed2: [u8; 32] = [17;32];
+    let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     let cycle = rng2.gen_range(1..256);
-
 
     println!("len = {}", decoded.len());
 
@@ -169,7 +165,6 @@ fn main() {
     let seedB: u64 = 1234567890;
     let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
     let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
- 
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
@@ -189,13 +184,13 @@ fn main() {
             mat2[[i, mat[[i, j]] as usize]] = j as u8;
         }
     }
-    for i in 0..256{
+    for i in 0..256 {
         for j in 0..256 {
-            print!("{},",mat2[[i,j]]);
+            print!("{},", mat2[[i, j]]);
         }
         println!("");
     }
-//   exit(1);
+    //   exit(1);
 
     for _i in 0..256 {
         sk[_i] = _i as u8;
