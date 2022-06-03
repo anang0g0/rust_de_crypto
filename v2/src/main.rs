@@ -36,7 +36,6 @@ fn pappy(a:[u8;256])-> [u8;256]{
     // create a SHA3-256 object
     let mut hasher = Sha3_256::default();
     // write input message
-    let mut me=hasher.clone();
     let mut count =0;
     
     hasher.update(a);
@@ -103,17 +102,21 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let cycle = rng2.gen_range(1..256);
 
     let j = byte.len();
+    let mut result:[u8;256]=[17;256];
+    result=pappy(result);
     for i in 0..j {
         buf[i] = byte[i];
+        buf[i]^=result[i];
     }
-    
+    println!("{:?}",result);
+
     for k in 0..16 {
-        
+
         for i in 0..j {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[buf[i] as usize] as u8;
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
-            //buf[i]^=result[i];
+
         }
     }
 
@@ -169,19 +172,21 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let l = decoded.len();
     let size: usize = 32;
     let mut result:[u8;256]=[17;256];
+    result=pappy(result);
     for j in (0..16).rev() {    // read hash digest
-        //    result=pappy(result);
+
             for i in 0..l {
-                //decoded[i]^=result[i%32];
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
+            //decoded[i]^=result[0];
         }
     }
     for i in 0..l {
         buf[i] = decoded[i];
+        buf[i]^=result[i];
     }
 
     println!("plain text:");
@@ -200,7 +205,7 @@ fn main() {
     //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力");
     let mut mat: Array2<u8> = Array2::zeros((256, 256));
-    let mut sk: [u8; 256] = [0; 256];
+    let mut sk: [u8; 256] = [17; 256];
     let mut mat2: Array2<u8> = Array2::zeros((256, 256));
     let mut _i: usize;
     let mut _j: usize;
@@ -212,6 +217,13 @@ fn main() {
     let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
     let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
  
+    /*
+    for i in 0..10{
+    sk=pappy(sk);
+    println!("{:?}",sk);
+    }
+    exit(1);
+    */
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
