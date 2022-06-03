@@ -8,6 +8,7 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
 use sha3::{Digest, Keccak256};
+use std::string;
 use std::{process::exit, str};
 
 /*
@@ -30,7 +31,7 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
   array
 }
 
-fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
+fn enc(data: &str, a: &[u8; 256], mat: &Array2<u8>) -> String {
   /*
    * S-box transformation table
    */
@@ -54,31 +55,26 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
   ];
 
-  let mut buf: [u8; 256] = [0; 256];
-  let byte = data.as_bytes();
+  let mut buf = data.as_bytes().to_vec();
   let seed2: [u8; 32] = [17; 32];
   let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
-  println!("len = {}", byte.len());
+  println!("len = {}", buf.len());
   println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
   let mut me: [u8; 256] = [0; 256];
   let cycle = rng2.gen_range(1..256);
 
-  let j = byte.len();
-  for i in 0..j {
-    buf[i] = byte[i];
-  }
   for k in 0..16 {
-    for i in 0..j {
-      buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
-      me[i] = a[buf[i] as usize] as u8;
-      buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
+    for (i, x) in buf.iter_mut().enumerate() {
+      *x = S_BOX[((*x % 16) + (*x >> 4) * 16) as usize];
+      me[i] = a[*x as usize] as u8;
+      *x = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
     }
   }
 
-  println!("encryptod = {:?}", &buf[0..j]);
+  println!("encryptod = {:?}", &buf);
 
-  let encoded = encode(&buf[0..j]);
+  let encoded = encode(&buf);
 
   println!("cipher text:");
   println!("{}", encoded);
@@ -152,13 +148,9 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 use ndarray::Array2;
 fn main() {
   //let mut key:[u8;256]=[0;256];
-  let mut data = String::new(); //from("日本語入力");
   let mut mat: Array2<u8> = Array2::zeros((256, 256));
   let mut sk: [u8; 256] = [0; 256];
   let mut mat2: Array2<u8> = Array2::zeros((256, 256));
-  let mut _i: usize;
-  let mut _j: usize;
-  let mut seed: u64 = 0;
   let seed2: [u8; 32] = [17; 32];
   let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
   let mut seedA: u64 = 1234567890;
@@ -166,8 +158,8 @@ fn main() {
   let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
   let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
   for j in 0..256 {
-    for _i in 0..256 {
-      sk[_i] = _i as u8;
+    for i in 0..256 {
+      sk[i] = i as u8;
     }
     let seed = rng2.gen::<u64>();
     //rng2.gen::<u64>(); // 32バイトシードで再現あり
@@ -200,11 +192,12 @@ fn main() {
   let sk2 = sk.clone();
 
   println!("何か入力を");
+  let mut data = String::new();
   std::io::stdin().read_line(&mut data).ok();
-  data = data.trim_end().to_owned();
-  println!("{}", data);
+  let input = data.trim_end();
+  println!("{}", input);
 
-  let cc = enc(&data, &sk, &mat);
+  let cc = enc(&input, &sk, &mat);
   println!(" ");
   let l = dec(cc, &sk2, &mat2);
 
