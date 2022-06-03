@@ -103,16 +103,18 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     let j = byte.len();
     let mut result:[u8;256]=[17;256];
-    result=pappy(result);
+    //result=pappy(result);
     for i in 0..j {
         buf[i] = byte[i];
-        buf[i]^=result[i];
+        //buf[i]^=result[i];
     }
-    println!("{:?}",result);
 
+    result=pappy(result);
+    println!("{:?}",result);
     for k in 0..16 {
 
         for i in 0..j {
+            buf[i]^=result[16*k+i];
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[buf[i] as usize] as u8;
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
@@ -173,6 +175,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let size: usize = 32;
     let mut result:[u8;256]=[17;256];
     result=pappy(result);
+    println!("{:?}",result);
     for j in (0..16).rev() {    // read hash digest
 
             for i in 0..l {
@@ -181,12 +184,12 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
-            //decoded[i]^=result[0];
+            decoded[i]^=result[16*j+i];
         }
     }
     for i in 0..l {
         buf[i] = decoded[i];
-        buf[i]^=result[i];
+        //buf[i]^=result[i];
     }
 
     println!("plain text:");
