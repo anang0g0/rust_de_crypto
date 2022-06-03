@@ -7,8 +7,9 @@ use rand::rngs::OsRng;
 use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
-use sha3::{Digest, Keccak256};
 use std::{process::exit, str};
+//use sha3::{Digest, Keccak256};
+use sha3::{Digest, Sha3_256};
 
 /*
     Fisher-Yates shuffle による方法
@@ -30,6 +31,43 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
     array
 }
 
+
+fn pappy(a:[u8;256])-> [u8;256]{
+    // create a SHA3-256 object
+    let mut hasher = Sha3_256::default();
+    // write input message
+    let mut me=hasher.clone();
+    let mut count =0;
+    
+    hasher.update(a);
+    let result = hasher.finalize();
+    
+    let mut buf:[u8;32]=[0;32];
+    let mut u2:[u8;256]=[0;256];
+    
+    for i in 0..32{
+        buf[i]=a[i];
+    }
+    for i in 0..8{
+    let mut hasher = Sha3_256::default();
+    //me=hasher.clone();
+    hasher.update(buf);
+        // read hash digest
+        let result = hasher.finalize();
+    
+    for i in 0..32{
+        buf[i]^=result[i];
+        u2[count]=buf[i];
+        //print!("{},",result[i]);
+        count=count+1;
+    }
+    //println!("");
+    }
+    
+    u2
+    
+}
+    
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
@@ -56,7 +94,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
-    let seed2: [u8; 32] = [17; 32];
+    let seed2: [u8; 32] = [17;32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     println!("len = {}", byte.len());
@@ -68,11 +106,14 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     for i in 0..j {
         buf[i] = byte[i];
     }
+    
     for k in 0..16 {
+        
         for i in 0..j {
             buf[i] = S_BOX[((buf[i] % 16) + (buf[i] >> 4) * 16) as usize];
             me[i] = a[buf[i] as usize] as u8;
             buf[i] = mat[[a[(16 * k + i) % cycle] as usize, me[i] as usize]] as u8;
+            //buf[i]^=result[i];
         }
     }
 
@@ -86,7 +127,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     encoded
 }
 
-fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
+fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let mut buf: [u8; 256] = [0; 256];
     /*
      * Inverse S-box transformation table
@@ -112,12 +153,13 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     ];
 
     let mut decoded = decode(&encoded).unwrap();
-    let mut inv_P: [usize; 256] = [0; 256];
+    let mut inv_P: [usize; 256] = [0;256];
     let mut tmp: [u8; 256] = [0; 256];
-    let seed2: [u8; 32] = [17; 32];
+    let seed2: [u8; 32] = [17;32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     let cycle = rng2.gen_range(1..256);
+
 
     println!("len = {}", decoded.len());
 
@@ -125,8 +167,12 @@ fn dec(encoded: String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         inv_P[a[i as usize] as usize] = i as usize;
     }
     let l = decoded.len();
-    for j in (0..16).rev() {
-        for i in 0..l {
+    let size: usize = 32;
+    let mut result:[u8;256]=[17;256];
+    for j in (0..16).rev() {    // read hash digest
+        //    result=pappy(result);
+            for i in 0..l {
+                //decoded[i]^=result[i%32];
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
@@ -165,6 +211,7 @@ fn main() {
     let seedB: u64 = 1234567890;
     let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
     let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
+ 
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
@@ -184,13 +231,13 @@ fn main() {
             mat2[[i, mat[[i, j]] as usize]] = j as u8;
         }
     }
-    for i in 0..256 {
+    for i in 0..256{
         for j in 0..256 {
-            print!("{},", mat2[[i, j]]);
+            print!("{},",mat2[[i,j]]);
         }
         println!("");
     }
-    //   exit(1);
+//   exit(1);
 
     for _i in 0..256 {
         sk[_i] = _i as u8;
@@ -206,7 +253,7 @@ fn main() {
 
     let cc = enc(&data, &sk, &mat);
     println!(" ");
-    let l = dec(cc, &sk2, &mat2);
+    let l = dec(&cc, &sk2, &mat2);
 
     println!("back to origin: {}", l);
 }
