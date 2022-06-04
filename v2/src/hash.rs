@@ -140,10 +140,7 @@ fn main() {
     x=hmac(converted,bff);
     println!("{:?}",x);
     let be=bytes.len();
-    for i in 0..be{
-        x[i+32]=bytes[i];
-        
-    }
+        x.concat(bytes);
     println!("{},{:?}",be,x);
 
 exit(1);
