@@ -47,5 +47,5 @@ name="dev"
 path="src/M_dev.rs"
 
 [[bin]]
-name="test"
-path="src/ga.rs"
+name="long"
+path="src/longsize.rs"
