@@ -126,16 +126,50 @@ fn main() {
     let mut bff:[u8;32]=[0;32];
     let mut str1:&str="";
     let mut str2:&str="";
-    //let res = bytes.iter().map(|&s| s as char).collect::<String>();
-    //let converted: String= String::from_utf8(mc).unwrap();
     let mut x:Vec<u8>;
-    let aa=mc.len();
-    for i in 0..aa{
-        x[i+32]=mc[i];
-    }
     println!("{:?}",mc);
+    //exit(1);
+
+    let test: &str = "Test";
+    let bytes: &[u8] = test.as_bytes();
+    // convert bytes => str
+    let res = bytes.iter().map(|&s| s as char).collect::<String>();
+    println!("res={:?}",res);
+    let converted: String = String::from_utf8(bytes.to_vec()).unwrap();
+    println!("{:?}",converted);
+    x=hmac(converted,bff);
+    println!("{:?}",x);
+    let be=bytes.len();
+    for i in 0..be{
+        x[i+32]=bytes[i];
+        
+    }
+    println!("{},{:?}",be,x);
+
+exit(1);
+    let mut data=String::new();
+    let mut dat=String::new();
+    let mut d2=String::new();
+    let mut d3:&str;
+    println!("何か入力を");
+    std::io::stdin().read_line(&mut data).ok();
+    data = data.trim_end().to_owned();
+    println!("{}", data);
+    let it:&[u8]=data.as_bytes();
+    let res2 = it.iter().map(|&s| s as char).collect::<String>();
+    let converted2: String = String::from_utf8(it.to_vec()).unwrap();
+    dat=converted2.clone();
+    d2=converted2.clone();
+    println!("{:?}",dat+S2str(&converted2));
+    //&d3=d2; //(d2+S2str(&converted2)).to_string();
+    //println!("{:?}",d3);
+
+    
     exit(1);
 
+
+    println!("{}", test);
+    println!("{}", converted);
 
 
     hasher.update(b"kotobahairanai");
