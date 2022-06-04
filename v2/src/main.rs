@@ -67,6 +67,39 @@ fn pappy(a:[u8;256])-> [u8;256]{
     
 }
     
+fn s2b(test:&str) -> &[u8]{
+//    let test: &str = "Test";
+    let bytes: &[u8] = test.as_bytes();
+// convert bytes => str
+
+//println!("{}", test);
+println!("{:?}", bytes);
+
+    bytes
+}
+
+fn b2s(bytes:&[u8]) -> String{
+
+    let res = bytes.iter().map(|&s| s as char).collect::<String>();
+    let converted: String = String::from_utf8(bytes.to_vec()).unwrap();
+    let mut be:String;
+    //println!("{}",res);
+ 
+    println!("{}", converted);
+    
+//    let mut it:&str=&converted;
+    //&it=&be;
+
+    converted
+}
+
+fn S2str(data: &String) -> &str {
+    let v = &data[0..data.len()];
+    println!("{:?}",v);
+
+    return v;
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
@@ -214,31 +247,40 @@ fn main() {
     let mut _j: usize;
     let mut seed: u64 = 0;
     let seed2: [u8; 32] = [17; 32];
-    let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
+    //let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let mut seedA: u64 = 1234567890;
-    let seedB: u64 = 1234567890;
-    let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
-    let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
- 
-    /*
+    let seedB: u64 = 9876543210;
+    //let mut rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
+    //let mut rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
+    let test:&str="kotobahairanai";
+    let bytes:&[u8]=test.as_bytes();
+
+    println!("{:?}",bytes);
+    s2b(test);
+    S2str(&b2s(bytes));
+    //exit(1);
+    let l=bytes.len();
+    for i in 0..l{
+        sk[i]=bytes[i];
+    }
     for i in 0..10{
     sk=pappy(sk);
-    println!("{:?}",sk);
+    //println!("{:?}",sk);
     }
-    exit(1);
-    */
+    //exit(1);
+    
     for j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
         }
-        let seed = rng2.gen::<u64>();
+        //let seed = rng2.gen::<u64>();
         //rng2.gen::<u64>(); // 32バイトシードで再現あり
-        sk = random_shuffule(sk, 256, seed);
+        sk = random_shuffule(sk, 256, seedA);
         for k in 0..256 {
             mat[[j, k]] = sk[k];
-            print!("{}, ", mat[[j, k]]);
+            //print!("{}, ", mat[[j, k]]);
         }
-        println!("");
+       // println!("");
     }
 
     for i in 0..256 {
@@ -246,20 +288,23 @@ fn main() {
             mat2[[i, mat[[i, j]] as usize]] = j as u8;
         }
     }
+    /*
     for i in 0..256{
         for j in 0..256 {
             print!("{},",mat2[[i,j]]);
         }
         println!("");
     }
+    */
 //   exit(1);
 
     for _i in 0..256 {
         sk[_i] = _i as u8;
     }
-    let seed = rng2.gen::<u64>();
-    sk = random_shuffule(sk, 256, seed);
-    let sk2 = sk.clone();
+    //let seed = rng2.gen::<u64>();
+    let mut sk2:[u8;256] =[0;256];
+    sk2 = random_shuffule(sk2, 256, seedB);
+
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
@@ -268,7 +313,7 @@ fn main() {
 
     let cc = enc(&data, &sk, &mat);
     println!(" ");
-    let l = dec(&cc, &sk2, &mat2);
+    let l = dec(&cc, &sk, &mat2);
 
     println!("back to origin: {}", l);
 }
