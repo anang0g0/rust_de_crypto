@@ -125,7 +125,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let cycle = rng2.gen_range(1..256);
 
     let j = byte.len();
-    let mut result:[u8;256]=[17;256];
+    //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
 
     //println!("{:?}",mat);
@@ -202,7 +202,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
     let l = decoded.len();
     let _size: usize = 32;
-    let mut result:[u8;256]=[0;256];
+    //let mut result:[u8;256]=[0;256];
     
     //result=pappy(result);
     //println!("{:?}",result);
