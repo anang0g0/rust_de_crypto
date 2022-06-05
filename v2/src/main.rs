@@ -58,36 +58,60 @@ fn S2str(data: &String) -> &str {
     }
 
 
-fn pappy(a:[u8;256])-> [u8;256]{
-    // create a SHA3-256 object
-    let mut count =0;
-    let mut buf:[u8;32]=[0;32];
-    let mut u2:[u8;256]=[0;256];
-    
-    for _i in 0..32{
-        buf[_i]=a[_i];
+    fn pappy(a:[u8;256])-> [u8;256]{
+        // create a SHA3-256 object
+        let mut count =0;
+        let mut buf:[u8;32]=[0;32];
+        let mut u2:[u8;256]=[0;256];
+        
+        for _i in 0..32{
+            buf[_i]=a[_i];
+        }
+        for _i in 0..8{
+        let mut hasher = Sha3_256::default();
+        //me=hasher.clone();
+        hasher.update(buf);
+            // read hash digest
+            let result = hasher.finalize();
+        
+        for _i in 0..32{
+            buf[_i]^=result[_i];
+            u2[count]=buf[_i];
+            //print!("{},",result[i]);
+            count=count+1;
+        }
+        //println!("");
+        }
+        
+        u2    
     }
-    for _i in 0..8{
-    let mut hasher = Sha3_256::default();
-    //me=hasher.clone();
-    hasher.update(buf);
-        // read hash digest
-        let result = hasher.finalize();
     
-    for _i in 0..32{
-        buf[_i]^=result[_i];
-        u2[count]=buf[_i];
-        //print!("{},",result[i]);
-        count=count+1;
-    }
-    //println!("");
-    }
-    
-    u2
-    
-}
 
-
+    fn p2(a:&[u8])-> [u8;32]{
+        // create a SHA3-256 object
+        let mut count =0;
+        let mut buf:[u8;32]=[0;32];
+        let mut u2:[u8;256]=[0;256];
+        
+        for _i in 0..32{
+            buf[_i]=a[_i];
+        }
+        for _i in 0..2{
+        let mut hasher = Sha3_256::default();
+        //me=hasher.clone();
+        hasher.update(buf);
+            // read hash digest
+            let result = hasher.finalize();
+        
+        for _i in 0..32{
+            buf[_i]^=result[_i];
+        }
+        //println!("");
+        }
+        
+        buf    
+    }
+    
 
     
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
@@ -381,13 +405,17 @@ fn main() {
     let cc = enc(&data, &sk, &mat);
 
     // encoded below
-    let gg=cc.clone();
+    let mut gg=cc.clone();
     let mut dd:Vec<u8>=hmac(cc,seed2);
-    println!("encd_hash={:?}",dd);
+    println!("d1={:?}",dd);
+    let e1=encode(dd);
+    dd=hmac(e1,seed2);
+    println!("d2={:?}",dd);
+    //println!("encd_hash={:?}",dd);
     let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
     f.write(&dd).unwrap();
     f.write(&gg.as_bytes()).unwrap();
-    println!("{:?}",f);
+    println!("f={:?}",f);
 
 
 
@@ -396,12 +424,15 @@ fn main() {
     }
     let tmp:&[u8]=&f[32..f.len()];
     //for i in 0..f.len()-32{
-    let x:Vec<u8>=tmp.to_vec();
+    let mut x:Vec<u8>=tmp.to_vec();
     //}
-    println!("{:?}",x);
+    println!("msg={:?}",x);
     let v=x.clone();
-    let w=hmac(String::from_utf8(x).unwrap(),seed2);
-    println!("decd={:?}",w);
+    let mut w=hmac(String::from_utf8(x).unwrap(),seed2);
+    println!("w1={:?}",w);
+    let e2=encode(w);
+    w=hmac(e2,seed2);
+    println!("w2={:?}",w);
     //exit(1);
     let z:String=String::from_utf8(v).unwrap();
     println!(" ");
