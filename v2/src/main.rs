@@ -314,10 +314,10 @@ fn main() {
     for _i in 0..l{
         sk[_i]=bytes[_i];
     }
-    for _i in 0..10{
-    sk=pappy(sk);
+    //for _i in 0..10{
+    //sk=pappy(sk);
     //println!("{:?}",sk);
-    }
+    //}
     //exit(1);
     /*
     for i in 0..10{
@@ -327,14 +327,14 @@ fn main() {
     exit(1);
     */
     //exit(1);
-    let l=bytes.len();
-    for _i in 0..l{
-        sk[_i]=bytes[_i];
-    }
-    for _i in 0..10{
-    sk=pappy(sk);
+    //let l=bytes.len();
+    //for _i in 0..l{
+    //    sk[_i]=bytes[_i];
+    //}
+    //for _i in 0..10{
+    //sk=pappy(sk);
     //println!("{:?}",sk);
-    }
+    //}
     //exit(1);
 
     for _j in 0..256 {
