@@ -11,6 +11,8 @@ base64 = "0.13.0"
 crypto = "0.3.0"
 digest = "0.10.3"
 hex = "0.4.3"
+hex-literal = "0.3.4"
+hmac-sha = "0.6.1"
 keccak = "0.1.2"
 keccak-hash = "0.9.0"
 ndarray = "0.15.4"
@@ -49,3 +51,7 @@ path="src/M_dev.rs"
 [[bin]]
 name="long"
 path="src/longsize.rs"
+
+[[bin]]
+name="hmac"
+path="src/hmac.rs"
