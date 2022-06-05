@@ -173,7 +173,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         }
     }
 
-    println!("encryptod = {:?}", &buf[0..j]);
+    println!("encrypted = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
     let enc=encoded.clone();
@@ -414,10 +414,9 @@ fn main() {
     //println!("encd_hash={:?}",dd);
     let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
     f.write(&dd).unwrap();
-    f.write(&gg.as_bytes()).unwrap();
-    println!("f={:?}",f);
-
-
+    f.write(gg.as_bytes()).unwrap();
+    //println!("f={:?}\n dd={:?},\n gg={:?}",f,dd,gg.as_bytes());
+//exit(1);
 
     for _i in 0..32{
     dd[_i]=f[_i];
