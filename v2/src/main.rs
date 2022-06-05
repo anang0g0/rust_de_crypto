@@ -8,8 +8,12 @@ use rand::{Rng, SeedableRng};
 use rand_chacha::rand_core::RngCore;
 use rand_chacha::ChaCha20Core;
 use std::{process::exit, str};
-//use sha3::{Digest, Keccak256};
-use sha3::{Digest, Sha3_256};
+//use sha3::{Digest, Sha3_256};
+use sha3::{Digest, Keccak256};
+use hex_literal::hex;
+use sha3::Sha3_256;
+use std::io::Write;
+
 
 /*
     Fisher-Yates shuffle による方法
@@ -50,7 +54,7 @@ fn b2s(bytes:&[u8]) -> String{
         let mut be:String;
         //println!("{}",res);
      
-        println!("{}", converted);
+        //println!("{}", converted);
         
     //    let mut it:&str=&converted;
         //&it=&be;
@@ -60,7 +64,7 @@ fn b2s(bytes:&[u8]) -> String{
     
 fn S2str(data: &String) -> &str {
         let v = &data[0..data.len()];
-        println!("{:?}",v);
+        //println!("{:?}",v);
     
         return v;
     }
@@ -100,6 +104,9 @@ fn pappy(a:[u8;256])-> [u8;256]{
     u2
     
 }
+
+
+
     
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
@@ -163,9 +170,9 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!("encryptod = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
-
+    let enc=encoded.clone();
     println!("cipher text:");
-    println!("{}", encoded);
+    println!("{:?}", enc.into_bytes());
     //exit(1);
 
 
@@ -246,6 +253,45 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         Ok(str) => str,
     }
 }
+
+fn hmac(message:String,key:[u8;32])->Vec<u8>{
+    let ipad:[u8;32]=[0x36;32];
+    let opad:[u8;32]=[0x5c;32];
+    let mut m:&[u8]=message.as_bytes();
+    let mut hasher=Keccak256::default();
+    let mut k1:Vec<u8>=key.to_vec();
+    let mut k2:Vec<u8>=key.to_vec();
+    for i in 0..32{
+        k1[i]^=opad[i];
+        k2[i]^=ipad[i];
+    }
+    let mut K1:Vec<u8>=vec![0];
+    let mut K2:Vec<u8>=vec![0];
+    let mut K3:String="".to_string();
+    K1.write(&k1).unwrap();
+    K2.write(&k2).unwrap();
+    K2.write(m).unwrap();
+
+    hasher.update(K2);
+    let result2=hasher.finalize();
+    K1.write(&result2.to_vec()).unwrap();
+    let mut hasher=Keccak256::default();
+    hasher.update(K1);
+    let result:Vec<u8>=hasher.finalize().to_vec();
+    //let be:String=String::from_utf8(result).unwrap();
+    for i in 0..32{
+    print!("{:0x}",result[i]);
+    }
+    println!("");
+
+    result
+}
+
+
+fn hex(bytes: &[u8]) -> String {
+    bytes.iter().fold("".to_owned(), |s, b| s + &format!("{:x}", b) )
+}
+
 
 use ndarray::Array2;
 fn main() {
@@ -333,15 +379,37 @@ fn main() {
     let seed = rng2.gen::<u64>();
     sk = random_shuffule(sk, 256, seed);
     let sk2 = sk.clone();
+    let mut x:Vec<u8>;
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
-
     let cc = enc(&data, &sk, &mat);
+    let gg=cc.clone();
+    let mut dd:Vec<u8>=hmac(cc,seed2);
+    println!("dd={:?}",dd);
+    let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
+    f.write(&dd).unwrap();
+    f.write(&gg.as_bytes()).unwrap();
+    println!("{:?}",f);
+
+    x=vec![0];
+    for i in 0..32{
+    dd[i]=f[i];
+    }
+    let mut tmp:&[u8]=&f[32..f.len()];
+    //for i in 0..f.len()-32{
+        x=tmp.to_vec();
+    //}
+    println!("{:?}",x);
+    let v=x.clone();
+    let mut w=hmac(String::from_utf8(x).unwrap(),seed2);
+    println!("hmac={:?}",w);
+    //exit(1);
+    let mut z:String=String::from_utf8(v).unwrap();
     println!(" ");
-    let l = dec(&cc, &sk2, &mat2);
+    let l = dec(&z, &sk2, &mat2);
 
     println!("back to origin: {}", l);
 }
