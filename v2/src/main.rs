@@ -261,10 +261,10 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
 }
 
-fn hmac(message:String,key:[u8;32])->Vec<u8>{
+fn hmac(message:&[u8],key:[u8;32])->Vec<u8>{
     let ipad:[u8;32]=[0x36;32];
     let opad:[u8;32]=[0x5c;32];
-    let m:&[u8]=message.as_bytes();
+    //let m:&[u8]=message.as_bytes();
     let mut hasher=Keccak256::default();
     let mut k1:Vec<u8>=key.to_vec();
     let mut k2:Vec<u8>=key.to_vec();
@@ -277,7 +277,7 @@ fn hmac(message:String,key:[u8;32])->Vec<u8>{
 
     K1.write(&k1).unwrap();
     K2.write(&k2).unwrap();
-    K2.write(m).unwrap();
+    K2.write(message).unwrap();
 
     hasher.update(K2);
     let result2=hasher.finalize();
@@ -290,7 +290,7 @@ fn hmac(message:String,key:[u8;32])->Vec<u8>{
     print!("{:0x}",result[i]);
     }
     println!("");
-
+ 
     result
 }
 
@@ -338,28 +338,6 @@ fn main() {
     for _i in 0..l{
         sk[_i]=bytes[_i];
     }
-    //for _i in 0..10{
-    //sk=pappy(sk);
-    //println!("{:?}",sk);
-    //}
-    //exit(1);
-    /*
-    for i in 0..10{
-    sk=pappy(sk);
-    println!("{:?}",sk);
-    }
-    exit(1);
-    */
-    //exit(1);
-    //let l=bytes.len();
-    //for _i in 0..l{
-    //    sk[_i]=bytes[_i];
-    //}
-    //for _i in 0..10{
-    //sk=pappy(sk);
-    //println!("{:?}",sk);
-    //}
-    //exit(1);
 
     for _j in 0..256 {
         for _i in 0..256 {
@@ -380,15 +358,6 @@ fn main() {
             mat2[[_i, mat[[_i, _j]] as usize]] = _j as u8;
         }
     }
-    /*
-    for i in 0..256{
-        for j in 0..256 {
-            print!("{},",mat2[[i,j]]);
-        }
-        println!("");
-    }
-    */
-//   exit(1);
 
     for _i in 0..256 {
         sk[_i] = _i as u8;
@@ -406,10 +375,11 @@ fn main() {
 
     // encoded below
     let mut gg=cc.clone();
-    let mut dd:Vec<u8>=hmac(cc,seed2);
+    let mut dd:Vec<u8>=hmac(cc.as_bytes(),seed2);
     println!("d1={:?}",dd);
-    let e1=encode(dd);
-    dd=hmac(e1,seed2);
+    //let e1=encode(dd);
+    let d2:&[u8]=&dd;
+    dd=hmac(d2,seed2);
     println!("d2={:?}",dd);
     //println!("encd_hash={:?}",dd);
     let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
@@ -423,17 +393,18 @@ fn main() {
     }
     let tmp:&[u8]=&f[32..f.len()];
     //for i in 0..f.len()-32{
-    let mut x:Vec<u8>=tmp.to_vec();
+    let mut x:&[u8]=tmp;
     //}
     println!("msg={:?}",x);
     let v=x.clone();
-    let mut w=hmac(String::from_utf8(x).unwrap(),seed2);
+    let mut w=hmac(x,seed2);
     println!("w1={:?}",w);
-    let e2=encode(w);
-    w=hmac(e2,seed2);
+    //let e2=encode(w);
+    let t:&[u8]=&w;
+    w=hmac(t,seed2);
     println!("w2={:?}",w);
     //exit(1);
-    let z:String=String::from_utf8(v).unwrap();
+    let z:String=String::from_utf8(v.to_vec()).unwrap();
     println!(" ");
 
     // encoded above
