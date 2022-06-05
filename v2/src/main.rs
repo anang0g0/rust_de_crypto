@@ -292,6 +292,18 @@ fn hex(bytes: &[u8]) -> String {
     bytes.iter().fold("".to_owned(), |s, b| s + &format!("{:x}", b) )
 }
 
+fn v2s(a:Vec<u8>)->String{
+
+let b: String = String::from_utf8(a).unwrap();
+//assert_eq!("0".to_string(), b);
+b
+}
+
+fn s2v(a:String)->Vec<u8>{
+
+    let b: Vec<u8> = a.into_bytes();
+b
+}
 
 use ndarray::Array2;
 fn main() {
@@ -386,9 +398,11 @@ fn main() {
     data = data.trim_end().to_owned();
     println!("{}", data);
     let cc = enc(&data, &sk, &mat);
+
+    // encoded below
     let gg=cc.clone();
     let mut dd:Vec<u8>=hmac(cc,seed2);
-    println!("dd={:?}",dd);
+    println!("encd_hash={:?}",dd);
     let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
     f.write(&dd).unwrap();
     f.write(&gg.as_bytes()).unwrap();
@@ -405,10 +419,12 @@ fn main() {
     println!("{:?}",x);
     let v=x.clone();
     let mut w=hmac(String::from_utf8(x).unwrap(),seed2);
-    println!("hmac={:?}",w);
+    println!("decd={:?}",w);
     //exit(1);
     let mut z:String=String::from_utf8(v).unwrap();
     println!(" ");
+    
+    // encoded above
     let l = dec(&z, &sk2, &mat2);
 
     println!("back to origin: {}", l);
