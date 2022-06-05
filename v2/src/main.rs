@@ -15,7 +15,7 @@ use std::io::Write;
     配列の要素をランダムシャッフルする
 */
 fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
-    let _i: usize;
+    //let _i: usize;
     let mut _a: usize;
     let mut _b: usize;
     //let seed: u64 = 1;
@@ -60,13 +60,7 @@ fn S2str(data: &String) -> &str {
 
 fn pappy(a:[u8;256])-> [u8;256]{
     // create a SHA3-256 object
-    let mut hasher = Sha3_256::default();
-    // write input message
     let mut count =0;
-    
-    hasher.update(a);
-    let _result = hasher.finalize();
-    
     let mut buf:[u8;32]=[0;32];
     let mut u2:[u8;256]=[0;256];
     
@@ -301,8 +295,6 @@ fn main() {
     let mut mat: Array2<u8> = Array2::zeros((256, 256));
     let mut sk: [u8; 256] = [17; 256];
     let mut mat2: Array2<u8> = Array2::zeros((256, 256));
-    let mut _i: usize;
-    let mut _j: usize;
 
     let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
