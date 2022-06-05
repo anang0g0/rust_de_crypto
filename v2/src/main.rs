@@ -135,8 +135,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         //buf[i]^=result[i];
     }
 
-    result=pappy(result);
-    println!("{:?}",result);
+    //result=pappy(result);
+    //println!("{:?}",result);
 
     for _k in 0..16 {
 
@@ -204,7 +204,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let _size: usize = 32;
     let mut result:[u8;256]=[0;256];
     
-    result=pappy(result);
+    //result=pappy(result);
     //println!("{:?}",result);
 
     for j in (0..16).rev() {    // read hash digest
