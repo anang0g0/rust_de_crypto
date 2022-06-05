@@ -272,12 +272,15 @@ fn hmac(message:&[u8],key:[u8;32])->Vec<u8>{
         k1[i]^=opad[i];
         k2[i]^=ipad[i];
     }
-    let mut K1:Vec<u8>=vec![0];
-    let mut K2:Vec<u8>=vec![0];
+    let mut K1:Vec<u8>=vec![];
+    let mut K2:Vec<u8>=vec![];
 
     K1.write(&k1).unwrap();
     K2.write(&k2).unwrap();
     K2.write(message).unwrap();
+    //println!("{:?}",k2);
+    //println!("{:?}",K2);
+    //exit(1);
 
     hasher.update(K2);
     let result2=hasher.finalize();
@@ -385,7 +388,7 @@ fn main() {
     let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
     f.write(&dd).unwrap();
     f.write(gg.as_bytes()).unwrap();
-    //println!("f={:?}\n dd={:?},\n gg={:?}",f,dd,gg.as_bytes());
+    println!("f={:?}\ndd={:?}\n gg={:?}",f,dd,gg.as_bytes());
 //exit(1);
 
     for _i in 0..32{
