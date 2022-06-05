@@ -4,11 +4,10 @@ use base64::{decode, encode};
 //use rand::rngs::adapter::ReseedingRng;
 use rand::{Rng, SeedableRng};
 //use rand_chacha::ChaCha20Core;
-use std::{process::exit, str};
-use sha3::{Digest, Keccak256};
 use sha3::Sha3_256;
+use sha3::{Digest, Keccak256};
 use std::io::Write;
-
+use std::{process::exit, str};
 
 /*
     Fisher-Yates shuffle による方法
@@ -30,90 +29,84 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: u64) -> [u8; 256] {
     array
 }
 
-
-fn s2b(test:&str) -> &[u8]{
+fn s2b(test: &str) -> &[u8] {
     //    let test: &str = "Test";
-        let bytes: &[u8] = test.as_bytes();
+    let bytes: &[u8] = test.as_bytes();
     // convert bytes => str
-    
+
     //println!("{}", test);
     println!("{:?}", bytes);
-    
-        bytes
-    }
-    
-fn b2s(bytes:&[u8]) -> String{
-    
-        //let res = bytes.iter().map(|&s| s as char).collect::<String>();
-        let _converted: String = String::from_utf8(bytes.to_vec()).unwrap();
 
-        _converted
-    }
-    
+    bytes
+}
+
+fn b2s(bytes: &[u8]) -> String {
+    //let res = bytes.iter().map(|&s| s as char).collect::<String>();
+    let _converted: String = String::from_utf8(bytes.to_vec()).unwrap();
+
+    _converted
+}
+
 fn S2str(data: &String) -> &str {
-        let v = &data[0..data.len()];
-        //println!("{:?}",v);
-    
-        return v;
+    let v = &data[0..data.len()];
+    //println!("{:?}",v);
+
+    return v;
+}
+
+fn pappy(a: [u8; 256]) -> [u8; 256] {
+    // create a SHA3-256 object
+    let mut count = 0;
+    let mut buf: [u8; 32] = [0; 32];
+    let mut u2: [u8; 256] = [0; 256];
+
+    for _i in 0..32 {
+        buf[_i] = a[_i];
     }
-
-
-    fn pappy(a:[u8;256])-> [u8;256]{
-        // create a SHA3-256 object
-        let mut count =0;
-        let mut buf:[u8;32]=[0;32];
-        let mut u2:[u8;256]=[0;256];
-        
-        for _i in 0..32{
-            buf[_i]=a[_i];
-        }
-        for _i in 0..8{
+    for _i in 0..8 {
         let mut hasher = Sha3_256::default();
         //me=hasher.clone();
         hasher.update(buf);
-            // read hash digest
-            let result = hasher.finalize();
-        
-        for _i in 0..32{
-            buf[_i]^=result[_i];
-            u2[count]=buf[_i];
+        // read hash digest
+        let result = hasher.finalize();
+
+        for _i in 0..32 {
+            buf[_i] ^= result[_i];
+            u2[count] = buf[_i];
             //print!("{},",result[i]);
-            count=count+1;
+            count = count + 1;
         }
         //println!("");
-        }
-        
-        u2    
     }
-    
 
-    fn p2(a:&[u8])-> [u8;32]{
-        // create a SHA3-256 object
-        let mut count =0;
-        let mut buf:[u8;32]=[0;32];
-        let mut u2:[u8;256]=[0;256];
-        
-        for _i in 0..32{
-            buf[_i]=a[_i];
-        }
-        for _i in 0..2{
+    u2
+}
+
+fn p2(a: &[u8]) -> [u8; 32] {
+    // create a SHA3-256 object
+    let mut count = 0;
+    let mut buf: [u8; 32] = [0; 32];
+    let mut u2: [u8; 256] = [0; 256];
+
+    for _i in 0..32 {
+        buf[_i] = a[_i];
+    }
+    for _i in 0..2 {
         let mut hasher = Sha3_256::default();
         //me=hasher.clone();
         hasher.update(buf);
-            // read hash digest
-            let result = hasher.finalize();
-        
-        for _i in 0..32{
-            buf[_i]^=result[_i];
+        // read hash digest
+        let result = hasher.finalize();
+
+        for _i in 0..32 {
+            buf[_i] ^= result[_i];
         }
         //println!("");
-        }
-        
-        buf    
     }
-    
 
-    
+    buf
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
@@ -140,7 +133,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
-    let seed2: [u8; 32] = [17;32];
+    let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     println!("len = {}", byte.len());
@@ -163,24 +156,21 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //println!("{:?}",result);
 
     for _k in 0..16 {
-
         for _i in 0..j {
             //buf[i]^=result[i];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[ a[(16 * _k + _i) % cycle] as usize, me[_i] as usize]] as u8;
-
+            buf[_i] = mat[[a[(16 * _k + _i) % cycle] as usize, me[_i] as usize]] as u8;
         }
     }
 
     println!("encrypted = {:?}", &buf[0..j]);
 
     let encoded = encode(&buf[0..j]);
-    let enc=encoded.clone();
+    let enc = encoded.clone();
     println!("cipher text:");
     println!("{:?}", enc.into_bytes());
     //exit(1);
-
 
     encoded
 }
@@ -211,15 +201,14 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     ];
 
     let mut decoded = decode(&encoded).unwrap();
-    let mut inv_P: [usize; 256] = [0;256];
+    let mut inv_P: [usize; 256] = [0; 256];
     let mut tmp: [u8; 256] = [0; 256];
-    let seed2: [u8; 32] = [17;32];
+    let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
     let cycle = rng2.gen_range(1..256);
 
-
-    println!("len = {}, {}", decoded.len(),cycle);
+    println!("len = {}, {}", decoded.len(), cycle);
 
     for i in 0..256 {
         inv_P[a[i as usize] as usize] = i as usize;
@@ -227,13 +216,14 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let l = decoded.len();
     let _size: usize = 32;
     //let mut result:[u8;256]=[0;256];
-    
+
     //result=pappy(result);
     //println!("{:?}",result);
 
-    for j in (0..16).rev() {    // read hash digest
+    for j in (0..16).rev() {
+        // read hash digest
 
-            for i in 0..l {
+        for i in 0..l {
             decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
             tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
@@ -261,19 +251,19 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     }
 }
 
-fn hmac(message:&[u8],key:[u8;32])->Vec<u8>{
-    let ipad:[u8;32]=[0x36;32];
-    let opad:[u8;32]=[0x5c;32];
+fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
+    let ipad: [u8; 32] = [0x36; 32];
+    let opad: [u8; 32] = [0x5c; 32];
     //let m:&[u8]=message.as_bytes();
-    let mut hasher=Keccak256::default();
-    let mut k1:Vec<u8>=key.to_vec();
-    let mut k2:Vec<u8>=key.to_vec();
-    for i in 0..32{
-        k1[i]^=opad[i];
-        k2[i]^=ipad[i];
+    let mut hasher = Keccak256::default();
+    let mut k1: Vec<u8> = key.to_vec();
+    let mut k2: Vec<u8> = key.to_vec();
+    for i in 0..32 {
+        k1[i] ^= opad[i];
+        k2[i] ^= ipad[i];
     }
-    let mut K1:Vec<u8>=vec![];
-    let mut K2:Vec<u8>=vec![];
+    let mut K1: Vec<u8> = vec![];
+    let mut K2: Vec<u8> = vec![];
 
     K1.write(&k1).unwrap();
     K2.write(&k2).unwrap();
@@ -283,36 +273,33 @@ fn hmac(message:&[u8],key:[u8;32])->Vec<u8>{
     //exit(1);
 
     hasher.update(K2);
-    let result2=hasher.finalize();
+    let result2 = hasher.finalize();
     K1.write(&result2.to_vec()).unwrap();
-    let mut hasher=Keccak256::default();
+    let mut hasher = Keccak256::default();
     hasher.update(K1);
-    let result:Vec<u8>=hasher.finalize().to_vec();
+    let result: Vec<u8> = hasher.finalize().to_vec();
     //let be:String=String::from_utf8(result).unwrap();
-    for i in 0..32{
-    print!("{:0x}",result[i]);
+    for i in 0..32 {
+        print!("{:0x}", result[i]);
     }
     println!("");
- 
+
     result
 }
 
-
 fn hex(bytes: &[u8]) -> String {
-    bytes.iter().fold("".to_owned(), |s, b| s + &format!("{:x}", b) )
+    bytes.iter().fold("".to_owned(), |s, b| s + &format!("{:x}", b))
 }
 
-fn v2s(a:Vec<u8>)->String{
-
-let b: String = String::from_utf8(a).unwrap();
-//assert_eq!("0".to_string(), b);
-b
+fn v2s(a: Vec<u8>) -> String {
+    let b: String = String::from_utf8(a).unwrap();
+    //assert_eq!("0".to_string(), b);
+    b
 }
 
-fn s2v(a:String)->Vec<u8>{
-
+fn s2v(a: String) -> Vec<u8> {
     let b: Vec<u8> = a.into_bytes();
-b
+    b
 }
 
 use ndarray::Array2;
@@ -329,24 +316,24 @@ fn main() {
     let seedB: u64 = 1234567890;
     let mut _rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
     let mut _rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
-    let test:&str="kotobahairanai";
-    let bytes:&[u8]=test.as_bytes();
+    let test: &str = "kotobahairanai";
+    let bytes: &[u8] = test.as_bytes();
     let mut _seed: u64 = rng2.gen_range(1..256);
 
-    println!("{:?}",bytes);
+    println!("{:?}", bytes);
     s2b(test);
     S2str(&b2s(bytes));
     //exit(1);
-    let l=bytes.len();
-    for _i in 0..l{
-        sk[_i]=bytes[_i];
+    let l = bytes.len();
+    for _i in 0..l {
+        sk[_i] = bytes[_i];
     }
 
     for _j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
         }
-        let _seed=rng2.gen::<u64>();
+        let _seed = rng2.gen::<u64>();
         //rng2.gen::<u64>(); // 32バイトシードで再現あり
         sk = random_shuffule(sk, 256, _seed);
         for _k in 0..256 {
@@ -368,7 +355,6 @@ fn main() {
     let seed = rng2.gen::<u64>();
     sk = random_shuffule(sk, 256, seed);
     let sk2 = sk.clone();
-    
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
@@ -377,37 +363,37 @@ fn main() {
     let cc = enc(&data, &sk, &mat);
 
     // encoded below
-    let mut gg=cc.clone();
-    let mut dd:Vec<u8>=hmac(cc.as_bytes(),seed2);
-    println!("d1={:?}",dd);
+    let mut gg = cc.clone();
+    let mut dd: Vec<u8> = hmac(cc.as_bytes(), seed2);
+    println!("d1={:?}", dd);
     //let e1=encode(dd);
-    let d2:&[u8]=&dd;
-    dd=hmac(d2,seed2);
-    println!("d2={:?}",dd);
+    let d2: &[u8] = &dd;
+    dd = hmac(d2, seed2);
+    println!("d2={:?}", dd);
     //println!("encd_hash={:?}",dd);
-    let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
+    let mut f: Vec<u8> = vec![]; //dd; //(cc.as_bytes()).to_vec();
     f.write(&dd).unwrap();
     f.write(gg.as_bytes()).unwrap();
-    println!("f={:?}\ndd={:?}\n gg={:?}",f,dd,gg.as_bytes());
-//exit(1);
-
-    for _i in 0..32{
-    dd[_i]=f[_i];
-    }
-    let tmp:&[u8]=&f[32..f.len()];
-    //for i in 0..f.len()-32{
-    let mut x:&[u8]=tmp;
-    //}
-    println!("msg={:?}",x);
-    let v=x.clone();
-    let mut w=hmac(x,seed2);
-    println!("w1={:?}",w);
-    //let e2=encode(w);
-    let t:&[u8]=&w;
-    w=hmac(t,seed2);
-    println!("w2={:?}",w);
+    println!("f={:?}\ndd={:?}\n gg={:?}", f, dd, gg.as_bytes());
     //exit(1);
-    let z:String=String::from_utf8(v.to_vec()).unwrap();
+
+    for _i in 0..32 {
+        dd[_i] = f[_i];
+    }
+    let tmp: &[u8] = &f[32..f.len()];
+    //for i in 0..f.len()-32{
+    let mut x: &[u8] = tmp;
+    //}
+    println!("msg={:?}", x);
+    let v = x.clone();
+    let mut w = hmac(x, seed2);
+    println!("w1={:?}", w);
+    //let e2=encode(w);
+    let t: &[u8] = &w;
+    w = hmac(t, seed2);
+    println!("w2={:?}", w);
+    //exit(1);
+    let z: String = String::from_utf8(v.to_vec()).unwrap();
     println!(" ");
 
     // encoded above
