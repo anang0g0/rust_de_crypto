@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 aead = "0.4.3"
+aes-gcm = "0.9.4"
 base64 = "0.13.0"
 crypto = "0.3.0"
 digest = "0.10.3"
@@ -55,3 +56,7 @@ path="src/longsize.rs"
 [[bin]]
 name="hmac"
 path="src/hmac.rs"
+
+[[bin]]
+name="aes"
+path="src/aes.rs"

@@ -114,7 +114,7 @@ fn S2str(data: &String) -> &str {
     
 
     
-fn enc(data: &String, a: &[u8], mat: &Array2<u8>) -> String {
+fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     /*
      * S-box transformation table
      */
@@ -147,8 +147,6 @@ fn enc(data: &String, a: &[u8], mat: &Array2<u8>) -> String {
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut me: [u8; 256] = [0; 256];
     let cycle = rng2.gen_range(1..256);
-    println!("sk={:?}",a);
-    //exit(1);
 
     let j = byte.len();
     //let mut result:[u8;256]=[17;256];
@@ -344,23 +342,6 @@ fn main() {
         sk[_i]=bytes[_i];
     }
 
-    /*
-    for _j in 0..26 {
-        for _i in 0..26 {
-            sk[_i] = _i as u8;
-        }
-        let _seed=rng2.gen::<u64>();
-        //rng2.gen::<u64>(); // 32バイトシードで再現あり
-        sk = random_shuffule(sk, 26, _seed);
-        for _k in 0..26 {
-            mat[[_j, _k]] = sk[_k];
-            print!("|{:02}", mat[[_j, _k]]);
-        }
-        println!("_");
-    }
-    exit(1);
-    */
-    
     for _j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
