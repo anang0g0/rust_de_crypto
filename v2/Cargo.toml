@@ -60,3 +60,7 @@ path="src/hmac.rs"
 [[bin]]
 name="aes"
 path="src/aes.rs"
+
+[[bin]]
+name="test"
+path="src/mine.rs"
