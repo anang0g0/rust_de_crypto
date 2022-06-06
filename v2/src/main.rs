@@ -265,9 +265,9 @@ fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
     let mut K1: Vec<u8> = vec![];
     let mut K2: Vec<u8> = vec![];
 
-    K1.write(&k1).unwrap();
-    K2.write(&k2).unwrap();
-    K2.write(message).unwrap();
+    K1.write_all(&k1).unwrap();
+    K2.write_all(&k2).unwrap();
+    K2.write_all(message).unwrap();
     //println!("{:?}",k2);
     //println!("{:?}",K2);
     //exit(1);
@@ -279,10 +279,10 @@ fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
     hasher.update(K1);
     let result: Vec<u8> = hasher.finalize().to_vec();
     //let be:String=String::from_utf8(result).unwrap();
-    for i in 0..32 {
-        print!("{:0x}", result[i]);
+    for x in &result {
+        print!("{:0x}", x);
     }
-    println!("");
+    println!();
 
     result
 }
@@ -382,10 +382,9 @@ fn main() {
     }
     let tmp: &[u8] = &f[32..f.len()];
     //for i in 0..f.len()-32{
-    let mut x: &[u8] = tmp;
+    let x: &[u8] = tmp;
     //}
     println!("msg={:?}", x);
-    let v = x.clone();
     let mut w = hmac(x, seed2);
     println!("w1={:?}", w);
     //let e2=encode(w);
@@ -393,7 +392,7 @@ fn main() {
     w = hmac(t, seed2);
     println!("w2={:?}", w);
     //exit(1);
-    let z: String = String::from_utf8(v.to_vec()).unwrap();
+    let z: String = String::from_utf8(x.to_vec()).unwrap();
     println!(" ");
 
     // encoded above
