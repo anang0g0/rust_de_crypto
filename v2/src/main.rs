@@ -142,26 +142,34 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let cycle = rng2.gen_range(1..256);
 
     let j = byte.len();
+    let mut be=seed2.clone();
     //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
 
     //println!("{:?}",mat);
     //exit(1);
+    for _i in 0..3{
+        be=p2(&be);
+    }
+    
     for i in 0..j {
         buf[i] = byte[i];
-        //buf[i]^=result[i];
+        //buf[i]^=be[(i+1)%32];
     }
 
     //result=pappy(result);
     //println!("{:?}",result);
 
     for _k in 0..16 {
+       // buf[_k]^=be[_k];
+       //be=p2(&be);
         for _i in 0..j {
-            //buf[i]^=result[i];
+            buf[_i]^=be[_i%32];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[a[(16 * _k + _i) % cycle] as usize, me[_i] as usize]] as u8;
+            //me[_i] = a[buf[_i] as usize] as u8;
+            buf[_i] = mat[[a[(16 * _k + _i) % 4] as usize, buf[_i] as usize]] as u8;
         }
+
     }
 
     println!("encrypted = {:?}", &buf[0..j]);
@@ -169,7 +177,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let encoded = encode(&buf[0..j]);
     let enc = encoded.clone();
     println!("cipher text:");
-    println!("{:?}", enc.into_bytes());
+    println!("{:?}", encoded);
     //exit(1);
 
     encoded
@@ -216,28 +224,35 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     let l = decoded.len();
     let _size: usize = 32;
     //let mut result:[u8;256]=[0;256];
-
+    let mut be=seed2.clone();
+    for i in 0..3{
+        be=p2(&be);
+    }
     //result=pappy(result);
     //println!("{:?}",result);
 
-    for j in (0..16).rev() {
+    for j in (0..16) {
         // read hash digest
-
+            //be=p2(&be);
         for i in 0..l {
-            decoded[i] = mat[[a[(16 * j + i) % cycle] as usize, decoded[i] as usize]];
-            tmp[i] = (inv_P[decoded[i] as usize] as usize) as u8;
+            decoded[i] = mat[[a[(16 * j + i) % 4] as usize, decoded[i] as usize]];
+            //decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
-            decoded[i] = INV_S_BOX[(((tmp[i] % 16) + (tmp[i] >> 4) * 16) as usize)];
+            decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=result[i];
+            decoded[i]^=be[i%32];
         }
+
+
+        //decoded[j]^=be[j];        
     }
     //println!("{:?}",decoded);
     //exit(1);
 
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=result[i];
+        //buf[i]^=be[(i+1)%32];
     }
 
     println!("plain text:");
@@ -355,12 +370,12 @@ fn main() {
     let seed = rng2.gen::<u64>();
     sk = random_shuffule(sk, 256, seed);
     let sk2 = sk.clone();
-
+    let sk3:[u8;256]=[5;256];
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
-    let cc = enc(&data, &sk, &mat);
+    let cc = enc(&data, &sk2, &mat);
 
     // encoded below
     let mut gg = cc.clone();
@@ -396,7 +411,8 @@ fn main() {
     println!(" ");
 
     // encoded above
-    let l = dec(&z, &sk2, &mat2);
+    let l = dec(&z, &sk, &mat2);
+    
 
     println!("back to origin: {}", l);
 
