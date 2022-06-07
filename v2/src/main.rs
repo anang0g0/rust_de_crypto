@@ -166,12 +166,13 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     for _k in 0..16 {
        // buf[_k]^=be[_k];
        be=p2(&be);
+       let it=p2(&be);
         for _i in 0..j {
             //buf[_i]^=be[_i%32];
-            buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            buf[_i]^=be[_i%32];
+            buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+            //buf[_i]^=be[_i%32];
             //me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[a[(16 * _k + _i) % 4] as usize, buf[_i] as usize]] as u8;
+            buf[_i] = mat[[be[_i%32] as usize, buf[_i] as usize]];
             be2[_i]^=buf[_i];
         }
 
@@ -246,12 +247,13 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     for _k in 0..16 {
        // buf[_k]^=be[_k];
        be=p2(&be);
+       let it=p2(&be);
         for _i in 0..j {
             //buf[_i]^=be[_i%32];
-            buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            buf[_i]^=be[_i%32];
+            buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+            //buf[_i]^=be[_i%32];
             //me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[a[(16 * _k + _i) % 4] as usize, buf[_i] as usize]] as u8;
+            buf[_i] = mat[[be[_i%32 as usize] as usize, buf[_i] as usize]];
             decoded[_i]^=buf[_i];
         }
 
@@ -405,7 +407,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //result=pappy(result);
     //println!("{:?}",result);
 
-    for j in (0..16) {
+    for j in (0..16).rev() {
         // read hash digest
             //be=p2(&be);
         for i in 0..l {
@@ -491,6 +493,43 @@ fn s2v(a: String) -> Vec<u8> {
     b
 }
 
+fn ae(cc:String,seed2:[u8;32])-> Vec<u8>{
+
+    let mut gg = cc.clone();
+    let mut dd: Vec<u8> = hmac(cc.as_bytes(), seed2);
+    println!("d1={:?}", dd);
+    //let e1=encode(dd);
+    let d2: &[u8] = &dd;
+
+    dd = hmac(d2, seed2);
+    println!("d2={:?}", dd);
+    //println!("encd_hash={:?}",dd);
+    let mut f: Vec<u8> = vec![]; //dd; //(cc.as_bytes()).to_vec();
+    f.write(&dd).unwrap();
+    f.write(gg.as_bytes()).unwrap();
+    //println!("f={:?}\ndd={:?}\n gg={:?}", f, dd, gg.as_bytes());
+    //exit(1);
+
+    for _i in 0..32 {
+        dd[_i] = f[_i];
+    }
+    let tmp: &[u8] = &f[32..f.len()];
+    //for i in 0..f.len()-32{
+    let x: &[u8] = tmp;
+    //}
+    println!("msg={:?}", x);
+    let mut w = hmac(x, seed2);
+    println!("w1={:?}", w);
+    //let e2=encode(w);
+    let t: &[u8] = &w;
+    w = hmac(t, seed2);
+    println!("w2={:?}", w);
+    //exit(1);
+    let z: String = String::from_utf8(x.to_vec()).unwrap();
+    
+    x.to_vec()
+}
+
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
@@ -549,51 +588,22 @@ fn main() {
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
-    let cc = enc(&data, &sk2, &mat);
-
+  
     /* 
-    let cc:String = ofb(&data,&sk2,&mat);
-    println!("{:?}",cc);
-    let cc:String = bfo(&cc,&sk2,&mat);
-exit(1);
-*/
-
     // encoded below
-    let mut gg = cc.clone();
-    let mut dd: Vec<u8> = hmac(cc.as_bytes(), seed2);
-    println!("d1={:?}", dd);
-    //let e1=encode(dd);
-    let d2: &[u8] = &dd;
-    dd = hmac(d2, seed2);
-    println!("d2={:?}", dd);
-    //println!("encd_hash={:?}",dd);
-    let mut f: Vec<u8> = vec![]; //dd; //(cc.as_bytes()).to_vec();
-    f.write(&dd).unwrap();
-    f.write(gg.as_bytes()).unwrap();
-    println!("f={:?}\ndd={:?}\n gg={:?}", f, dd, gg.as_bytes());
-    //exit(1);
-
-    for _i in 0..32 {
-        dd[_i] = f[_i];
-    }
-    let tmp: &[u8] = &f[32..f.len()];
-    //for i in 0..f.len()-32{
-    let x: &[u8] = tmp;
-    //}
-    println!("msg={:?}", x);
-    let mut w = hmac(x, seed2);
-    println!("w1={:?}", w);
-    //let e2=encode(w);
-    let t: &[u8] = &w;
-    w = hmac(t, seed2);
-    println!("w2={:?}", w);
-    //exit(1);
-    let z: String = String::from_utf8(x.to_vec()).unwrap();
+    let cc = enc(&data, &sk2, &mat);
     println!(" ");
 
     // encoded above
-    let l = dec(&z, &sk, &mat2);
+    let l = dec(&cc, &sk, &mat2);
+    */
     
+    let cc:String = ofb(&data,&sk2,&mat);
+    println!("{:?}",cc);
+    let l:String = bfo(&cc,&sk2,&mat);
+//exit(1);
+
+
 
     println!("back to origin: {}", l);
 
