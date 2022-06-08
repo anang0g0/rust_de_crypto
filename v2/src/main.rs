@@ -163,7 +163,7 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         // buf[_k]^=be[_k];
         be=p2(&be);
          for _i in 0..j {
-            buf[_i]^=be[_i%32];
+            //buf[_i]^=be[_i%32];
 
              buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
 
@@ -236,7 +236,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     for j in 0..16 {
         // read hash digest
-            be=p2(&be);
+            //be=p2(&be);
         for i in 0..l {
             
             
@@ -246,7 +246,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
 
-            decoded[i]^=be[i%32];
+            //decoded[i]^=be[i%32];
         }
         
 
