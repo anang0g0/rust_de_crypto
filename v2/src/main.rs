@@ -138,6 +138,25 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, // e
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
     ];
+    const INV_S_BOX: [u8; 256] = [
+        // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
+        0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb, // 0
+        0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, // 1
+        0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e, // 2
+        0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25, // 3
+        0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92, // 4
+        0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84, // 5
+        0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06, // 6
+        0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, // 7
+        0x3a, 0x91, 0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73, // 8
+        0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8, 0x1c, 0x75, 0xdf, 0x6e, // 9
+        0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, // a
+        0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4, // b
+        0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f, // c
+        0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, // d
+        0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, // e
+        0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d, // f
+    ];
 
     let mut buf: [u8; 256] = [0; 256];
     let byte = data.as_bytes();
@@ -148,22 +167,24 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut me: [u8; 256] = [0; 256];
     let cycle = rng2.gen_range(1..256);
-    let nonce:[u8;32]=[23;32];
+    let nonce:[u8;256]=[0;256];
+
     let j = byte.len();
     let mut be=seed2.clone();
-    let mut be2:[u8;256]=[0;256];
+    let mut be2:[u8;256]=[13;256];
     //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
 
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
-        be=p2(&be);
+        be2=pappy(be2);
     }
     
+    let mut msg:[u8;256]=[0;256];
     for i in 0..j {
-        buf[i] = nonce[i%32];//byte[i];
-        be2[i]=byte[i];
+        buf[i] = rng2.gen_range(0..=255); //nonce[i].clone();//byte[i];
+        msg[i]=byte[i].clone();
         
         //buf[i]^=be[(i+1)%32];
     }
@@ -172,23 +193,33 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //println!("{:?}",result);
 
     for _k in 0..16 {
-       // buf[_k]^=be[_k];
-       be=p2(&be);
-       let it=p2(&be);
-        for _i in 0..j {
-            //buf[_i]^=be[_i%32];
-            buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            //buf[_i]^=be[_i%32];
-            //me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[be[_i%32] as usize, buf[_i] as usize]];
-            be2[_i]^=buf[_i];
-        }
+        // buf[_k]^=be[_k];
+        be2=pappy(be2);
+        
+        //println!("=={:?}",be);
+         for _i in 0..j {
 
-    }
+             
 
-    println!("encrypted = {:?}", &be2[0..j]);
+             buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             //buf[_i]^=be[_i%32];
+             buf[_i] = a[buf[_i] as usize] as u8;
+             buf[_i]^=be2[_i%32];
+             buf[_i] = mat[[a[(16 * j + _i)%101] as usize, buf[_i] as usize]];
+             buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             //msg[_i]^=buf[_i];
+             
+         }
+         for i in 0..j{
+            msg[i]^=buf[i];
+         }
+ 
+     }
+ 
+     println!("encrypted = {:?},{}", &msg[0..j],j);
 
-    let encoded = encode(&be2[0..j]);
+
+    let encoded = encode(&msg[0..j]);
     //let enc = encoded.clone();
     println!("cipher text:");
     println!("{:?}", encoded);
@@ -220,6 +251,25 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, // e
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
     ];
+    const INV_S_BOX: [u8; 256] = [
+        // 0     1     2     3     4     5     6     7     8     9     a     b     c     d     e     f
+        0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb, // 0
+        0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, // 1
+        0x54, 0x7b, 0x94, 0x32, 0xa6, 0xc2, 0x23, 0x3d, 0xee, 0x4c, 0x95, 0x0b, 0x42, 0xfa, 0xc3, 0x4e, // 2
+        0x08, 0x2e, 0xa1, 0x66, 0x28, 0xd9, 0x24, 0xb2, 0x76, 0x5b, 0xa2, 0x49, 0x6d, 0x8b, 0xd1, 0x25, // 3
+        0x72, 0xf8, 0xf6, 0x64, 0x86, 0x68, 0x98, 0x16, 0xd4, 0xa4, 0x5c, 0xcc, 0x5d, 0x65, 0xb6, 0x92, // 4
+        0x6c, 0x70, 0x48, 0x50, 0xfd, 0xed, 0xb9, 0xda, 0x5e, 0x15, 0x46, 0x57, 0xa7, 0x8d, 0x9d, 0x84, // 5
+        0x90, 0xd8, 0xab, 0x00, 0x8c, 0xbc, 0xd3, 0x0a, 0xf7, 0xe4, 0x58, 0x05, 0xb8, 0xb3, 0x45, 0x06, // 6
+        0xd0, 0x2c, 0x1e, 0x8f, 0xca, 0x3f, 0x0f, 0x02, 0xc1, 0xaf, 0xbd, 0x03, 0x01, 0x13, 0x8a, 0x6b, // 7
+        0x3a, 0x91, 0x11, 0x41, 0x4f, 0x67, 0xdc, 0xea, 0x97, 0xf2, 0xcf, 0xce, 0xf0, 0xb4, 0xe6, 0x73, // 8
+        0x96, 0xac, 0x74, 0x22, 0xe7, 0xad, 0x35, 0x85, 0xe2, 0xf9, 0x37, 0xe8, 0x1c, 0x75, 0xdf, 0x6e, // 9
+        0x47, 0xf1, 0x1a, 0x71, 0x1d, 0x29, 0xc5, 0x89, 0x6f, 0xb7, 0x62, 0x0e, 0xaa, 0x18, 0xbe, 0x1b, // a
+        0xfc, 0x56, 0x3e, 0x4b, 0xc6, 0xd2, 0x79, 0x20, 0x9a, 0xdb, 0xc0, 0xfe, 0x78, 0xcd, 0x5a, 0xf4, // b
+        0x1f, 0xdd, 0xa8, 0x33, 0x88, 0x07, 0xc7, 0x31, 0xb1, 0x12, 0x10, 0x59, 0x27, 0x80, 0xec, 0x5f, // c
+        0x60, 0x51, 0x7f, 0xa9, 0x19, 0xb5, 0x4a, 0x0d, 0x2d, 0xe5, 0x7a, 0x9f, 0x93, 0xc9, 0x9c, 0xef, // d
+        0xa0, 0xe0, 0x3b, 0x4d, 0xae, 0x2a, 0xf5, 0xb0, 0xc8, 0xeb, 0xbb, 0x3c, 0x83, 0x53, 0x99, 0x61, // e
+        0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d, // f
+    ];
 
     let mut buf: [u8; 256] = [0; 256];
     //let byte = data.as_bytes();
@@ -230,21 +280,21 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     println!("origin: {}", str::from_utf8(encoded.as_bytes()).unwrap());
     let mut me: [u8; 256] = [0; 256];
     let cycle = rng2.gen_range(1..256);
-    let nonce:[u8;32]=[23;32];
+    let nonce:[u8;256]=[0;256];
     let j = decoded.len();
     let mut be=seed2.clone();
-    let mut be2:[u8;256]=[0;256];
+    let mut be2:[u8;256]=[13;256];
     //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
 
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
-        be=p2(&be);
+        be2=pappy(be2);
     }
     
     for i in 0..j {
-        buf[i] = nonce[i%32];//byte[i];
+        buf[i] = rng2.gen_range(0..=255); //nonce[i];//byte[i];
 
         //buf[i]^=be[(i+1)%32];
     }
@@ -252,21 +302,30 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //result=pappy(result);
     //println!("{:?}",result);
 
+
+    
     for _k in 0..16 {
-       // buf[_k]^=be[_k];
-       be=p2(&be);
-       let it=p2(&be);
-        for _i in 0..j {
-            //buf[_i]^=be[_i%32];
-            buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            //buf[_i]^=be[_i%32];
-            //me[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[be[_i%32 as usize] as usize, buf[_i] as usize]];
-            decoded[_i]^=buf[_i];
-        }
+        // buf[_k]^=be[_k];
+        be2=pappy(be2);
+        //println!("=={:?}",be);
+        //let it=p2(&be);
+         for _i in 0..j {
 
-    }
-
+             buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             //buf[_i]^=be[_i%32];
+             buf[_i] = a[buf[_i] as usize] as u8;
+             buf[_i]^=be2[_i%32];
+             buf[_i] = mat[[a[(16 * j + _i)%101] as usize, buf[_i] as usize]];
+             buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             
+         }
+         for i in 0..j{
+            decoded[i]^=buf[i];
+         }
+ 
+     }
+ 
+ 
     println!("encrypted = {:?}", &decoded[0..j]);
 
     //let encoded = encode(&buf[0..j]);
@@ -279,7 +338,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..j]);
-    println!("{:?}", String::from_utf8(buf[0..j].to_vec()));
+   // println!("{:?}", String::from_utf8(buf[0..j].to_vec()));
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
@@ -345,18 +404,20 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     //result=pappy(result);
     //println!("{:?}",result);
 
+
     for _k in 0..16 {
        // buf[_k]^=be[_k];
        //be=p2(&be);
         for _i in 0..j {
-            buf[_i]^=be[_i%32];
+
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[be[(a[((16 * _k + _i)%256) as usize]%32) as usize] as usize, buf[_i as usize] as usize]] as u8;
-     
+            buf[_i] = mat[[a[((16 * _k + _i)%101) as usize] as usize, buf[_i as usize] as usize]] as u8;
+            buf[_i]^=be[_i%32];     
         }
 
     }
+
 
     println!("encrypted = {:?}", &buf[0..j]);
 
@@ -426,18 +487,18 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
         // read hash digest
             //be=p2(&be);
         for i in 0..l {
-
-            decoded[i] = mat[[be[(a[(16 * j + i)%256 as usize]%32) as usize] as usize, decoded[i as usize] as usize]];
+            decoded[i]^=be[i%32];            
+            decoded[i] = mat[[a[(16 * j + i)%101 as usize] as usize, decoded[i as usize] as usize]];
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
-            decoded[i]^=be[i%32];            
-        }
 
+        }
 
         //decoded[j]^=be[j];        
     }
+  
     //println!("{:?}",decoded);
     //exit(1);
 
@@ -606,24 +667,26 @@ fn main() {
     data = data.trim_end().to_owned();
     println!("{}", data);
   
-    ///* 
+    /* 
     // encoded below
     let cc = enc(&data, &sk, &mat, nonce);
     println!(" ");
 
     // encoded above
     let l = dec(&cc, &sk, &mat2, nonce);
-  //  */
+    */
 
-/*
-    let cc:String = ofb(&data,&sk2,&mat);
+
+    let cc:String = ofb(&data,&sk,&mat);
     println!("{:?}",cc);
-    let l:String = bfo(&cc,&sk2,&mat);
+    let cc:String = bfo(&cc,&sk,&mat);
+    //println!("{:?}",cc);
+   // let l:String = bfo(&cc,&sk,&mat);
 //exit(1);
-*/
 
 
-    println!("back to origin: {}", l);
+
+    println!("back to origin: {}", cc);
 
     exit(1);
 }
