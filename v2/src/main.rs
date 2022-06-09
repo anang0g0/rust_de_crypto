@@ -58,25 +58,26 @@ fn S2str(data: &String) -> &str {
     return v;
 }
 
-fn pappy(a: [u8; 256]) -> [u8; 256] {
+fn pappy(a: &[u8]) -> [u8; 256] {
     // create a SHA3-256 object
     let mut count = 0;
-    let mut buf: [u8; 32] = [0; 32];
+    let mut buf:[u8;32]=[0;32];
     let mut u2: [u8; 256] = [0; 256];
 
-    for _i in 0..32 {
-        buf[_i] = a[_i];
+    for _i in 0..a.len() {
+        buf[_i%32] ^= a[_i];
     }
+    
     for _i in 0..8 {
         let mut hasher = Sha3_256::default();
         //me=hasher.clone();
         hasher.update(buf);
         // read hash digest
-        let result = hasher.finalize();
+        let mut result = hasher.finalize();
 
         for _i in 0..32 {
             buf[_i] ^= result[_i];
-            u2[count] = buf[_i];
+            u2[count] = result[_i];
             //print!("{},",result[i]);
             count = count + 1;
         }
@@ -178,7 +179,7 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
-        be2=pappy(be2);
+        be2=pappy(&be2);
     }
     
     let mut msg:[u8;256]=[0;256];
@@ -194,12 +195,11 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
     for _k in 0..16 {
         // buf[_k]^=be[_k];
-        be2=pappy(be2);
+        be2=pappy(&be2);
         
         //println!("=={:?}",be);
-         for _i in 0..j {
 
-             
+         for _i in 0..j {
 
              buf[_i] ^= S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
              //buf[_i]^=be[_i%32];
@@ -290,7 +290,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
-        be2=pappy(be2);
+        be2=pappy(&be2);
     }
     
     for i in 0..j {
@@ -306,7 +306,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     
     for _k in 0..16 {
         // buf[_k]^=be[_k];
-        be2=pappy(be2);
+        be2=pappy(&be2);
         //println!("=={:?}",be);
         //let it=p2(&be);
          for _i in 0..j {
@@ -509,6 +509,8 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
 
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..l]);
+    //let ww=encode(&buf[0..l]);
+     
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
@@ -516,6 +518,9 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
         }
         Ok(str) => str,
     }
+    
+    
+    //ww
 }
 
 fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
@@ -624,6 +629,7 @@ fn main() {
     //let bytes: &[u8] = nonce.as_bytes();
     let mut seed =&p2(nonce); //rng2.gen_range(1..256);
     //seed=p2(&seed);
+    let sk3=pappy(nonce);
 
     println!("{:?}", seed);
     //s2b(test);
@@ -667,13 +673,13 @@ fn main() {
     data = data.trim_end().to_owned();
     println!("{}", data);
   
-    /* 
+     /*
     // encoded below
     let cc = enc(&data, &sk, &mat, nonce);
     println!(" ");
-
     // encoded above
-    let l = dec(&cc, &sk, &mat2, nonce);
+    let l = dec(&cc ,&sk3, &mat2, nonce);
+    let cc = enc(&l, &sk, &mat, nonce);
     */
 
 
