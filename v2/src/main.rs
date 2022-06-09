@@ -352,7 +352,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
             buf[_i]^=be[_i%32];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[a[(16 * _k + _i) as usize] as usize, buf[_i as usize] as usize]] as u8;
+            buf[_i] = mat[[be[(a[((16 * _k + _i)%256) as usize]%32) as usize] as usize, buf[_i as usize] as usize]] as u8;
      
         }
 
@@ -427,7 +427,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             //be=p2(&be);
         for i in 0..l {
 
-            decoded[i] = mat[[a[(16 * j + i) as usize] as usize, decoded[i as usize] as usize]];
+            decoded[i] = mat[[be[(a[(16 * j + i)%256 as usize]%32) as usize] as usize, decoded[i as usize] as usize]];
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
