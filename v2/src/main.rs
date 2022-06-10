@@ -655,7 +655,7 @@ fn main() {
     let mut seed =&p2(nonce); //rng2.gen_range(1..256);
     //seed=p2(&seed);
     let sk3=pappy(nonce);
-
+    let sk2=pappy(&seed2);
 /* 
     println!("{:?}", seed);
     let mut IV:Vec<u8>=Vec::new();
@@ -718,7 +718,7 @@ fn main() {
 
     // encoded below
     for i in 0..3{
-     cc = enc(&data, &sk, &mat, nonce);
+        cc = enc(&data, &sk, &mat, nonce);
         data=cc;
     }
     cc=data;
@@ -727,6 +727,8 @@ fn main() {
     for i in 0..3{
     l=dec(&cc ,&sk, &mat2, nonce);
     cc=l;
+
+    //cc = enc(&data, &sk2, &mat, nonce);
     //let cc = enc(&l, &sk, &mat, nonce);
     }
     
@@ -739,9 +741,9 @@ fn main() {
    // let l:String = bfo(&cc,&sk,&mat);
 //exit(1);
 
+let code=decode(&cc).unwrap();
 
-
-    println!("back to origin: {:?}", String::from_utf8(decode(&cc).unwrap()));
+    println!("back to origin: {}",v2s(code)); 
 
     exit(1);
 }
