@@ -206,16 +206,13 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
              buf[_i] = a[buf[_i] as usize] as u8;
              buf[_i]^=be2[_i%32];
              buf[_i] = mat[[a[(16 * j + _i)%101] as usize, buf[_i] as usize]];
-             buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-             //msg[_i]^=buf[_i];
+             //buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             msg[_i]^=buf[_i];
              
-         }
-         for i in 0..j{
-            msg[i]^=buf[i];
          }
  
      }
- 
+
      println!("encrypted = {:?},{}", &msg[0..j],j);
 
 
@@ -316,15 +313,12 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
              buf[_i] = a[buf[_i] as usize] as u8;
              buf[_i]^=be2[_i%32];
              buf[_i] = mat[[a[(16 * j + _i)%101] as usize, buf[_i] as usize]];
-             buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-             
-         }
-         for i in 0..j{
-            decoded[i]^=buf[i];
+             //buf[_i] = INV_S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+             decoded[_i]^=buf[_i];             
          }
  
      }
- 
+
  
     println!("encrypted = {:?}", &decoded[0..j]);
 
@@ -375,7 +369,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     ];
 
     let mut buf: [u8; 256] = [0; 256];
-    let byte = data.as_bytes();
+   // let mut byte = data.as_bytes();
+    let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
     let mut seed:[u8;32]=[0;32];
     seed=p2(&seed2);
@@ -462,8 +457,9 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut seed:[u8;32]=[0;32];
     seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
+    let aa:String="kotobahairanai".to_string();
+    //let v:Vec<u8>=aa.to_vec();
 
-    
     let cycle = rng2.gen_range(1..256);
 
     println!("len = {}, {}", decoded.len(), cycle);
@@ -506,21 +502,34 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
         buf[i] = decoded[i];
         //buf[i]^=be[(i+1)%32];
     }
+    let v:Vec<u8>=vec![1,2,3];
 
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..l]);
-    //let ww=encode(&buf[0..l]);
-     
+
+    /*
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
             "baka".to_string()
         }
-        Ok(str) => str,
+        Ok(str) => encode(&str[0..l])
     }
-    
-    
-    //ww
+    */
+
+    /* 
+    // \*let ret =/
+     match String::from_utf8(buf.to_vec()) {
+        Err(_why) => {
+        println!("復号できませんでした");
+        b"baka".to_vec()
+        }
+        Ok(str) => str.as_bytes().to_vec()
+        }
+        //ret
+        */
+    //buf.to_vec()
+    encode(&buf[0..l])
 }
 
 fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
@@ -557,6 +566,12 @@ fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
     println!();
 
     result
+}
+
+fn v2u(bytes:&[u8])->Vec<u8>{
+    let bytes_owned: Vec<u8> = bytes.to_owned(); // &[u8] -> Vec<u8>
+
+    bytes_owned
 }
 
 fn hex(bytes: &[u8]) -> String {
@@ -611,6 +626,16 @@ fn ae(cc:String,seed2:[u8;32])-> Vec<u8>{
     x.to_vec()
 }
 
+fn v2vs(src:Vec<u8>)-> Vec<String>{
+    // 整数型
+    // 要素を整数型から文字列型変換
+    let dst: Vec<String> = src.iter().map(|x| x.to_string()).collect();
+    // 文字列型vectorを区切り文字で結合
+    println!("{}", dst.join(" "));
+
+    dst
+}
+
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
@@ -631,7 +656,22 @@ fn main() {
     //seed=p2(&seed);
     let sk3=pappy(nonce);
 
+/* 
     println!("{:?}", seed);
+    let mut IV:Vec<u8>=Vec::new();
+    IV.write(&sk3).unwrap();
+    println!("IV={:?}", IV);
+    IV.write(nonce).unwrap();
+    println!("IV2={:?}",IV);
+    let x="kotobahairanai".as_bytes();
+    IV.write(x).unwrap();
+    println!("IV3={:?}",IV);
+    //println!("{:?}",str::from_utf8(x).unwrap());
+    let src: Vec<u8> = vec![0, 1, 2, 3];
+    let strg=v2vs(src).join(" ");
+    println!("{}",strg);
+    exit(1);
+*/
     //s2b(test);
     //S2str(&b2s(bytes));
     //exit(1);
@@ -672,27 +712,36 @@ fn main() {
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
-  
-     /*
+    data=encode(data);
+    let mut cc:String=String::new();
+    let mut l:String=String::new();
+
     // encoded below
-    let cc = enc(&data, &sk, &mat, nonce);
+    for i in 0..3{
+     cc = enc(&data, &sk, &mat, nonce);
+        data=cc;
+    }
+    cc=data;
     println!(" ");
     // encoded above
-    let l = dec(&cc ,&sk3, &mat2, nonce);
-    let cc = enc(&l, &sk, &mat, nonce);
-    */
-
-
+    for i in 0..3{
+    l=dec(&cc ,&sk, &mat2, nonce);
+    cc=l;
+    //let cc = enc(&l, &sk, &mat, nonce);
+    }
+    
+/*
     let cc:String = ofb(&data,&sk,&mat);
     println!("{:?}",cc);
     let cc:String = bfo(&cc,&sk,&mat);
+*/
     //println!("{:?}",cc);
    // let l:String = bfo(&cc,&sk,&mat);
 //exit(1);
 
 
 
-    println!("back to origin: {}", cc);
+    println!("back to origin: {:?}", String::from_utf8(decode(&cc).unwrap()));
 
     exit(1);
 }
