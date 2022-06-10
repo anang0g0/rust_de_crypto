@@ -95,7 +95,7 @@ fn p2(a: &[u8]) -> [u8; 32] {
 
 
     for _i in 0..count {
-        buf[_i] = a[_i];
+        buf[_i%32] ^= a[_i];
     }
     for _i in 0..2 {
         let mut hasher = Sha3_256::default();
@@ -160,7 +160,7 @@ fn ofb(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
     ];
 
     let mut buf: [u8; 256] = [0; 256];
-    let byte = data.as_bytes();
+    let byte = decode(data).unwrap(); //data.as_bytes();
     let seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
 
@@ -656,31 +656,10 @@ fn main() {
     //seed=p2(&seed);
     let sk3=pappy(nonce);
     let sk2=pappy(&seed2);
-/* 
-    println!("{:?}", seed);
-    let mut IV:Vec<u8>=Vec::new();
-    IV.write(&sk3).unwrap();
-    println!("IV={:?}", IV);
-    IV.write(nonce).unwrap();
-    println!("IV2={:?}",IV);
-    let x="kotobahairanai".as_bytes();
-    IV.write(x).unwrap();
-    println!("IV3={:?}",IV);
-    //println!("{:?}",str::from_utf8(x).unwrap());
-    let src: Vec<u8> = vec![0, 1, 2, 3];
-    let strg=v2vs(src).join(" ");
-    println!("{}",strg);
-    exit(1);
-*/
-    //s2b(test);
-    //S2str(&b2s(bytes));
-    //exit(1);
-    /* 
-    let l = bytes.len();
-    for _i in 0..l {
-        sk[_i] = bytes[_i];
-  }
-    */
+    let n2=pappy(&sk3);
+    let n3=pappy(&n2);
+
+
     for _j in 0..256 {
         for _i in 0..256 {
             sk[_i] = _i as u8;
@@ -716,6 +695,7 @@ fn main() {
     let mut cc:String=String::new();
     let mut l:String=String::new();
 
+    /*
     // encoded below
     for i in 0..3{
         cc = enc(&data, &sk, &mat, nonce);
@@ -723,27 +703,33 @@ fn main() {
     }
     cc=data;
     println!(" ");
+
     // encoded above
     for i in 0..3{
     l=dec(&cc ,&sk, &mat2, nonce);
     cc=l;
-
+    }
+*/
+/*
+    for i in 0..3{
+        data = enc(&cc, &sk3, &mat, &n3);
+        cc=data;    
     //cc = enc(&data, &sk2, &mat, nonce);
     //let cc = enc(&l, &sk, &mat, nonce);
     }
-    
-/*
+*/ 
+
     let cc:String = ofb(&data,&sk,&mat);
     println!("{:?}",cc);
     let cc:String = bfo(&cc,&sk,&mat);
-*/
+
     //println!("{:?}",cc);
    // let l:String = bfo(&cc,&sk,&mat);
 //exit(1);
 
-let code=decode(&cc).unwrap();
+//let code=decode(&cc).unwrap();
 
-    println!("back to origin: {}",v2s(code)); 
+    println!("back to origin: {}",(cc)); 
 
-    exit(1);
+ exit(1);
 }
