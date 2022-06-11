@@ -300,7 +300,7 @@ fn bfo(encoded: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
             println!("復号できませんでした");
             "baka".to_string()
         }
-        Ok(str) => str,
+        Ok(str) => encode(str),
     }
 
 }
@@ -679,7 +679,7 @@ fn main() {
 
     let cc:String = ofb(&data,&sk,&mat);
     println!("{:?}",cc);
-    let cc:String = bfo(&cc,&sk,&mat);
+    let cc:String = ofb(&cc,&sk,&mat);
 
 
 let code=decode(&cc).unwrap();
