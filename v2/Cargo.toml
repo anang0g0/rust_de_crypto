@@ -64,3 +64,11 @@ path="src/aes.rs"
 [[bin]]
 name="test"
 path="src/mine.rs"
+
+[[bin]]
+name="xor"
+path="src/xor128.rs"
+
+[[bin]]
+name="are"
+path="src/arena.rs"
