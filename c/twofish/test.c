@@ -116,7 +116,7 @@ int main(int argc, char** argv)
             fprintf(stdout,"%c",*(plain+j));
             printf("\n");
     }
-    /*
+    
     else
     {
         for (int j=0; j<2;++j)
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
         fprintf(stdout,"Test complete!\n");
         fprintf(stdout,"Errors: %d\n",errnos);
     }
-*/
+
     free(tf_twofish);
     return 0;
 }
