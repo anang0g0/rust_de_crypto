@@ -317,6 +317,42 @@ fn s2v(a:String)->Vec<u8>{
 b
 }
 
+fn ae(cc:String,seed2:[u8;32])-> Vec<u8>{
+        // encoded below
+        let mut gg=cc.clone();
+        let mut dd:Vec<u8>=hmac(cc.as_bytes(),seed2);
+        println!("d1={:?}",dd);
+        //let e1=encode(dd);
+        let d2:&[u8]=&dd;
+        dd=hmac(d2,seed2);
+        println!("d2={:?}",dd);
+        //println!("encd_hash={:?}",dd);
+        let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
+        f.write(&dd).unwrap();
+        f.write(gg.as_bytes()).unwrap();
+        println!("f={:?}\ndd={:?}\n gg={:?}",f,dd,gg.as_bytes());
+    //exit(1);
+    
+        for _i in 0..32{
+        dd[_i]=f[_i];
+        }
+        let tmp:&[u8]=&f[32..f.len()];
+        //for i in 0..f.len()-32{
+        let mut x:&[u8]=tmp;
+        //}
+        println!("msg={:?}",x);
+        let v=x.clone();
+        let mut w=hmac(x,seed2);
+        println!("w1={:?}",w);
+        //let e2=encode(w);
+        let t:&[u8]=&w;
+        w=hmac(t,seed2);
+        println!("w2={:?}",w);
+        //exit(1);
+        let z:String=String::from_utf8(v.to_vec()).unwrap();
+    
+}
+
 use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
@@ -395,38 +431,6 @@ fn main() {
     println!("{}", data);
     let cc = enc(&data, &sk, &mat);
 
-    // encoded below
-    let mut gg=cc.clone();
-    let mut dd:Vec<u8>=hmac(cc.as_bytes(),seed2);
-    println!("d1={:?}",dd);
-    //let e1=encode(dd);
-    let d2:&[u8]=&dd;
-    dd=hmac(d2,seed2);
-    println!("d2={:?}",dd);
-    //println!("encd_hash={:?}",dd);
-    let mut f:Vec<u8>=vec![];//dd; //(cc.as_bytes()).to_vec();
-    f.write(&dd).unwrap();
-    f.write(gg.as_bytes()).unwrap();
-    println!("f={:?}\ndd={:?}\n gg={:?}",f,dd,gg.as_bytes());
-//exit(1);
-
-    for _i in 0..32{
-    dd[_i]=f[_i];
-    }
-    let tmp:&[u8]=&f[32..f.len()];
-    //for i in 0..f.len()-32{
-    let mut x:&[u8]=tmp;
-    //}
-    println!("msg={:?}",x);
-    let v=x.clone();
-    let mut w=hmac(x,seed2);
-    println!("w1={:?}",w);
-    //let e2=encode(w);
-    let t:&[u8]=&w;
-    w=hmac(t,seed2);
-    println!("w2={:?}",w);
-    //exit(1);
-    let z:String=String::from_utf8(v.to_vec()).unwrap();
     println!(" ");
 
     // encoded above
