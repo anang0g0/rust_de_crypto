@@ -418,6 +418,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
    // let mut byte = data.as_bytes();
     let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
+
     let mut seed:[u8;32]=[7;32];
     //seed=p2(&seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
@@ -445,7 +446,6 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
 
     //result=pappy(result);
     //println!("{:?}",result);
-
 
     for _k in 0..2 {
         //be=p2(&be);
@@ -506,6 +506,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut inv_P: [usize; 256] = [0; 256];
     let mut tmp: [u8; 256] = [11; 256];
     //let mut seed2=b"kotobahairanai";
+
     let mut seed:[u8;32]=[7;32];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
@@ -760,7 +761,7 @@ fn main() {
     for i in 0..1{
         cc = enc(&data, &sk, &mat, nonce);
     }
-    //cc=cc;
+
     println!(" ");
 
     // encoded above
