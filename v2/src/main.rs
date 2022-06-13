@@ -32,6 +32,25 @@ fn random_shuffule(mut array: [u8; 256], size: u16, seed: &[u8]) -> [u8; 256] {
 
     array
 }
+fn shuffule(mut array: [u8; 32], size: u16, seed: &[u8]) -> [u8; 32] {
+    //let _i: usize;
+    let mut _a: usize;
+    let mut _b: usize;
+    let mut sead:[u8;32]=[123;32];
+    for i in 0..seed.len(){
+        sead[i]=seed[i];
+    }
+    //let seed: u64 = 1;
+    //let mut rng2 = rand_chacha::ChaCha20Rng::seed_from_u64(seed);
+    let mut rng: rand::rngs::StdRng = rand::SeedableRng::from_seed(sead);
+    for _i in (1..size).rev() {
+        _a = (_i) as usize;
+        let _b = rng.gen::<u8>() % _i as u8; // 32バイトシードで再現あり
+        (array[_a], array[_b as usize]) = (array[_b as usize], array[_a])
+    }
+
+    array
+}
 
 fn s2b(test: &str) -> &[u8] {
     //    let test: &str = "Test";
@@ -416,6 +435,28 @@ fn rot(mut z:[u8;32])->[u8;32]{
     z
 }
 
+fn permute(u:[u8;32])->[u8;32]{
+    let mut tmp:[u8;32]=[0;32];
+    let mut nk:[u8;32]=[0;32];
+    let mut nk2:[u8;32]=[0;32];
+
+    for i in 0..32{
+        nk2[i]=u[i];
+    }
+    
+    for j in 0..2{
+    for i in 0..32{
+        tmp[i]=u[nk2[i] as usize];
+    }
+    for i in 0..32{
+        nk2[i]=tmp[i];
+    }
+    }
+    println!("{:?},",nk2);
+
+    nk2   
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     /*
      * S-box transformation table
@@ -768,7 +809,21 @@ fn main() {
     let sk2=pappy(&seed2);
     let n2=pappy(&sk3);
     let n3=pappy(&n2);
+    let mut nk:[u8;32]=[0;32];
+    let mut nk2:[u8;32]=[0;32];
+    let mut tmp:[u8;32]=[0;32];
 
+for i in 0..32{
+    nk[i]=i as u8;
+}
+    nk=shuffule(nk,32, seed);
+println!("{:?}",nk);
+for i in 0..10{
+nk=permute(nk);
+//println!("{:?}",nk);
+}
+//exit(1);
+    
 
     for _j in 0..256 {
         for _i in 0..256 {
@@ -776,7 +831,7 @@ fn main() {
         }
         //let _seed = rng2.gen::<u64>();
         //rng2.gen::<u64>(); // 32バイトシードで再現あり
-        sk = random_shuffule(sk, 256, seed);
+        sk = random_shuffule(sk, 256, &seed2);
         for _k in 0..256 {
             mat[[_j, _k]] = sk[_k];
             //print!("{}, ", mat[[j, k]]);
