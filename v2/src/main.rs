@@ -386,6 +386,36 @@ fn iinv( mut a:u16,  n:u16)->u16
 }
 
 
+fn lot(mut z:[u8;32])->[u8;32]{
+    let mut tmp:u8=0;
+
+    for i in 0..32{    
+        if i+1 < 32{
+        tmp=z[i];
+        z[i]=z[(i+1)];
+        z[i+1]=tmp;
+        }
+    }
+z
+}
+
+fn rot(mut z:[u8;32])->[u8;32]{
+    let mut tmp:u8=0;
+
+    for i in (0..32).rev(){
+        //tmp=z[i];
+        if (i)>0 {
+        tmp=z[i];
+        z[(i)%32]=z[(i-1)%32];
+        z[(i-1)%32]=tmp;
+        }
+        if i == 0{
+            z[0]=tmp;
+        }
+    }
+    z
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     /*
      * S-box transformation table
@@ -419,7 +449,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
 
-    let mut seed:[u8;32]=[7;32];
+    let mut seed:[u8;32]=[0;32];
     //seed=p2(&seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
@@ -429,9 +459,15 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     let mut count=0;
     let j = byte.len();
     let mut be=seed.clone();
+    let mut it:[u8;256]=[0;256];
     //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
-
+    for i in 0..256{
+    it[i]=a[i];
+    }
+    for i in 0..32{
+        seed[i]=i as u8;
+    }
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
@@ -447,19 +483,21 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     //result=pappy(result);
     //println!("{:?}",result);
 
-    for _k in 0..2 {
+    for _k in 0..16 {
+        //it=pappy(&it);
         //be=p2(&be);
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
        for _i in 0..j {
-            buf[_i]^=be[_i%32]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
+            buf[_i]^=seed[_i]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[  be[((16 * _k + _i)%32) as usize] as usize, (buf[_i as usize]) as usize]] ;
+            buf[_i] = mat[[  it[((16 * _k + _i))%256 as usize] as usize, (buf[_i as usize]) as usize]] ;
             
         }
-        
+        seed=lot(seed);
+        println!("{:?}",seed);
     }
 //exit(1);
 
@@ -507,13 +545,15 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut tmp: [u8; 256] = [11; 256];
     //let mut seed2=b"kotobahairanai";
 
-    let mut seed:[u8;32]=[7;32];
+    let mut seed:[u8;32]=[0;32];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     let aa:String="kotobahairanai".to_string();
     //let v:Vec<u8>=aa.to_vec();
     let mut count=0;
     let cycle = rng2.gen_range(1..256);
+    let mut it:[u8;256]=[0;256];
+
 
     println!("len = {}, {}", decoded.len(), cycle);
 
@@ -523,7 +563,13 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let l = decoded.len();
     let _size: usize = 32;
     //let mut result:[u8;256]=[0;256];
-    
+
+    for i in 0..32{
+        seed[i]=i as u8;
+    }
+    for i in 0..16{
+        seed=lot(seed);
+    }
     let mut be:[u8;32]=seed.clone();
     for i in 0..3{
         be=p2(&be);
@@ -531,25 +577,30 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     }
     //result=pappy(result);
     //println!("{:?}",result);
-
-    for j in (0..2) {
+    for i in 0..256{
+    it[i]=a[i];
+    }
+    for j in (0..16) {
         // read hash digest
             //be=p2(&be);
-            count+=1;        
+            seed=rot(seed);
+            println!("{:?}",seed);
+            //it=pappy(&it);
             //println!("aa={:?}",decoded);
             //println!("ie={:?}",be);
             for i in (0..l) {
             
-            decoded[i] = mat[[ be[(16 * j + i)%32 as usize]  as usize, (decoded[i as usize]) as usize]];
+            decoded[i] = mat[[ it[(16 * j + i)%256 as usize]  as usize, (decoded[i as usize]) as usize]];
 
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=be[i%32]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
+            decoded[i]^=seed[i]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
 
         }
+
     }
 
     
@@ -703,7 +754,7 @@ fn main() {
     let mut sk: [u8; 256]=[0;256];
     let mut mat2: Array2<u8> = Array2::zeros((256, 256));
 
-    let seed2: [u8; 32] = [17; 32];
+    let mut seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let seedA: u64 = 1234567890;
     let seedB: u64 = 1234567890;
@@ -732,6 +783,15 @@ fn main() {
         }
         //println!("");
     }
+    for i in 0..32{
+        seed2[i]=i as u8;
+    }
+    for i in 0..32{
+        seed2=rot(seed2);
+        println!("{:?}",seed2);
+    }
+    exit(1);
+
 
     for _i in 0..256 {
         for _j in 0..256 {
