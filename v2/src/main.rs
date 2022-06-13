@@ -489,7 +489,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
        for _i in 0..j {
-            buf[_i]^=seed[_i]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
+            buf[_i]^=seed[_i%32]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
@@ -597,7 +597,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=seed[i]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
+            decoded[i]^=seed[i%32]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
 
         }
 
@@ -783,6 +783,7 @@ fn main() {
         }
         //println!("");
     }
+    /*
     for i in 0..32{
         seed2[i]=i as u8;
     }
@@ -791,7 +792,7 @@ fn main() {
         println!("{:?}",seed2);
     }
     exit(1);
-
+*/
 
     for _i in 0..256 {
         for _j in 0..256 {
