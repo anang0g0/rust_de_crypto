@@ -335,11 +335,11 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
     let mut seed:[u8;32]=[0;32];
-    seed=p2(&seed2);
+    seed=p2(&seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
-    let mut me: [u8; 256] = [0; 256];
+    let mut me: [u8; 256] = [1; 256];
     let cycle = rng2.gen_range(1..256);
 
     let j = byte.len();
@@ -362,18 +362,19 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     //result=pappy(result);
     //println!("{:?}",result);
 
-
-    for _k in 0..16 {
+    me=pappy(&me);
+    for _k in 0..1 {
        // buf[_k]^=be[_k];
-       //be=p2(&be);
+        me=pappy(&me);
        //println!("ii={:?}",&buf[0..j]);
        for _i in 0..j {
-            buf[_i]^=be[_i%32];  
+            
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[a[((16 * _k + _i)%101) as usize] as usize, buf[_i as usize] as usize]] as u8;
-            //
+            //buf[_i] = a[buf[_i] as usize] as u8;
+            buf[_i] = mat[[a[((16 * _k + _i)%256) as usize] as usize, buf[_i as usize] as usize]] as u8;
+            buf[_i]^=me[_i];  
         }
+        println!("enc== {:?}",&buf[0..j]);
     }
 //exit(1);
 
@@ -418,11 +419,11 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut tmp: [u8; 256] = [0; 256];
     //let mut seed2=b"kotobahairanai";
     let mut seed:[u8;32]=[0;32];
-    seed=p2(seed2);
+    seed=p2(&seed);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     let aa:String="kotobahairanai".to_string();
     //let v:Vec<u8>=aa.to_vec();
-
+    let mut me: [u8; 256] = [1; 256];
     let cycle = rng2.gen_range(1..256);
 
     println!("len = {}, {}", decoded.len(), cycle);
@@ -441,22 +442,22 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     }
     //result=pappy(result);
     //println!("{:?}",result);
-
-    for j in (0..16) {
+    me=pappy(&me);
+    for j in (0..1) {
         // read hash digest
-            //be=p2(&be);
+            me=pappy(&me);
             //println!("aa={:?}",decoded);
             //println!("ie={:?}",be);
             for i in (0..l) {
-            //decoded[i]^=be[i%32];            
-            decoded[i] = mat[[a[(16 * j + i)%101 as usize] as usize, decoded[i as usize] as usize]];
-            decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
+            decoded[i]^=me[i%32];
+            decoded[i] = mat[[a[(16 * j + i)%256 as usize] as usize, decoded[i as usize] as usize]];
+            //decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
-            decoded[i]^=be[i%32];
+            
         }
-
+        println!("dec=={:?}",&decoded[0..l]);
         //decoded[j]^=be[j];        
     }
   
@@ -667,7 +668,7 @@ fn main() {
     for i in 0..1{
         cc = enc(&data, &sk, &mat, nonce);
     }
-    cc=data;
+    //cc=data;
     println!(" ");
 
     // encoded above
@@ -684,7 +685,7 @@ fn main() {
     let cc:String = ctr(&cc,&sk,&mat);
 */
 
-let code=decode(&cc).unwrap();
+let code=decode(&l).unwrap();
 
     println!("back to origin: {:?}",v2s(code)); 
 
