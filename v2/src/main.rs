@@ -435,27 +435,43 @@ fn rot(mut z:[u8;32])->[u8;32]{
     z
 }
 
-fn permute(u:[u8;32])->[u8;32]{
+fn permute(u:[u8;32] ,n:i32)->[u8;32]{
     let mut tmp:[u8;32]=[0;32];
     let mut nk:[u8;32]=[0;32];
     let mut nk2:[u8;32]=[0;32];
 
     for i in 0..32{
         nk2[i]=u[i];
+        nk[i]=i as u8;
     }
-    
-    for j in 0..2{
+    for j in 0..n{
     for i in 0..32{
-        tmp[i]=u[nk2[i] as usize];
+        tmp[i]=nk2[u[i] as usize];
     }
     for i in 0..32{
         nk2[i]=tmp[i];
     }
     }
-    println!("{:?},",nk2);
+    //println!("{:?},",nk2);
 
     nk2   
 }
+
+fn rebirth(inv:[u8;32],mut nk:[u8;32],n:i32)->[u8;32]{
+    let mut tmp:[u8;32]=[0;32];
+
+    for j in 0..n{
+    for i in 0..32{
+        tmp[i]=inv[nk[i] as usize];
+    }
+    for k in 0..32{
+        nk[k]=tmp[k];
+    }
+    }
+
+    nk
+}
+
 
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     /*
@@ -817,11 +833,18 @@ for i in 0..32{
     nk[i]=i as u8;
 }
     nk=shuffule(nk,32, seed);
-println!("{:?}",nk);
-for i in 0..10{
-nk=permute(nk);
-//println!("{:?}",nk);
+println!("ntt={:?}",nk);
+
+
+for i in 0..32{
+    nk2[nk[i] as usize]=i as u8;
 }
+for i in 0..1{
+nk=permute(nk,2);
+println!("nec={:?}",nk);
+}
+nk=rebirth(nk2,nk,3);
+println!("inv={:?}",nk);
 //exit(1);
     
 
