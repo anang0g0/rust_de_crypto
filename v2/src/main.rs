@@ -435,26 +435,30 @@ fn rot(mut z:[u8;32])->[u8;32]{
     z
 }
 
-fn permute(u:[u8;32] ,n:i32)->[u8;32]{
+fn permute(u:[u8;32],mut u2:[u8;32] ,n:i32)->[u8;32]{
     let mut tmp:[u8;32]=[0;32];
     let mut nk:[u8;32]=[0;32];
     let mut nk2:[u8;32]=[0;32];
 
-    for i in 0..32{
-        nk2[i]=u[i];
-        nk[i]=i as u8;
-    }
     for j in 0..n{
     for i in 0..32{
-        tmp[i]=nk2[u[i] as usize];
+        tmp[i]=u[u2[i] as usize];
     }
+    /* 
+    println!("tmp={:?}",tmp);
+    println!("u={:?}",u);
+    println!("u2={:?}",u2);
+    //exit(1);
+*/
     for i in 0..32{
-        nk2[i]=tmp[i];
+        u2[i]=tmp[i];
     }
+    //println!("{:?},",nk);
     }
-    //println!("{:?},",nk2);
+    //exit(1);
+    //
 
-    nk2   
+    u2
 }
 
 fn rebirth(inv:[u8;32],mut nk:[u8;32],n:i32)->[u8;32]{
@@ -525,6 +529,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     for i in 0..32{
         seed[i]=i as u8;
     }
+   seed= shuffule(seed,32,&be);
     //println!("{:?}",mat);
     //exit(1);
     for _i in 0..3{
@@ -554,6 +559,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
             
         }
         seed=lot(seed);
+        //seed=permute(seed,1);
         println!("{:?}",seed);
     }
 //exit(1);
@@ -624,10 +630,20 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     for i in 0..32{
         seed[i]=i as u8;
     }
+    let mut be:[u8;32]=[0;32]; ////seed.clone();
+    seed=shuffule(seed, 32, &be);
+
+    let mut inv:[u8;32]=[0;32];
+    for i in 0..32{
+        inv[seed[i] as usize]=i as u8;
+    }
+
     for i in 0..16{
         seed=lot(seed);
     }
-    let mut be:[u8;32]=seed.clone();
+
+    //seed=permute(seed,16);
+
     for i in 0..3{
         be=p2(&be);
 
@@ -640,8 +656,10 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     for j in (0..16) {
         // read hash digest
             //be=p2(&be);
+            //seed=rebirth(inv, seed, 2);
             seed=rot(seed);
-            println!("{:?}",seed);
+            //println!("{:?}",seed);
+            
             //it=pappy(&it);
             //println!("aa={:?}",decoded);
             //println!("ie={:?}",be);
@@ -839,12 +857,20 @@ println!("ntt={:?}",nk);
 for i in 0..32{
     nk2[nk[i] as usize]=i as u8;
 }
-for i in 0..1{
-nk=permute(nk,2);
-println!("nec={:?}",nk);
+for i in 0..32{
+    tmp[i]=i as u8;
 }
-nk=rebirth(nk2,nk,3);
-println!("inv={:?}",nk);
+//tmp=nk.clone();
+for i in 0..3{
+tmp=permute(nk,tmp,1);
+println!("nec={:?}",tmp);
+}
+//exit(1);
+//tmp=nk;
+for i in 0..3{
+tmp=rebirth(nk2,tmp,1);
+println!("inv={:?}",tmp);
+}
 //exit(1);
     
 
