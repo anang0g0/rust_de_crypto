@@ -541,7 +541,10 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
         buf[i] = byte[i];
         //buf[i]^=be[(i+1)%32];
     }
-
+let mut nk:[u8;32]=[0;32];
+for i in 0..32{
+    nk[i]=i as u8;
+}
     //result=pappy(result);
     //println!("{:?}",result);
 
@@ -551,16 +554,16 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
        for _i in 0..j {
-            buf[_i]^=seed[_i%32]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
+            buf[_i]^=nk[_i%32]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
             buf[_i] = mat[[  it[((16 * _k + _i))%256 as usize] as usize, (buf[_i as usize]) as usize]] ;
             
         }
-        seed=lot(seed);
-        //seed=permute(seed,1);
-        println!("{:?}",seed);
+        //seed=lot(seed);
+        nk=permute(seed,nk,1);
+        println!("{:?}",nk);
     }
 //exit(1);
 
@@ -637,12 +640,16 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     for i in 0..32{
         inv[seed[i] as usize]=i as u8;
     }
-
+/* 
     for i in 0..16{
         seed=lot(seed);
     }
-
-    //seed=permute(seed,16);
+    */
+    let mut ee:[u8;32]=[0;32];
+    for i in 0..32{
+        ee[i]=i as u8;
+    }
+    ee=permute(seed,ee,16);
 
     for i in 0..3{
         be=p2(&be);
@@ -656,8 +663,8 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     for j in (0..16) {
         // read hash digest
             //be=p2(&be);
-            //seed=rebirth(inv, seed, 2);
-            seed=rot(seed);
+            ee=rebirth(inv, ee, 1);
+            //seed=rot(seed);
             //println!("{:?}",seed);
             
             //it=pappy(&it);
@@ -672,7 +679,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=seed[i%32]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
+            decoded[i]^=ee[i%32]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
 
         }
 
