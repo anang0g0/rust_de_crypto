@@ -8,6 +8,7 @@ use sha3::Sha3_256;
 use sha3::{Digest, Keccak256};
 use std::io::Write;
 use std::{process::exit, str};
+use ndarray::prelude::*;
 
 /*
     Fisher-Yates shuffle による方法
@@ -434,6 +435,108 @@ fn rot(mut z:[u8;32])->[u8;32]{
     }
     z
 }
+fn lot2(mut z:[u8;16])->[u8;16]{
+    let mut tmp:u8=0;
+
+    for i in 0..16{    
+        if i+1 < 16{
+        tmp=z[i];
+        z[i]=z[(i+1)];
+        z[i+1]=tmp;
+        }
+    }
+z
+}
+
+fn rot2(mut z:[u8;16])->[u8;16]{
+    let mut tmp:u8=0;
+
+    for i in (0..16).rev(){
+        //tmp=z[i];
+        if (i)>0 {
+        tmp=z[i];
+        z[(i)%16]=z[(i-1)%16];
+        z[(i-1)%16]=tmp;
+        }
+        if i == 0{
+            z[0]=tmp;
+        }
+    }
+    z
+}
+
+fn v2m(m:[u8;256])->Array2<u8>{
+    let mut mat: Array2<u8> = Array2::zeros((16, 16));
+    for i in 0..16{
+        for j in 0..16{
+            mat[[j,i]]=m[i*16+j];
+        }
+    }
+
+    mat
+}
+
+fn shift(sf:Array2<u8>)->Array2<u8>{
+    let mut v:[u8;16]=[0;16];
+    let mut mat: Array2<u8> = Array2::zeros((16, 16));
+
+    for j in 0..16{
+    for i in 0..16{
+        v[i]=sf[[j,i]];
+    }
+    for ii in 0..j{
+    v=lot2(v);
+    }
+    for k in 0..16{
+    mat[[j,k]]=v[k];
+    }
+}
+
+mat
+}
+
+fn rev_shift(sf:Array2<u8>)->Array2<u8>{
+    let mut v:[u8;16]=[0;16];
+    let mut mat: Array2<u8> = Array2::zeros((16, 16));
+
+    for j in 0..16{
+    for i in 0..16{
+        v[i]=sf[[j,i]];
+    }
+    for ii in 0..j{
+    v=rot2(v);
+    }
+    for k in 0..16{
+    mat[[j,k]]=v[k];
+    }
+}
+
+mat
+}
+
+
+fn mul(mm:Array2<u8>)->Array2<u8>{
+let mut mm=arr2(&[
+    [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
+    [4,5,16,17,20,21,64,65,68,69,80,81,84,85,29,28],
+    [8,15,64,85,120,107,58,115,146,221,231,186,127,36,205,193],
+    [16,17,29,28,13,12,205,204,221,220,208,209,192,193,76,77],
+    [32,51,116,108,46,36,38,226,1,215,169,116,244,59,180,233],
+    [64,85,205,193,228,252,45,161,10,146,191,62,241,100,143,223],
+    [128,255,19,226,98,206,117,192,68,79,87,43,199,38,24,174],
+    [29,28,76,77,81,80,143,142,146,147,195,194,222,223,157,156],
+    [58,36,45,100,251,173,12,138,221,68,125,179,64,145,37,169],
+    [116,108,180,233,32,100,96,174,1,214,38,180,167,44,106,235],
+    [232,180,234,106,192,33,39,183,10,153,181,151,164,185,238,253],
+    [205,193,143,223,186,231,37,102,68,10,47,61,182,169,70,150],
+    [135,94,6,132,187,143,53,113,146,78,217,60,74,89,20,3],
+    [19,226,24,174,189,138,181,222,221,152,197,49,203,96,93,51],
+    [38,59,96,44,169,145,193,96,1,1,85,96,150,26,185,36],
+    [76,77,157,156,209,208,70,71,10,11,219,218,151,150,95,94]
+    ]);
+    
+mm
+}
 
 fn permute(u:[u8;32],mut u2:[u8;32] ,n:i32)->[u8;32]{
     let mut tmp:[u8;32]=[0;32];
@@ -554,7 +657,7 @@ for i in 0..32{
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
        for _i in 0..j {
-            buf[_i]^=nk[_i%32]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
+            buf[_i]^=be[nk[_i%32] as usize]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
@@ -679,7 +782,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=ee[i%32]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
+            decoded[i]^=be[ee[i%32] as usize]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
 
         }
 
@@ -828,7 +931,7 @@ fn v2vs(src:Vec<u8>)-> Vec<String>{
     dst
 }
 
-use ndarray::Array2;
+//use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力");
