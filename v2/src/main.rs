@@ -511,7 +511,7 @@ fn v2m(m:[u8;256])->Array2<u8>{
     let mut mat: Array2<u8> = Array2::zeros((16, 16));
     for i in 0..16{
         for j in 0..16{
-            mat[[i,j]]=m[i*16+j];
+            mat[[j,i]]=m[i*16+j];
         }
     }
 
