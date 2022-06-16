@@ -370,8 +370,8 @@ fn oinv( a:u16)->u16
     }
     }
     println!("no return ");
-    //  exit (1);
-    0
+      exit (1);
+    
 }
 
 
@@ -640,6 +640,9 @@ fn mulm(ma:Array2<u8>)->Array2<u8>{
             }
         }
     }
+    println!("{:?}",nn);
+    //exit(1);
+    
 nn
 }
 
@@ -751,6 +754,9 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
+    let mut mat3: Array2<u8> = Array2::zeros((16, 16));
+    let mut mat2: Array2<u8> = Array2::zeros((16, 16));
+    
     let mut me: [u8; 256] = [11; 256];
     let cycle = rng2.gen_range(1..256);
     let mut count=0;
@@ -784,17 +790,29 @@ for i in 0..32{
     //result=pappy(result);
     //println!("{:?}",result);
 
+    //exit(1);
+
     for _k in 0..16 {
+        mat3=v2m(buf);
+        mat3=shift(mat3);
+        //mat3=tenchi(mat3);
+        //mat3=mulm(mat3);
+        //mat3=invm(mat3);
+        //mat3=rev_shift(mat3);
+        buf=m2v(mat3);
+        println!("{:?}",buf);
+     
         //it=pappy(&it);
         //be=p2(&be);
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
+
        for _i in 0..j {
             buf[_i]^=be[nk[_i%32] as usize]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[  it[((16 * _k + _i))%256 as usize] as usize, (buf[_i as usize]) as usize]] ;
+            buf[_i] = mat[[  it[((16 * _k + _i))%256 as usize] as usize, (buf[_i as usize]) as usize]];
             
         }
         //seed=lot(seed);
@@ -809,7 +827,7 @@ for i in 0..32{
     let enc = encoded.clone();
     println!("cipher text:");
     println!("{:?}", encoded);
-    //exit(1);
+    exit(1);
 
     encoded
 }
@@ -846,7 +864,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut inv_P: [usize; 256] = [0; 256];
     let mut tmp: [u8; 256] = [11; 256];
     //let mut seed2=b"kotobahairanai";
-
+    let mut t2:[u8;256]=[0;256];
     let mut seed:[u8;32]=[0;32];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
@@ -855,7 +873,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     let mut count=0;
     let cycle = rng2.gen_range(1..256);
     let mut it:[u8;256]=[0;256];
-
+    let mut mat2: Array2<u8> = Array2::zeros((16, 16));
 
     println!("len = {}, {}", decoded.len(), cycle);
 
@@ -919,8 +937,26 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             decoded[i]^=be[ee[i%32] as usize]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
             
         }
+        for ii in 0..l{
+            t2[ii]=decoded[ii];
+        }
+        mat2=v2m(t2);
+        mat2=rev_shift(mat2);
+        //mat3=tenchi(mat3);
+        //mat3=mulm(mat3);
+        //mat2=invm(mat2);
+        //mat2=shift(mat2);
+        t2=m2v(mat2);
 
+        for ii in 0..l{
+            decoded[ii]=t2[ii];
+        }
+        println!("{:?}",decoded);            
     }
+    
+    
+    //exit(1);
+
 
     
   
@@ -1111,17 +1147,18 @@ fn main() {
         [38,59,96,44,169,145,193,96,1,1,85,96,150,26,185,36],
         [76,77,157,156,209,208,70,71,10,11,219,218,151,150,95,94]
         ]);
-
+/*
 inn=m2v(van);
 for i in 0..256{
+
     print!("{},",inn[i]);
 }
 
 me=v2m(inn);
 println!("{:?}",me);
 
-exit(1);
-
+//exit(1);
+*/
 for i in 0..32{
     nk[i]=i as u8;
 }
