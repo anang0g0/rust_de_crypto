@@ -363,15 +363,9 @@ fn oinv( a:u16)->u16
     if a == 0{
         return 0;
     }
-    for i in 0..256
-    {
-        if gf[mlt(fg[a as usize] as u16, i) as usize] == 1{
-           return i as u16; 
-    }
-    }
-    println!("no return ");
-      exit (1);
+
     
+256-(fg[a as usize]+1) as u16
 }
 
 
