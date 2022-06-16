@@ -722,6 +722,21 @@ fn rebirth(inv:[u8;32],mut nk:[u8;32],n:i32)->[u8;32]{
 }
 
 
+fn addround(mut key:[u64;8],l:i32)->[u64;8]{
+let mut round:[u64;8]=[0;8];
+
+    for i in 0..l{
+        for j in 0..8{
+            key[j]=key[(j+7)%8]^key[j];
+    } 
+    for j in 0..8{
+    round[j]^=key[j];
+    }
+    }
+
+    round
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     /*
      * S-box transformation table
@@ -821,7 +836,7 @@ for i in 0..32{
 
         buf=m2v(mat3);
         println!("{:?}",buf);
-     
+     //let k2:[u32;6]=(addround(be, _k)>>32);
         //it=pappy(&it);
         //be=p2(&be);
        // buf[_k]^=be[_k];
@@ -960,7 +975,8 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=be[ee[i%32] as usize]; //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
+            decoded[i]^=be[ee[i%32] as usize]; 
+            //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
             
         }
         for ii in 0..l{
