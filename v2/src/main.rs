@@ -202,7 +202,7 @@ fn ctr(data: &String, a: &[u8; 256], mat: &Array2<u8>) -> String {
 
          for _i in 0..j {
 
-            buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+            //buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
              //buf[_i]^=be[_i%32];
              //buf[_i] = a[buf[_i] as usize] as u8;
              buf[_i]^=be2[_i%32];
@@ -330,7 +330,7 @@ fn mlt(x:u16, y:u16)->u16
 
   if x == 0 || y == 0 
   {
-    println!("is 0");
+   // println!("is 0");
    return 0
   }
 
@@ -507,11 +507,22 @@ fn tenchi(m2:Array2<u8>)->Array2<u8>{
     mat
 }
 
+fn rev_tenchi(m2:Array2<u8>)->Array2<u8>{
+    let mut mat: Array2<u8> = Array2::zeros((16, 16));
+    for i in 0..16{
+        for j in 0..16{
+            mat[[j,i]]=m2[[i,j]];
+        }
+    }
+
+    mat
+}
+
 fn v2m(m:[u8;256])->Array2<u8>{
     let mut mat: Array2<u8> = Array2::zeros((16, 16));
     for i in 0..16{
         for j in 0..16{
-            mat[[j,i]]=m[i*16+j];
+            mat[[i,j]]=m[i*16+j];
         }
     }
 
@@ -534,7 +545,7 @@ let mut r1:[u8;256]=[0;256];
 
 for i in 0..16{
     for j in 0..16{
-        r1[i*16+j]=m2[[j,i]];
+        r1[i*16+j]=m2[[i,j]];
     }
 }
 
@@ -683,6 +694,7 @@ nn
 }
 
 
+
 fn permute(u:[u8;32],mut u2:[u8;32] ,n:i32)->[u8;32]{
     let mut tmp:[u8;32]=[0;32];
     let mut nk:[u8;32]=[0;32];
@@ -755,6 +767,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     println!("len = {}", byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut mat3: Array2<u8> = Array2::zeros((16, 16));
+    let mut aia: Array2<u8> = Array2::zeros((16, 16));
     let mut mat2: Array2<u8> = Array2::zeros((16, 16));
     
     let mut me: [u8; 256] = [11; 256];
@@ -778,11 +791,22 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
         be=p2(&be);
         println!("{:?}",be);
     }
-    
+
+
     for i in 0..j {
         buf[i] = byte[i];
         //buf[i]^=be[(i+1)%32];
     }
+    for i in j..256{
+    buf[i]=0;
+    }
+    
+/*    
+    for i in 0..256{
+        buf[i] = gf[i];
+        //buf[i]^=be[(i+1)%32];
+    }
+  */  
 let mut nk:[u8;32]=[0;32];
 for i in 0..32{
     nk[i]=i as u8;
@@ -793,12 +817,14 @@ for i in 0..32{
     //exit(1);
 
     for _k in 0..16 {
-        mat3=v2m(buf);
+        mat3=v2m(buf);        
+	    
         mat3=shift(mat3);
-        //mat3=tenchi(mat3);
-        //mat3=mulm(mat3);
-        //mat3=invm(mat3);
-        //mat3=rev_shift(mat3);
+    	println!("zzz{:?}",mat3);    
+        mat3=mulm(mat3);
+	println!("fff{:?}",mat3);
+	//exit(1);
+
         buf=m2v(mat3);
         println!("{:?}",buf);
      
@@ -807,7 +833,8 @@ for i in 0..32{
        // buf[_k]^=be[_k];
        //println!("ii={:?}",&buf[0..j]);
 
-       for _i in 0..j {
+       for _i in 0..256{ //j{
+       //j {
             buf[_i]^=be[nk[_i%32] as usize]; //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
@@ -821,16 +848,17 @@ for i in 0..32{
     }
 //exit(1);
 
-    println!("encrypted = {:?}", &buf[0..j]);
+    println!("encrypted = {:?}", &buf[0..256]); //j]);
 
-    let encoded = encode(&buf[0..j]);
+    let encoded = encode(&buf[0..256]); //j]);
     let enc = encoded.clone();
     println!("cipher text:");
     println!("{:?}", encoded);
-    exit(1);
+   // exit(1);
 
     encoded
 }
+
 
 fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     let mut buf: [u8; 256] = [0; 256];
@@ -881,6 +909,9 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
         inv_P[a[i as usize] as usize] = i as usize;
     }
     let l = decoded.len();
+    println!("{}",l);
+    //exit(1);
+    
     let _size: usize = 32;
     //let mut result:[u8;256]=[0;256];
 
@@ -914,6 +945,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     for i in 0..256{
     it[i]=a[i];
     }
+
     for j in (0..16) {
         // read hash digest
             //be=p2(&be);
@@ -941,11 +973,21 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
             t2[ii]=decoded[ii];
         }
         mat2=v2m(t2);
+
+        //
+	
+	println!("ppp{:?}",mat2);
+	//exit(1);
+	
+
+	mat2=invm(mat2);
+	
+	println!("xxx{:?}",mat2);
+	//exit(1);
+
         mat2=rev_shift(mat2);
-        //mat3=tenchi(mat3);
-        //mat3=mulm(mat3);
-        //mat2=invm(mat2);
-        //mat2=shift(mat2);
+
+        
         t2=m2v(mat2);
 
         for ii in 0..l{
@@ -953,8 +995,6 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
         }
         println!("{:?}",decoded);            
     }
-    
-    
     //exit(1);
 
 
@@ -1147,18 +1187,63 @@ fn main() {
         [38,59,96,44,169,145,193,96,1,1,85,96,150,26,185,36],
         [76,77,157,156,209,208,70,71,10,11,219,218,151,150,95,94]
         ]);
-/*
-inn=m2v(van);
-for i in 0..256{
+        let mut inv=arr2(&[
+            [ 77,240, 60, 82,  7,193,162, 86, 35,152, 75,172, 81,161,217,226],
+            [175,124,143,135,174,152,138,216, 17, 90, 99,116,121,137,217,188],
+            [249,217,194,104, 20,211, 43, 14,232,247, 57,132,236,246,126,145],
+            [199, 96,228,206,231, 58,  3, 71, 21, 16, 17,182,196,222,126,237],
+            [ 99,142,  6, 79, 53,201,227,150, 76, 42, 59,178,244, 30,198, 33],
+            [137,139,245, 59,  9, 31,203, 88,171, 39, 19,112,220, 54,198, 69],
+            [136, 31,222,168,235,141, 72,237,253,216,255,159,147, 28,105,160],
+            [246,180, 58, 58, 99,138, 96,150,185, 19,215, 56,187, 52,105,223],
+            [ 25,100,253,111,223,106,165, 81,223,250,214,129,160,223,250, 25],
+            [137,116,204,180,152, 82,141, 53,129,219,254,214,136,247,250, 64],
+            [ 61, 23,115, 62,141, 81,183, 90, 50,120, 12,  7,181, 32,245,221],
+            [137,243,215,125,144,217,159, 65,163,124, 36,186,157,  8,245,204],
+            [159,110,184,222,  7,245,230, 69,153, 17, 98,141,193,164, 33, 50],
+            [ 53,255,201,113,213, 66,206,126, 18,255, 74,192,233,140, 33,161],
+            [105,105,118,120,254,254,254,165, 38, 38, 38, 38, 38, 38, 38,232],
+            [118,238,118,246,254,254,254,140, 38, 38, 38, 38, 38, 38, 38,215]
+            ]);
+  
 
-    print!("{},",inn[i]);
+van=v2m(gf);
+for i in 0..10{
+van=mulm(van);
+//}
+//for i in 0..10{
+    van=invm(van);
+    //van=tenchi(van);
 }
+println!("{:?}",van);
+//exit(1);
+
+/*
+v
+println!("{:?}",van);
+van=tenchi(van);
+println!("{:?}",van);
+van=tenchi(van);
+println!("{:?}",van);
+exit(1);
+ */
+/*
+van=tenchi(van);
+println!("{:?}",van);
+van=rev_tenchi(van);
+println!("{:?}",van);
+exit(1);
+
+van=invm(van);
+println!("{:?}",van);
+//exit(1);
+ */
 
 me=v2m(inn);
 println!("{:?}",me);
 
 //exit(1);
-*/
+
 for i in 0..32{
     nk[i]=i as u8;
 }
@@ -1261,3 +1346,4 @@ let code=decode(&l).unwrap();
 
  exit(1);
 }
+
