@@ -38,49 +38,7 @@ register poly k=0;
 }
 
 
-/*
-def i2b(n)
-  x=n
-  i=0;
-  while(x>0)
-    x=(x>>1); i=i+1;
-  }
-c=i
-
-
-  while(c>0) 
-    i=c-1
-    if(n[i]==1)
-      print "1";
-    }
-  
-    if(n[i]==0)
-      print "0";
-    }
-  c=c-1;
-  }
-#  print "\n";
-
-}
-
-
-def itob(n)
-
-k=0;
-  while(n>0)
-    if(n%2==1)
-      k=k+1;
-    }
-    n=(n>>1);
-  }
-
-  #  printf("k=%d\n",k);
-
-  return k;
-}
-*/
-
-#/* ���ӥå��������֤� */
+/* ���ӥå��������֤� */
 int cb(register poly x){
 int  i=0;
 
@@ -92,62 +50,15 @@ int  i=0;
 }
 
 
-#/* F_2 quot */
-poly pd(register poly p,register poly d){
+// F_2 quot
+poly pq(int p,int d){
 
-register poly t[64]={0};
-register poly q,y,r,i;
- 
-  if(cb(p)<cb(d)){
-    return p;
-  }
-
-// print "a"
-
-  q=p; y=d;
-  r=0;
-  i=cb(q)-cb(y);
-
-  y=(y<<i);
-
-  if(y>p){
-    y=(y>>1);
-  }
-  while(cb(q) >= cb(d)){
-    y=d;
-    i=cb(q)-cb(y);
-    //print "i=",i,"\n"
-    if(i>0){
-      y=(y<<i);
-    }
-
-    if(i<0){
-      break;
-    }
-    if(cb(q)==cb(y)){
-      r=r + (1<<i);
-      itob(q);
-      itob(y);
-      q=(q^y);
-      itob(q);
-      itob(y);
-    }
-  }
-
-  return q;
-
-}
-
-
-/* F_2 mod */
-poly pq(register poly p,register poly d){
-register poly y,q,r,i;
-register poly t[64]={0};
+int t[64],q,y,r;
 
  
-  if(cb(p)<cb(d)){
+  if(cb(p)<cb(d))
     return p;
-  }
+  
 
 
   q=p;
@@ -156,35 +67,110 @@ register poly t[64]={0};
   i=cb(q)-cb(y);
   y=(y<<i);
 
-  if(y>p){
+  if(y>p)
     y=(y>>1);
-  }
+  
 
-  while(cb(q) >= cb(d)){
+while(cb(q) >= cb(d)){
     y=d;
     i=cb(q)-cb(y);
 
-    if(i>0){
+    if(i>0)
       y=(y<<i);
-    }
+    
 
-    if(i<0){
+    if(i<0)
       break;
-    }
-    if(cb(q)==cb(y)){
+    
+	if(cb(q)==cb(y)){
       r=r + (1<<i);
       itob(q);
       itob(y);
       q=(q^y);
       itob(q);
       itob(y);
-    }
-  }
+	}
+}
 
 
   return r;
 
 }
+
+
+/* F_2 mod */
+int pd(poly p,poly d){
+int t[64];
+int q,y,r;
+ 
+	if(cb(p)<cb(d)){
+    return p;
+}
+
+//  print "a"
+
+  q=p; y=d;
+  r=0;
+  i=cb(q)-cb(y);
+
+  y=(y<<i);
+
+	if(y>p){
+    y=(y>>1);
+	}
+	while(cb(q) >= cb(d)){
+    y=d;
+    i=cb(q)-cb(y);
+    //print "i=",i,"\n"
+    if(i>0)
+      y=(y<<i);
+	
+
+    if(i<0)
+      break;
+    
+		if(cb(q)==cb(y)){
+      r=r + (1<<i);
+      itob(q);
+      itob(y);
+      q=(q^y);
+      itob(q);
+      itob(y);
+		}
+	}
+
+  return q;
+
+}
+
+/*
+*/
+
+// invert of integer
+unsigned short inv(unsigned short a, unsigned short n)
+{
+    unsigned short d;
+    unsigned short q, t, r, x, s/*, gcd*/ ;
+
+    x = 0;
+    s = 1;
+
+    d = n;
+    while (a != 0)
+    {
+        q = pq(d , a);
+        r = pd(d , a);
+        d = a;
+        a = r;
+        t = x ^ seki(q , s);
+        x = s;
+        s = t;
+    }
+    //gcd = d;
+
+    return pd((x ^ n) , pq(n , d));
+}
+
 
 void write_poly(poly p,poly p_low)
 {
@@ -232,6 +218,28 @@ void factorize(poly p,poly p_low)
 	write_poly(p,p_low);
 }
 
+// test gcd
+int agcd(int xx, int yy)
+{
+    int tt = 0, tmp;
+
+    if (xx < yy)
+    {
+        tmp = xx;
+        xx = yy;
+        yy = tmp;
+    }
+    tt = pq(xx, yy);
+    while (tt != 0)
+    {
+        xx = yy;
+        yy = tt;
+        tt = pq(xx, yy);
+  printf("%b %b %b %b\n",yy,xx,tt,tmp);
+    }
+
+    return yy;
+}
 
 int main(){
 	poly p,p_low;
@@ -248,15 +256,16 @@ p=MSB; p_low= (MSB>>i);
 			p=MSB; p_low>>=1;
 		}
 	}
-  */  
-	register poly a=0b11111111111111111111111111111111,b=0b10000000000000000000000000000011;
- // while(1)
-  {
-	a=seki(a,b);
-	printf("%b\n",a);
+  */
+	register poly a=0b11,b=0b100011011,c=0;
+c=inv(a,b);
+printf("%b\n",c);
+while(cb(c)<32){
+  c=seki(a,b);
+  printf("%b\n",c);
   a+=2;
   b+=2;
-  }
+}
 	return 0;
 }
 
