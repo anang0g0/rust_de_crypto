@@ -7,9 +7,9 @@ poly quo,quo_low,res,res_low;
 
 int i,k;
 
-unsigned int seki(unsigned int a ,unsigned int b){
+poly seki(register poly a ,register poly b){
 
-unsigned int  c=0;
+register poly  c=0;
   while(a!=0){
     if ((a & 1)==1){
 	 c^=b;
@@ -21,8 +21,8 @@ unsigned int  c=0;
 }
 
 
-int itob(unsigned int n){
-unsigned int k=0;
+poly itob(register poly n){
+register poly k=0;
 
 
   while(n>0){
@@ -81,7 +81,7 @@ k=0;
 */
 
 #/* ���ӥå��������֤� */
-int cb(unsigned int x){
+int cb(register poly x){
 int  i=0;
 
   while(x>0){
@@ -93,10 +93,10 @@ int  i=0;
 
 
 #/* F_2 quot */
-unsigned int pd(unsigned int p,unsigned int d){
+poly pd(register poly p,register poly d){
 
-unsigned int t[64]={0};
-unsigned int q,y,r,i;
+register poly t[64]={0};
+register poly q,y,r,i;
  
   if(cb(p)<cb(d)){
     return p;
@@ -140,9 +140,9 @@ unsigned int q,y,r,i;
 
 
 /* F_2 mod */
-unsigned int pq(unsigned int p,unsigned int d){
-unsigned int y,q,r,i;
-unsigned int t[64]={0};
+poly pq(register poly p,register poly d){
+register poly y,q,r,i;
+register poly t[64]={0};
 
  
   if(cb(p)<cb(d)){
@@ -185,31 +185,6 @@ unsigned int t[64]={0};
   return r;
 
 }
-
-
-int main(){
-	poly p,p_low;
-
-//scanf("%d",&i);
-//	p=MSB; p_low= (MSB>>i);
-/*
-	while(p_low!=0){
-		write_poly(p,p_low); printf("=");
-		factorize(p,p_low); printf("\n");
-		p +=p_low; 
-		if(p==0){
-			p=MSB; p_low>>=1;
-		}
-	}
-    */
-	unsigned int a=123;
-	a=seki(a,a);
-	printf("%b",a);
-
-	return 0;
-}
-
-
 
 void write_poly(poly p,poly p_low)
 {
@@ -258,7 +233,32 @@ void factorize(poly p,poly p_low)
 }
 
 
+int main(){
+	poly p,p_low;
 
+/*
+scanf("%d",&i);
+p=MSB; p_low= (MSB>>i);
+
+	while(p_low!=0){
+		write_poly(p,p_low); printf("=");
+		factorize(p,p_low); printf("\n");
+		p +=p_low; 
+		if(p==0){
+			p=MSB; p_low>>=1;
+		}
+	}
+  */  
+	register poly a=0b11111111111111111111111111111111,b=0b10000000000000000000000000000011;
+ // while(1)
+  {
+	a=seki(a,b);
+	printf("%b\n",a);
+  a+=2;
+  b+=2;
+  }
+	return 0;
+}
 
 
 
