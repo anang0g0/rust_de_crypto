@@ -612,46 +612,29 @@ fn rot_word(word:u32)->u32
  (word << 24 | word >> 8)
 }
 
-/*
-fn sub_word(word:u32)->u32
-{
-  let mut val:u32 = word;
-  let mut p:[u8;4] = [0;4];
-  &val as u8;
-  p[0] = sbox[p[0]]; p[1] = sbox[p[1]];
-  p[2] = sbox[p[2]]; p[3] = sbox[p[3]];
-  return val;
-}
- */
+
 
  
-fn add_round_key(state:[u8;16] /*4*Nb*/, w:[u32;4] /*Nb*(Nr+1)*/)
+fn add_round_key(state:[u8;16] /*4*Nb*/, mut w:[u32;4] /*Nb*(Nr+1)*/)->[u32;4]
 {
   let mut i:i32;
-  let mut state:u32;
-  let mut s:[u32;4] = [0;4]; //state;
-  for i in 0..4 {
-    s[i] ^= w[i];
-  }
-}
-/* 
-fn KeyExpansion(key:[i32;8], w:[u32;Nb*(14+1)], Nk:i32) {
-    for i in 0..8 {
-      w[i] = key[i];
-    }
-  
-    for i in 8..Nb*(Nr+1) {
-      temp = w[i-1];
-      if (i%8 == 0) {
-        temp = SubWord(RotWord(temp)) ^ Rcon[i/8];
-      } else if (6 < 8 && i%8 == 4) {
-        temp = SubWord(temp);
-      }
-      w[i] = w[i-8] ^ temp
-    }
-  }
-*/
+  let mut m:u32=0;
 
+  let mut s:[u32;4] = [0;4]; //state;
+  for i in 0..4{
+    for j in 0..4{
+        m=(m<<8);
+        m^=state[i*4+j] as u32;
+    }
+  s[i]=m;
+  m=0;
+}
+for i in 0..4{
+    s[i]^=w[i];
+}
+
+  s
+}
 
 fn sub_word(word:u32)->u32
 {
@@ -674,6 +657,7 @@ fn sub_word(word:u32)->u32
         0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf, // e
         0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16, // f
     ];
+
     const rcon:[u32;11] = [
         0x00000000, /* invalid */
         0x00000001, /* x^0 */
@@ -696,8 +680,10 @@ fn sub_word(word:u32)->u32
    } //&val;
   p[0] = S_BOX[p[0] as usize]; p[1] = S_BOX[p[1] as usize];
   p[2] = S_BOX[p[2] as usize]; p[3] = S_BOX[p[3] as usize];
-  return val;
+  
+  val
 }
+
 
 
 fn key_expansion(key:[u32;4] /*Nk*/,mut w:[u32;60] /*Nb*(Nr+1)*/)
