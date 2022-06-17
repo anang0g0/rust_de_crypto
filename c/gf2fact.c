@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <math.h>
 typedef unsigned long long int poly;
 poly quo, quo_low, res, res_low;
 
@@ -76,6 +76,7 @@ poly pq(int p, int d)
 
   while (cb(q) >= cb(d))
   {
+    printf("bbb\n");
     y = d;
     i = cb(q) - cb(y);
 
@@ -127,7 +128,7 @@ int pd(poly p, poly d)
   {
     y = d;
     i = cb(q) - cb(y);
-    // print "i=",i,"\n"
+    printf("i=%d\n", i);
     if (i > 0)
       y = (y << i);
 
@@ -148,7 +149,6 @@ int pd(poly p, poly d)
   return q;
 }
 
-
 // invert of integer
 unsigned short inv(unsigned short a, unsigned short n)
 {
@@ -168,7 +168,9 @@ unsigned short inv(unsigned short a, unsigned short n)
     t = x ^ seki(q, s);
     x = s;
     s = t;
+    printf("aaa\n");
   }
+
   // gcd = d;
 
   return pd((x ^ n), pq(n, d));
@@ -263,6 +265,37 @@ int agcd(int xx, int yy)
   return yy;
 }
 
+int testbit(int bit, int i)
+{
+  if (bit == 0)
+    return 0;
+  if (bit & (1 << i))
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+int bitctr(int c){
+
+  bit = __builtin_popcount(c);
+  printf("%b %d\n", c, bit);
+
+return bit;
+}
+
+int bitch(c){
+
+  bit = __builtin_parityll(c);
+  printf("%b %d\n", c, bit);
+
+return bit;
+}
+
+
 int main()
 {
   poly p, p_low;
@@ -280,9 +313,10 @@ int main()
       }
     }
     */
-  register poly a = 0b11, b = 0b100011011, c = 0;
+  register poly a = 0b11, b = 0b100011011, c = 0, bit = 0;
+  // printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
   c = inv(a, b);
-  printf("%b\n", c);
+    exit(1);
   while (cb(c) < 32)
   {
     c = seki(a, b);
