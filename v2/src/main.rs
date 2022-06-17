@@ -737,6 +737,18 @@ let mut round:[u64;8]=[0;8];
     round
 }
 
+fn llu2b(mut l:u64)->[u8;8]{
+    let mut uu:[u8;8]=[0;8];
+    let mut count=0;
+while l>0{
+    uu[count]= (l%256) as u8;
+    count=count+1;
+    l=(l>>8);
+}
+
+uu
+}
+
 fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String {
     /*
      * S-box transformation table
@@ -955,6 +967,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>,seed2:&[u8]) -> String 
     it[i]=a[i];
     }
 
+
     for j in (0..16) {
         // read hash digest
             //be=p2(&be);
@@ -1081,6 +1094,36 @@ fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
     println!();
 
     result
+}
+
+
+fn mkiv(nonce: &[u8], key: [u8; 32]) -> Vec<u8> {
+    //let m:&[u8]=message.as_bytes();
+    let mut hasher = Keccak256::default();
+    let mut k1: Vec<u8> = key.to_vec();
+    let mut K1: Vec<u8> = vec![];
+    let mut K2: Vec<u8> = vec![];
+    let mut IV: Vec<u8> = vec![];
+
+    K1.write_all(&k1).unwrap();
+    K1.write_all(nonce).unwrap();
+
+    let mut hasher = Keccak256::default();
+    hasher.update(K1);
+    let result = hasher.finalize();
+    K2.write(&result.to_vec()).unwrap();
+//  let result2: Vec<u8> = hasher.finalize().to_vec();
+    let mut hasher = Keccak256::default();
+    hasher.update(K2);
+    let result2 = hasher.finalize();
+    IV.write(&result2.to_vec()).unwrap();
+
+    for IV in &result {
+        print!("{:0x}", &IV);
+    }
+    println!();
+
+    IV
 }
 
 fn v2u(bytes:&[u8])->Vec<u8>{
