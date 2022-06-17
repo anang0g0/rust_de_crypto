@@ -841,10 +841,7 @@ for i in 0..32{
         mat3=v2m(buf);        
 	    
         mat3=shift(mat3);
-    	println!("zzz{:?}",mat3);    
         mat3=mulm(mat3);
-	println!("fff{:?}",mat3);
-	//exit(1);
 
         buf=m2v(mat3);
         println!("{:?}",buf);
