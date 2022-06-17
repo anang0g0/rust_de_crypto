@@ -253,12 +253,12 @@ int agcd(int xx, int yy)
     xx = yy;
     yy = tmp;
   }
-  tt = pq(xx, yy);
+  tt = pd(xx, yy);
   while (tt != 0)
   {
     xx = yy;
     yy = tt;
-    tt = pq(xx, yy);
+    tt = pd(xx, yy);
     printf("%b %b %b %b\n", yy, xx, tt, tmp);
   }
 
@@ -280,6 +280,7 @@ int testbit(int bit, int i)
 }
 
 int bitctr(int c){
+int bit;
 
   bit = __builtin_popcount(c);
   printf("%b %d\n", c, bit);
@@ -287,7 +288,8 @@ int bitctr(int c){
 return bit;
 }
 
-int bitch(c){
+int bitch(int c){
+  int bit;
 
   bit = __builtin_parityll(c);
   printf("%b %d\n", c, bit);
@@ -313,10 +315,13 @@ int main()
       }
     }
     */
-  register poly a = 0b11, b = 0b100011011, c = 0, bit = 0;
+  register poly a = 0b11, b = 0b100011011, c = 0, bit = 0b1001;
   // printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
   c = inv(a, b);
+  a=agcd(bit,a);
+  printf("%b\n",a);
     exit(1);
+  
   while (cb(c) < 32)
   {
     c = seki(a, b);
