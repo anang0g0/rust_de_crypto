@@ -772,8 +772,6 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
     ]);
 
     
-    //let mut result:[u8;256]=[17;256];
-    //result=pappy(result);
     for i in 0..256 {
         it[i] = a[i];
     }
@@ -792,8 +790,10 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
         buf[i] = byte[i];
         //buf[i]^=be[(i+1)%32];
     }
+    
+    let c:char ='\n';
     for i in j..256 {
-        buf[i] = 0;
+        buf[i] = 0; //(c as i32 - 48) as u8;
     }
 
     /*
@@ -888,6 +888,8 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
     let cycle = rng2.gen_range(1..256);
     let mut it: [u8; 256] = [0; 256];
     let mut mat2: Array2<u8> = Array2::zeros((16, 16));
+    let mut xount:i32=0;
+
 
     println!("len = {}, {}", decoded.len(), cycle);
 
@@ -983,23 +985,30 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
 
         for ii in 0..l {
             decoded[ii] = t2[ii];
+
         }
-        println!("{:?}", decoded);
+        println!("~~~{:?}", decoded);
     }
-    //exit(1);
 
     //println!("{:?}",decoded);
     //exit(1);
-
+    let mut om = 0;
     for i in 0..l {
         buf[i] = decoded[i];
-        //buf[i]^=be[(i+1)%32];
+        if(buf[i]>0){
+            om=om+1;
+        }
+
     }
+        println!("{:?}",&buf[0..om]);
+        //exit(1);
+        //buf[i]^=be[(i+1)%32];
+
     let v: Vec<u8> = vec![1, 2, 3];
 
     println!("plain text:");
-    println!("decrypted = {:?}", &buf[0..l]);
-
+    println!("decrypted = {:?}", &buf[0..om]);
+    
     /*
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
@@ -1022,7 +1031,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
         //ret
         */
     //buf.to_vec()
-    encode(&buf[0..l])
+    encode(&buf[0..om])
 }
 
 fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
