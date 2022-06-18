@@ -708,7 +708,7 @@ fn sub_word(word:u32)->u32
 
 
 
-fn key_expansion(key:[u32;8] /*Nk*/,mut w:[u32;88] /*Nb*(Nr+1)*/)->[u32;88]
+fn key_expansion(key:[u32;32] /*Nk*/,mut w:[u32;120] /*Nb*(Nr+1)*/)->[u32;120]
 {
     const rcon:[u32;11] = [
     0x00000000, /* invalid */
@@ -730,7 +730,7 @@ fn key_expansion(key:[u32;8] /*Nk*/,mut w:[u32;88] /*Nb*(Nr+1)*/)->[u32;88]
 for i in 0..8{
   w[i]=key[i];
 }
-let mut tmp:[u8;4]=[0;4];
+
   //memcpy(w, key, Nk*4);
   for i in 8..88 {
     
@@ -846,8 +846,8 @@ for i in 0..32{
     nk[i]=i as u8;
 }
 
-let mut w:[u32;88]=[0;88];
-let mut cie:[u32;8]=[1;8];
+let mut w:[u32;120]=[0;120];
+let mut cie:[u32;32]=[1;32];
 
 println!("{:?}",w);
 //exit(1);
@@ -875,7 +875,7 @@ println!("{:?}",w);
 
        for _i in 0..256{ //j{
        //j {
-            buf[_i]^=(w[_i%88]%256) as u8; 
+            buf[_i]^=(w[_i%120]%256) as u8; 
             //=be[nk[_i%32] as usize];
             //
             //
@@ -1001,8 +1001,8 @@ const rcon:[u32;11] = [
     for i in 0..256{
     it[i]=a[i];
     }
-    let mut w:[u32;88]=[0;88];
-    let mut cie:[u32;8]=[1;8];
+    let mut w:[u32;120]=[0;120];
+    let mut cie:[u32;32]=[1;32];
 
     println!("{:?}",w);
     //exit(1);
@@ -1027,7 +1027,7 @@ const rcon:[u32;11] = [
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=(w[i%88]%256) as u8; //
+            decoded[i]^=(w[i%120]%256) as u8; //
             //be[ee[i%32] as usize];
             
             //S_BOX[(be[ee[i%32] as usize]%16 + ((be[ee[i%32] as usize]>>4)*16)) as usize];
