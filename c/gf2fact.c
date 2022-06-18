@@ -279,24 +279,25 @@ int testbit(int bit, int i)
   }
 }
 
-int bitctr(int c){
-int bit;
+int bitctr(int c)
+{
+  int bit;
 
   bit = __builtin_popcount(c);
   printf("%b %d\n", c, bit);
 
-return bit;
+  return bit;
 }
 
-int bitch(int c){
+int bitch(int c)
+{
   int bit;
 
   bit = __builtin_parityll(c);
   printf("%b %d\n", c, bit);
 
-return bit;
+  return bit;
 }
-
 
 int main()
 {
@@ -318,10 +319,10 @@ int main()
   register poly a = 0b11, b = 0b100011011, c = 0, bit = 0b1001;
   // printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
   c = inv(a, b);
-  a=agcd(bit,a);
-  printf("%b\n",a);
-    exit(1);
-  
+  a = agcd(bit, a);
+  printf("%b\n", a);
+  exit(1);
+
   while (cb(c) < 32)
   {
     c = seki(a, b);
