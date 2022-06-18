@@ -807,7 +807,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
         nk[i] = i as u8;
     }
 
-    let mut w: [u32; 60] = [19; 60];
+    let mut w: [u32; 60] = [0; 60];
     let mut cie: [u32; 8] = [0; 8];
     for i in 0..8 {
         cie[i] = (i + 1) as u32;
