@@ -606,6 +606,28 @@ fn gmult(mut a:u8,mut b:u8)-> u8
 c
 }
 
+fn b2w(b:[u8;4])->u32{
+    let mut temp:u32=0;
+
+    for i in 0..4{
+        temp=(temp<<8);
+        temp^=b[i] as u32;
+    }
+temp
+}
+
+fn w2b(mut w:u32)->[u8;4]{
+    let mut tmp:[u8;4]=[0;4];
+
+    for i in 0..4{
+        tmp[i]=(tmp[i]<<8);
+        tmp[i]^= (w%256) as u8;
+        w=(w>>8);
+    }
+tmp
+}
+
+
 fn rot_word(word:u32)->u32
 {
   /* a3 a2 a1 a0 -> a0 a3 a2 a1 */
@@ -686,7 +708,7 @@ fn sub_word(word:u32)->u32
 
 
 
-fn key_expansion(key:[u32;4] /*Nk*/,mut w:[u32;60] /*Nb*(Nr+1)*/)
+fn key_expansion(key:[u32;8] /*Nk*/,mut w:[u32;88] /*Nb*(Nr+1)*/)->[u32;88]
 {
     const rcon:[u32;11] = [
     0x00000000, /* invalid */
@@ -703,13 +725,15 @@ fn key_expansion(key:[u32;4] /*Nk*/,mut w:[u32;60] /*Nb*(Nr+1)*/)
 ];
  
   let i:i32;
-  let Nr:u32 = 8;
-  let Nk:u32 = 14;
-for i in 0..4{
+  let Nr:u8 = 14;
+  let Nk:u8 = 8;
+for i in 0..8{
   w[i]=key[i];
 }
+let mut tmp:[u8;4]=[0;4];
   //memcpy(w, key, Nk*4);
-  for i in 8..60 {
+  for i in 8..88 {
+    
     let mut temp:u32 = w[i-1];
     if i%8 == 0 {
       temp = sub_word(rot_word(temp)) ^ rcon[i/8];
@@ -718,6 +742,8 @@ for i in 0..4{
     }
     w[i] = w[i-8] ^ temp;
   }
+
+  w
 }
 
 
@@ -819,12 +845,20 @@ let mut nk:[u8;32]=[0;32];
 for i in 0..32{
     nk[i]=i as u8;
 }
+
+let mut w:[u32;88]=[0;88];
+let mut cie:[u32;8]=[1;8];
+
+println!("{:?}",w);
+//exit(1);
+
     //result=pappy(result);
     //println!("{:?}",result);
 
     //exit(1);
 
     for _k in 0..16 {
+        w=key_expansion(cie, w);
         mat3=v2m(buf);        
 	    
         mat3=shift(mat3);
@@ -832,6 +866,7 @@ for i in 0..32{
 
         buf=m2v(mat3);
         println!("{:?}",buf);
+
      //let k2:[u32;6]=(addround(be, _k)>>32);
         //it=pappy(&it);
         //be=p2(&be);
@@ -840,9 +875,9 @@ for i in 0..32{
 
        for _i in 0..256{ //j{
        //j {
-            buf[_i]^=be[nk[_i%32] as usize];
-            //S_BOX[(be[nk[_i%32] as usize]%16 + ((be[nk[_i%32] as usize]>>4)*16)) as usize];
-             //gf[mlt(fg[be[_i%32] as usize] as u16,fg[buf[_i] as usize] as u16) as usize]; //+count;  
+            buf[_i]^=(w[_i%88]%256) as u8; 
+            //=be[nk[_i%32] as usize];
+            //
             //
             //buf[_i]=gf[buf[_i] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
@@ -966,13 +1001,17 @@ const rcon:[u32;11] = [
     for i in 0..256{
     it[i]=a[i];
     }
+    let mut w:[u32;88]=[0;88];
+    let mut cie:[u32;8]=[1;8];
 
-
+    println!("{:?}",w);
+    //exit(1);
     for j in (0..16) {
         // read hash digest
             //be=p2(&be);
-            
+            w=key_expansion(cie, w);            
             ee=rebirth(inv, ee, 1);
+
             //ee=rot(ee);
             //println!("{:?}",seed);
             
@@ -988,7 +1027,9 @@ const rcon:[u32;11] = [
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i]^=be[ee[i%32] as usize];
+            decoded[i]^=(w[i%88]%256) as u8; //
+            //be[ee[i%32] as usize];
+            
             //S_BOX[(be[ee[i%32] as usize]%16 + ((be[ee[i%32] as usize]>>4)*16)) as usize];
             //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
             
@@ -1260,7 +1301,7 @@ fn main() {
             ]);
 
             van2(8);
-            exit(1);
+            //exit(1);
 
 van=v2m(gf);
 for i in 0..10{
