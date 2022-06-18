@@ -804,15 +804,15 @@ fn key_expansion(key: [u32; 32] /*Nk*/, mut w: [u32; 120] /*Nb*(Nr+1)*/) -> [u32
     let i: i32;
     let Nr: u8 = 14;
     let Nk: u8 = 8;
-    for i in 0..8 {
+    for i in 0..32 {
         w[i] = key[i];
     }
 
     //memcpy(w, key, Nk*4);
-    for i in 8..88 {
+    for i in 32..120 {
         let mut temp: u32 = w[i - 1];
         if i % 8 == 0 {
-            temp = sub_word(rot_word(temp)) ^ rcon[i / 8];
+            temp = sub_word(rot_word(temp)) ^ rcon[(i-32) / 8];
         } else if (6 < 8 && i % 14 == 4) {
             temp = sub_word(temp);
         }
@@ -943,9 +943,11 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
         nk[i] = i as u8;
     }
 
-    let mut w: [u32; 120] = [0; 120];
-    let mut cie: [u32; 32] = [1; 32];
-
+    let mut w: [u32; 120] = [19; 120];
+    let mut cie: [u32; 32] = [0; 32];
+    for i in 0..32{
+        cie[i]=(i+1) as u32;
+    }
     println!("{:?}", w);
     //exit(1);
 
@@ -973,8 +975,8 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
         for _i in 0..256 {
             //j{
             //j {
-            buf[_i] ^= (w[_i % 120] % 256) as u8;
-            //=be[nk[_i%32] as usize];
+            buf[_i] ^= ((w[_i % 120] % 256) as u8)^be[nk[_i%32] as usize];
+            //=
             //
             //
             //buf[_i]=gf[buf[_i] as usize];
@@ -1120,9 +1122,11 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
     for i in 0..256 {
         it[i] = a[i];
     }
-    let mut w: [u32; 120] = [0; 120];
-    let mut cie: [u32; 32] = [1; 32];
-
+    let mut w: [u32; 120] = [19; 120];
+    let mut cie: [u32; 32] = [0; 32];
+    for i in 0..32{
+        cie[i]=(i+1) as u32;
+    }
     println!("{:?}", w);
     //exit(1);
     for j in (0..16) {
@@ -1145,8 +1149,7 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i] ^= (w[i % 120] % 256) as u8; //
-                                                    //be[ee[i%32] as usize];
+            decoded[i] ^= ((w[i % 120] % 256) as u8)^be[ee[i%32] as usize]; //
 
             //S_BOX[(be[ee[i%32] as usize]%16 + ((be[ee[i%32] as usize]>>4)*16)) as usize];
             //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
