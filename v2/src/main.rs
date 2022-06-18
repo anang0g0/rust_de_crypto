@@ -463,6 +463,22 @@ fn rev_shift(sf: Array2<u8>) -> Array2<u8> {
     mat
 }
 
+struct DummyRng {
+    state: u128,
+}
+impl DummyRng {
+    fn new(seed: u128) -> Self {
+        DummyRng { state: seed }
+    }
+    fn next(&mut self) -> u128 {
+        let mut x = self.state;
+        x ^= x << 2;
+        self.state = x;
+        x
+    }
+}
+
+
 fn van2(kk: u16) {
     let i: u16;
     let j: u16;
@@ -748,6 +764,14 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let j = byte.len();
     let mut be = seed.clone();
     let mut it: [u8; 256] = [0; 256];
+    let Mix: Array2<u8> = arr2(&[
+        [0x2, 0x3, 0x1, 0x1],
+        [0x1, 0x2, 0x3, 0x1],
+        [0x1, 0x1, 0x2, 0x3],
+        [0x3, 0x1, 0x1, 0x2],
+    ]);
+
+    
     //let mut result:[u8;256]=[17;256];
     //result=pappy(result);
     for i in 0..256 {
@@ -843,23 +867,12 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
 
 fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let mut buf: [u8; 256] = [0; 256];
-    /*
-     * Inverse S-box transformation table
-     */
-    /* x^(i-1) mod x^8 + x^4 + x^3 + x + 1 */
-    const rcon: [u32; 11] = [
-        0x00000000, /* invalid */
-        0x00000001, /* x^0 */
-        0x00000002, /* x^1 */
-        0x00000004, /* x^2 */
-        0x00000008, /* x^3 */
-        0x00000010, /* x^4 */
-        0x00000020, /* x^5 */
-        0x00000040, /* x^6 */
-        0x00000080, /* x^7 */
-        0x0000001B, /* x^4 + x^3 + x^1 + x^0 */
-        0x00000036, /* x^5 + x^4 + x^2 + x^1 */
-    ];
+    let iMix: Array2<u8> = arr2(&[
+        [0xe, 0xb, 0xd, 0x9],
+        [0x9, 0xe, 0xb, 0xd],
+        [0xd, 0x9, 0xe, 0xb],
+        [0xb, 0xd, 0x9, 0xe],
+    ]);
 
     let mut decoded = decode(&encoded).unwrap();
     let mut inv_P: [usize; 256] = [0; 256];
@@ -1171,20 +1184,14 @@ fn main() {
     let mut me: Array2<u8> = Array2::zeros((16, 16));
     let mut inn: [u8; 256] = [0; 256];
 
-    let Mix: Array2<u8> = arr2(&[
-        [0x2, 0x3, 0x1, 0x1],
-        [0x1, 0x2, 0x3, 0x1],
-        [0x1, 0x1, 0x2, 0x3],
-        [0x3, 0x1, 0x1, 0x2],
-    ]);
-    let iMix: Array2<u8> = arr2(&[
-        [0xe, 0xb, 0xd, 0x9],
-        [0x9, 0xe, 0xb, 0xd],
-        [0xd, 0x9, 0xe, 0xb],
-        [0xb, 0xd, 0x9, 0xe],
-    ]);
     
-    
+
+        let mut rng = DummyRng::new(12123123);
+        for _ in 0..10 {
+            println!("{}", rng.next());
+        }
+
+        
     van2(8);
     //exit(1);
 
@@ -1281,11 +1288,6 @@ fn main() {
         l = dec(&cc, &sk, &mat2, nonce);
     }
 
-    /*
-        let cc:String = ctr(&data,&sk,&mat);
-        println!("{:?}",cc);
-        let cc:String = ctr(&cc,&sk,&mat);
-    */
 
     let code = decode(&l).unwrap();
 
