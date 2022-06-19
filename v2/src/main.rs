@@ -479,19 +479,20 @@ impl DummyRng {
 }
 
 
-fn van2(kk: u16) {
+
+fn van2() {
     let i: u16;
     let j: u16;
-    let mut vb: Array2<u8> = Array2::zeros((8, 16));
+    let mut vb: Array2<u8> = Array2::zeros((8, 256));
     //let mut vb:Array2<u16>= arr2(&([[8,16]]));
     println!("van der");
 
-    for i in 0..(16) {
+    for i in 0..(256) {
         vb[[0, i]] = 1;
     }
     //#pragma omp parallel for private(i, j)
-    for i in 0..4 {
-        for j in 0..16 {
+    for i in 0..8 {
+        for j in 0..256 {
             vb[[i, j]] = gf[mltn(i as u16, fg[j as usize] as u16) as usize];
             print!("{},", vb[[i, j]]);
         }
@@ -1205,7 +1206,7 @@ fn main() {
         }
 
         
-    van2(8);
+    van2();
     //exit(1);
 
     me = v2m(gf);
