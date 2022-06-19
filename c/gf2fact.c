@@ -225,6 +225,19 @@ void write_poly(poly p, poly p_low)
   }
 }
 
+poly opowmod2(poly f, poly mod, int n) {
+
+    poly ret;
+
+    ret=2;
+    while (n > 0) {
+        if (n & 1) ret = pd(seki(ret , f),mod) ;  // n の最下位bitが 1 ならば x^(2^i) をかける
+        f = pd(seki(f , f),mod);
+        n >>= 1;  // n を1bit 左にずらす
+    }
+    return ret;
+}
+
 //多項式のべき乗余
 poly opowmod(poly f, poly mod, int n)
 {
