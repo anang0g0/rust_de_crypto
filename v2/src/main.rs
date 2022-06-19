@@ -828,7 +828,11 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
         mat3 = mulm(mat3);
 
         buf = m2v(mat3);
+        //for i in j..256{
+        //    buf[i]=0;
+        //}
         println!("{:?}", buf);
+        //exit(1);
 
         //let k2:[u32;6]=(addround(be, _k)>>32);
         //it=pappy(&it);
@@ -860,7 +864,7 @@ fn enc(data: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let enc = encoded.clone();
     println!("cipher text:");
     println!("{:?}", encoded);
-    // exit(1);
+    //exit(1);
 
     encoded
 }
