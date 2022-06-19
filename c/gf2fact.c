@@ -113,7 +113,7 @@ poly pq(poly p, poly d)
 
   while (cb(q) >= cb(d))
   {
-    printf("bbb\n");
+    //printf("bbb\n");
     y = d;
     i = cb(q) - cb(y);
 
@@ -165,7 +165,7 @@ poly pd(poly p, poly d)
   {
     y = d;
     i = cb(q) - cb(y);
-    printf("i=%d\n", i);
+    //printf("i=%d\n", i);
     if (i > 0)
       y = (y << i);
 
@@ -205,7 +205,7 @@ poly inv(poly a, poly n)
     t = x ^ seki(q, s);
     x = s;
     s = t;
-    printf("aaa\n");
+    //printf("aaa\n");
   }
 
   // gcd = d;
@@ -224,6 +224,25 @@ void write_poly(poly p, poly p_low)
     q >>= 1;
   }
 }
+
+//多項式のべき乗余
+poly opowmod(poly f, poly mod, int n)
+{
+    int i, j = 0;
+
+    //繰り返し２乗法
+    for (i = 1; i < n + 1; i++)
+    {
+        f = seki(f, f);
+        //printf("f=%b\n",f);
+        if (cb(f) > cb(mod))
+            f = pd(f, mod);
+    }
+
+    return f;
+}
+
+
 
 void divide(poly a, poly a_low, poly b, poly b_low)
 {
@@ -296,11 +315,12 @@ poly agcd(poly xx, poly yy)
     xx = yy;
     yy = tt;
     tt = pd(xx, yy);
-    printf("%b %b %b %b\n", yy, xx, tt, tmp);
+    //printf("%b %b %b %b\n", yy, xx, tt, tmp);
   }
 
   return yy;
 }
+
 
 int testbit(poly bit, poly i)
 {
@@ -337,6 +357,72 @@ int bitch(poly c)
 }
 
 
+//多項式のべき乗
+poly opow(poly f, int n)
+{
+    int i;
+    poly g = 0;
+
+    g = f;
+
+    for (i = 1; i < n; i++)
+        g = seki(g, f);
+
+    return g;
+}
+
+
+//GF(2^m) then set m in this function.
+int ben_or(poly f)
+{
+    int i, n, flg = 0;
+    poly s = 0, u = 0, r = 0;
+
+    //if GF(8192) is 2^m and m==13 or if GF(4096) and m==12 if GF(16384) is testing
+    int m = 1;
+    // m=12 as a for GF(4096)=2^12 defined @ gloal.h or here,for example m=4 and GF(16)
+
+
+    s = 2;
+    r = s;
+    n = cb(f)-1;
+    //printf("%d\n",n);
+    if (n == 0)
+        return -1;
+
+    i = 0;
+
+    //r(x)^{q^i} square pow mod
+    while (i < n / 2 )
+    {
+        flg = 1;
+        // irreducible over GH(8192) 2^13
+        r = opowmod(r, f, m);
+
+        // irreducible over GF2
+        //r=pq(opow(r,2),f);
+
+        u = r^s;
+        //printf("%b %b %b\n",r,s,u);
+        if (cb(u)-1 == 0 && u==0)
+            return -1;
+        if (cb(u)-1 == 0 && u == 1)
+        {
+            i++;
+            flg = 0;
+        }
+        if (cb(u)-1 > 0)
+            u = agcd(f, u);
+
+        if (cb(u)-1 > 0)
+            return -1;
+
+        if (flg == 1)
+            i++;
+    }
+
+    return 0;
+}
 
 
 int main()
@@ -379,25 +465,55 @@ int main()
     */
   
   
-  uint128_t bit = (uint128_t)0b1000000000000000000000000000000000000000000000000000000000001111;
-  uint128_t b=(uint128_t)0b1111111111111111111111111111111111111111111;
-
+  //uint128_t bit = (uint128_t)0b1000000000000000000000000000000000000000000000000000000000001111;
+  //uint128_t b=(uint128_t)0b1111111111111111111111111111111111111111111;
+  poly aa=0b11001;
+  poly bit=0b1000110;
+poly b=0b100011011;
+poly cc=0,dd=0b11;
 //  printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
-  c = inv(a, bit);
-  a = agcd(bit, a);
-  printf("%llu\n", a);
+cc=pq(bit,aa);
+printf("%b\n",cc);
+  cc = inv(dd, b);
+  printf("%b\n",cc);
+  printf("md=%b\n",pd(seki(cc,dd),b));
+//  exit(1);
+
+  dd=pd(seki(cc,aa),bit);
+  b = agcd(bit, aa);
+  printf("inv=%b\n", cc);
+    printf("mod=%b\n", dd);
+  aa=pd(seki(cc,aa),bit);
+  printf("ans=%b\n",aa);
+  //printf("%b\n", b);
+  //exit(1);
+  /*
   c=seki(d,e);
 print_u128_u(c);
-print_u128_u(e);
-printf("\n%d\n",cb(e));
-  exit(1);
+printf("\n");
+ndigits= print_u128_u(e);
+printf("\n%d\n",ndigits);
+  ndigits = print_u128_u(c);
+printf("\n%d digits\n", ndigits);
 
+uint128_t f=0;
+f=((uint128_t)1<<127);
+ndigits= print_u128_u(f);
+printf("\n %d\n",ndigits);
+  //exit(1);
+  */
+c=0b1;
   while (cb(c) < 32)
   {
-    c = seki(a, b);
-    printf("%b\n", c);
-    a += 2;
-    b += 2;
+    i=ben_or(c);
+    if(i==0){
+    printf("iireducible=%b\n", c);
+    //break;
+    }
+    //c = seki(a, b);
+
+    c += 2;
+    //b += 2;
   }
   return 0;
 }
