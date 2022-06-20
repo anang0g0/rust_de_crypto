@@ -1,5 +1,41 @@
 #include <stdio.h>
 #include <math.h>
+
+#include <inttypes.h>
+#include <immintrin.h>
+
+/*
+** Using documented GCC type unsigned __int128 instead of undocumented
+** obsolescent typedef name __uint128_t.  Works with GCC 4.7.1 but not
+** GCC 4.1.2 (but __uint128_t works with GCC 4.1.2) on Mac OS X 10.7.4.
+*/
+typedef unsigned __int128 uint128_t;
+
+/*      UINT64_MAX 18446744073709551615ULL */
+#define P10_UINT64 10000000000000000000ULL /* 19 zeroes */
+#define E10_UINT64 19
+
+#define STRINGIZER(x) #x
+#define TO_STRING(x) STRINGIZER(x)
+
+static int print_u128_u(uint128_t u128)
+{
+  int rc;
+  if (u128 > UINT64_MAX)
+  {
+    uint128_t leading = u128 / P10_UINT64;
+    uint64_t trailing = u128 % P10_UINT64;
+    rc = print_u128_u(leading);
+    rc += printf("%." TO_STRING(E10_UINT64) PRIu64, trailing);
+  }
+  else
+  {
+    uint64_t u64 = u128;
+    rc = printf("%" PRIu64, u64);
+  }
+  return rc;
+}
+
 typedef unsigned long long int poly;
 poly quo, quo_low, res, res_low;
 
@@ -414,6 +450,29 @@ int main()
 {
   poly p, p_low;
 
+
+  uint128_t u128a = ((uint128_t)UINT64_MAX + 1) * 0x1234567890ABCDEFULL +
+                    0xFEDCBA9876543210ULL;
+  uint128_t u128b = ((uint128_t)UINT64_MAX + 1) * 0xF234567890ABCDEFULL +
+                    0x1EDCBA987654320FULL;
+  int ndigits = print_u128_u(u128a);
+  printf("\n%d digits\n", ndigits);
+  ndigits = print_u128_u(u128b);
+  printf("\n%d digits\n", ndigits);
+
+  uint128_t aaa = (uint128_t)0b1111111111111111111111111111111111111111111100000000000000000001;
+  uint128_t ddd = (uint128_t)0b1000000000000000000000000000000000000000000000000000000000001111;
+  uint128_t ccc = 0;
+  uint128_t ee = (uint128_t)0b1111111111111111111111111111111111111111111000000001111111111111;
+  ndigits = print_u128_u(aaa);
+  printf("\n%d digits\n", ndigits);
+  ndigits = print_u128_u(ddd);
+  printf("\n%d digits\n", ndigits);
+  ccc = aaa * ddd;
+  ndigits = print_u128_u(ccc);
+  printf("\n%d digits\n", ndigits);
+
+
   /*
   scanf("%d",&i);
   p=MSB; p_low= (MSB>>i);
@@ -432,7 +491,7 @@ int main()
   c = inv(a, b);
   a = agcd(bit, a);
   printf("%b %b\n", a,c);
-  //exit(1);
+  exit(1);
 
   poly aa = 0b11001;
    bit = 0b1000110;
