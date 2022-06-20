@@ -1,52 +1,16 @@
 #include <stdio.h>
 #include <math.h>
-
-#include <stdio.h>
-#include <inttypes.h>
-#include <immintrin.h>
-
-/*
-** Using documented GCC type unsigned __int128 instead of undocumented
-** obsolescent typedef name __uint128_t.  Works with GCC 4.7.1 but not
-** GCC 4.1.2 (but __uint128_t works with GCC 4.1.2) on Mac OS X 10.7.4.
-*/
-typedef unsigned __int128 uint128_t;
-
-/*      UINT64_MAX 18446744073709551615ULL */
-#define P10_UINT64 10000000000000000000ULL /* 19 zeroes */
-#define E10_UINT64 19
-
-#define STRINGIZER(x) #x
-#define TO_STRING(x) STRINGIZER(x)
-
-static int print_u128_u(uint128_t u128)
-{
-  int rc;
-  if (u128 > UINT64_MAX)
-  {
-    uint128_t leading = u128 / P10_UINT64;
-    uint64_t trailing = u128 % P10_UINT64;
-    rc = print_u128_u(leading);
-    rc += printf("%." TO_STRING(E10_UINT64) PRIu64, trailing);
-  }
-  else
-  {
-    uint64_t u64 = u128;
-    rc = printf("%" PRIu64, u64);
-  }
-  return rc;
-}
 typedef unsigned long long int poly;
 poly quo, quo_low, res, res_low;
 
 #define MSB (~(~0ULL >> 1))
 
-poly i, k;
+int i, k;
 
-poly seki(poly a, poly b)
+poly seki(register poly a, register poly b)
 {
 
-  poly c = 0;
+  register poly c = 0;
   while (a != 0)
   {
     if ((a & 1) == 1)
@@ -60,9 +24,9 @@ poly seki(poly a, poly b)
   return c;
 }
 
-poly itob(poly n)
+poly itob(register poly n)
 {
-  poly k = 0;
+  register poly k = 0;
 
   while (n > 0)
   {
@@ -79,7 +43,7 @@ poly itob(poly n)
 }
 
 /* ���ӥå��������֤� */
-int cb(poly x)
+int cb(register poly x)
 {
   int i = 0;
 
@@ -93,10 +57,10 @@ int cb(poly x)
 }
 
 // F_2 quot
-poly pq(poly p, poly d)
+poly pq(int p, int d)
 {
 
-  poly t[64], q, y, r;
+  int t[64], q, y, r;
 
   if (cb(p) < cb(d))
     return p;
@@ -112,7 +76,7 @@ poly pq(poly p, poly d)
 
   while (cb(q) >= cb(d))
   {
-    // printf("bbb\n");
+    printf("bbb\n");
     y = d;
     i = cb(q) - cb(y);
 
@@ -137,10 +101,10 @@ poly pq(poly p, poly d)
 }
 
 /* F_2 mod */
-poly pd(poly p, poly d)
+int pd(poly p, poly d)
 {
-  poly t[64];
-  poly q, y, r;
+  int t[64];
+  int q, y, r;
 
   if (cb(p) < cb(d))
   {
@@ -152,7 +116,7 @@ poly pd(poly p, poly d)
   q = p;
   y = d;
   r = 0;
-  i = cb(q) - cb(y) + 1;
+  i = cb(q) - cb(y);
 
   y = (y << i);
 
@@ -160,13 +124,11 @@ poly pd(poly p, poly d)
   {
     y = (y >> 1);
   }
-
-  while (cb(q) >= cb(y))
+  while (cb(q) >= cb(d))
   {
-    // printf("qy==%llb %llb\n",q,y);
     y = d;
     i = cb(q) - cb(y);
-    // printf("i=%d\n", i);
+    printf("i=%d\n", i);
     if (i > 0)
       y = (y << i);
 
@@ -175,17 +137,12 @@ poly pd(poly p, poly d)
 
     if (cb(q) == cb(y))
     {
-      r = r ^ (1 << i);
+      r = r + (1 << i);
       itob(q);
       itob(y);
       q = (q ^ y);
       itob(q);
       itob(y);
-    }
-    if (q == 0 || y == 0)
-    {
-      // printf("%llb %llb\n",q,y);
-      return 0;
     }
   }
 
@@ -193,10 +150,10 @@ poly pd(poly p, poly d)
 }
 
 // invert of integer
-poly inv(poly a, poly n)
+unsigned short inv(unsigned short a, unsigned short n)
 {
-  poly d;
-  poly q, t, r, x, s /*, gcd*/;
+  unsigned short d;
+  unsigned short q, t, r, x, s /*, gcd*/;
 
   x = 0;
   s = 1;
@@ -211,7 +168,7 @@ poly inv(poly a, poly n)
     t = x ^ seki(q, s);
     x = s;
     s = t;
-    // printf("aaa\n");
+    printf("aaa\n");
   }
 
   // gcd = d;
@@ -229,42 +186,6 @@ void write_poly(poly p, poly p_low)
     printf((p & q) ? "1" : "0");
     q >>= 1;
   }
-}
-
-poly opowmod2(poly f, poly mod, int n)
-{
-
-  poly ret;
-
-  ret = 2;
-  while (n > 0)
-  {
-    if (n & 1)
-      ret = pd(seki(ret, f), mod); // n の最下位bitが 1 ならば x^(2^i) をかける
-    f = pd(seki(f, f), mod);
-    n >>= 1; // n を1bit 左にずらす
-    printf("ret=%llb\n", ret);
-  }
-  return ret;
-}
-
-//多項式のべき乗余
-poly opowmod(poly f, poly mod, int n)
-{
-  int i, j = 0;
-
-  //繰り返し２乗法
-  for (i = 1; i < n + 1; i++)
-  {
-    printf("pre==%llu\n", f);
-    f = seki(f, f);
-    printf("f=%llu\n", f);
-    if (cb(f) - 1 > cb(mod) - 1)
-      f = pd(f, mod);
-  }
-  printf("f=%llb mod=%llb\n", f, mod);
-
-  return f;
 }
 
 void divide(poly a, poly a_low, poly b, poly b_low)
@@ -321,52 +242,30 @@ void factorize(poly p, poly p_low)
   write_poly(p, p_low);
 }
 
-poly ogcd(poly xx, poly yy)
-{
-  poly tt;
-
-  while (cb(yy) - 1 > 0)
-  {
-    tt = pd(xx, yy);
-    xx = yy;
-    yy = tt;
-  }
-
-  printf("%llb", yy);
-  printf(" =========yy\n");
-  printf("%llb", tt);
-  printf(" =========tt\n");
-
-  return tt;
-}
-
 // test gcd
-poly agcd(poly xx, poly yy)
+int agcd(int xx, int yy)
 {
-  poly tt = 0, tmp;
+  int tt = 0, tmp;
 
-  if ((cb(xx)) < (cb(yy)))
+  if (xx < yy)
   {
     tmp = xx;
     xx = yy;
     yy = tmp;
   }
-
   tt = pd(xx, yy);
-  // printf("iii\n");
   while (tt != 0)
   {
-
     xx = yy;
     yy = tt;
     tt = pd(xx, yy);
-    // printf("gcd==%lld %lld %lld %lld\n", yy, xx, tt, tmp);
+    printf("%b %b %b %b\n", yy, xx, tt, tmp);
   }
 
   return yy;
 }
 
-int testbit(poly bit, poly i)
+int testbit(int bit, int i)
 {
   if (bit == 0)
     return 0;
@@ -380,7 +279,7 @@ int testbit(poly bit, poly i)
   }
 }
 
-int bitctr(poly c)
+int bitctr(int c)
 {
   int bit;
 
@@ -390,7 +289,7 @@ int bitctr(poly c)
   return bit;
 }
 
-int bitch(poly c)
+int bitch(int c)
 {
   int bit;
 
@@ -398,6 +297,43 @@ int bitch(poly c)
   printf("%b %d\n", c, bit);
 
   return bit;
+}
+
+
+poly opowmod2(poly f, poly mod, int n)
+{
+
+  poly ret;
+
+  ret = 2;
+  while (n > 0)
+  {
+    if (n & 1)
+      ret = pd(seki(ret, f), mod); // n の最下位bitが 1 ならば x^(2^i) をかける
+    f = pd(seki(f, f), mod);
+    n >>= 1; // n を1bit 左にずらす
+    printf("ret=%llb\n", ret);
+  }
+  return ret;
+}
+
+//多項式のべき乗余
+poly opowmod(poly f, poly mod, int n)
+{
+  int i, j = 0;
+
+  //繰り返し２乗法
+  for (i = 1; i < n + 1; i++)
+  {
+    printf("pre==%llu\n", f);
+    f = seki(f, f);
+    printf("f=%llu\n", f);
+    if (cb(f) - 1 > cb(mod) - 1)
+      f = pd(f, mod);
+  }
+  printf("f=%llb mod=%llb\n", f, mod);
+
+  return f;
 }
 
 //多項式のべき乗
@@ -413,6 +349,8 @@ poly opow(poly f, int n)
 
   return g;
 }
+
+
 
 // GF(2^m) then set m in this function.
 int ben_or(poly f)
@@ -471,30 +409,10 @@ int ben_or(poly f)
   return 0;
 }
 
+
 int main()
 {
   poly p, p_low;
-
-  uint128_t u128a = ((uint128_t)UINT64_MAX + 1) * 0x1234567890ABCDEFULL +
-                    0xFEDCBA9876543210ULL;
-  uint128_t u128b = ((uint128_t)UINT64_MAX + 1) * 0xF234567890ABCDEFULL +
-                    0x1EDCBA987654320FULL;
-  int ndigits = print_u128_u(u128a);
-  printf("\n%d digits\n", ndigits);
-  ndigits = print_u128_u(u128b);
-  printf("\n%d digits\n", ndigits);
-
-  uint128_t a = (uint128_t)0b1111111111111111111111111111111111111111111100000000000000000001;
-  uint128_t d = (uint128_t)0b1000000000000000000000000000000000000000000000000000000000001111;
-  uint128_t c = 0;
-  uint128_t e = (uint128_t)0b1111111111111111111111111111111111111111111000000001111111111111;
-  ndigits = print_u128_u(a);
-  printf("\n%d digits\n", ndigits);
-  ndigits = print_u128_u(d);
-  printf("\n%d digits\n", ndigits);
-  c = a * d;
-  ndigits = print_u128_u(c);
-  printf("\n%d digits\n", ndigits);
 
   /*
   scanf("%d",&i);
@@ -509,12 +427,16 @@ int main()
       }
     }
     */
+  register poly a = 0b11, b = 0b100011011, c = 0, bit = 0b1001;
+  // printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
+  c = inv(a, b);
+  a = agcd(bit, a);
+  printf("%b %b\n", a,c);
+  //exit(1);
 
-  // uint128_t bit = (uint128_t)0b1000000000000000000000000000000000000000000000000000000000001111;
-  // uint128_t b=(uint128_t)0b1111111111111111111111111111111111111111111;
   poly aa = 0b11001;
-  poly bit = 0b1000110;
-  poly b = 0b100011011;
+   bit = 0b1000110;
+   b = 0b100011011;
   poly cc = 0, dd = 0b11;
   //  printf("%f %f\n",ceil(log2(a)),ceil(log2(b)));
 
@@ -532,5 +454,16 @@ int main()
     }
     cc += 2;
   }
+exit(1);
+
+
+  while (cb(c) < 32)
+  {
+    c = seki(a, b);
+    printf("%b\n", c);
+    a += 2;
+    b += 2;
+  }
   return 0;
 }
+
