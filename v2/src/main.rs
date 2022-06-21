@@ -927,7 +927,7 @@ let Sbox =arr2(&[
         buf = m2v(mat3);
         
         for i in 0..256{
-            buf[i]=bite(buf[i] as usize,6);
+            buf[i]=bite(buf[i] as usize,_k%8);
         }        
 
 
@@ -946,6 +946,7 @@ let Sbox =arr2(&[
         for _i in 0..256 {
             //j{
             //j {
+            buf[_i]=bite(buf[_i] as usize,_k%8);
             buf[_i] ^= ((w[_i % 60] % 256) as u8) ^ be[nk[_i % 32] as usize];
             //=
             //
@@ -1061,16 +1062,19 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
         w = key_expansion(cie, w);
         ee = rebirth(inv2, ee, 1);
 
+        println!("{:?}",w);
+        //exit(1);
         //ee=rot(ee);
-        //println!("{:?}",seed);
-//for i in 0..256{
+
+        //for i in 0..256{
 //    decoded[i]=u2(decoded[i],0);
-//}
+
         //count=0;
         //it=pappy(&it);
         //println!("aa={:?}",decoded);
         //println!("ie={:?}",be);
         for i in (0..l) {
+       
             decoded[i] = mat[[it[(16 * j + i) % 256 as usize] as usize, (decoded[i as usize]) as usize]];
 
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
@@ -1079,13 +1083,13 @@ fn dec(encoded: &String, a: &[u8; 256], mat: &Array2<u8>, seed2: &[u8]) -> Strin
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
             decoded[i] ^= ((w[i % 60] % 256) as u8) ^ be[ee[i % 32] as usize]; //
-
+            decoded[i]=u2(decoded[i],7-(j%8));
             //S_BOX[(be[ee[i%32] as usize]%16 + ((be[ee[i%32] as usize]>>4)*16)) as usize];
             //gf[mlt(oinv(be[i%32] as u16),fg[decoded[i] as usize] as u16) as usize];
         }
         
         for ii in 0..256 {
-            t2[ii] = u2(decoded[ii] as u8,6);
+            t2[ii] = u2(decoded[ii] as u8,7-(j%8));
             //t2[ii]=u2(t2[ii],j);
         }
          count+=1;
