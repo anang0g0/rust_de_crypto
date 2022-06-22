@@ -14,11 +14,9 @@ static const unsigned int normal[15] = {
     0b110111,
     0b1100001,
     0b11000001,
-    0b100011011, //aes
+    //0b100011011, //aes(not primitive !!)
     //0b110101001, //normal
-    //0b100011101, //sage
-    //0b100011011,
-    0b1100110001,
+    0b100011101, //sage
     //0b11000010011,
     0b10001101111, //sage1024
     0b110000001101,
@@ -213,9 +211,15 @@ int cb(register unsigned int x)
   return i;
 }
 
+typedef struct {
+  int rem;
+  int quo;
+} div;
+
 // F_2 quot
-unsigned int pq(int p, int d)
+div pq(int p, int d)
 {
+  div={0};
 
   int t[64], q, y, r,i;
 
@@ -245,58 +249,14 @@ unsigned int pq(int p, int d)
 
     if (cb(q) == cb(y))
     {
-      r = r + (1 << i);
-      q = (q ^ y);
+      div.rem = r + (1 << i);
+      div.qup = (q ^ y);
     }
   }
 
-  return r;
+  return div;
 }
 
-/* F_2 mod */
-int pd(unsigned int p, unsigned int d)
-{
-  int t[64];
-  int q, y, r,i;
-
-  if (cb(p) < cb(d))
-  {
-    return p;
-  }
-
-  //  print "a"
-
-  q = p;
-  y = d;
-  r = 0;
-  i = cb(q) - cb(y);
-
-  y = (y << i);
-
-  if (y > p)
-  {
-    y = (y >> 1);
-  }
-  while (cb(q) >= cb(d))
-  {
-    y = d;
-    i = cb(q) - cb(y);
-    //printf("i=%d\n", i);
-    if (i > 0)
-      y = (y << i);
-
-    if (i < 0)
-      break;
-
-    if (cb(q) == cb(y))
-    {
-      r = r + (1 << i);
-      q = (q ^ y);
-    }
-  }
-
-  return q;
-}
 
 
 // invert of integer
