@@ -374,22 +374,22 @@ fn mltn(mut n: u16, mut x: u16) -> u16 {
 }
 
 //有限体の元の逆数
-unsigned short
-qinv(unsigned short a)
+
+fn qinv(a:u16)->u16
 {
-    int i;
+let mut b:u16=0;
 
-    if (a == 0)
-        return 0;
-
-    for (i = 0; i < N; i++)
-    {
-        if (gf[mlt(fg[a], i)] == 1)
-            return (unsigned short)i;
+    if (a == 0){
+        return 0 as u16;
     }
-
-    printf("no return \n");
-    //  exit (1);
+    for i in 0..N
+    {
+        if gf[mlt(fg[a as usize] as u16, i as u16) as usize] == 1{
+            b=i as u16;
+            //return i as u16;
+        }
+    }
+b
 }
 
 
