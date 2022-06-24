@@ -1339,6 +1339,37 @@ fn fread() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+
+fn mmat(a:Array2<u8>,b:Array2<u8>,l:i32){
+    let mut tmp: Array2<u8> = Array2::zeros((E, E));
+    let mut i:usize;
+    let mut j:usize;
+    let mut k:usize;
+    
+        //#pragma omp parallel for num_threads(4) // private(i,j,k)
+        for i in 0..l
+        {
+          for j in 0..l
+          {
+            for k in 0..l
+            {
+              tmp[[i as usize,j as usize]] ^= gf[mlt(fg[a[[i as usize,k as usize]] as usize] as u16, fg[b[[k as usize ,j as usize]] as usize] as u16) as usize] as u8;
+            }
+          }
+        }
+     
+    for i in 0..l
+    {
+      for j in 0..l
+      {
+      print!(" {},",tmp[[i as usize,j as usize]]);
+      }
+      println!("");
+    }
+    
+    }
+    
+
 //use ndarray::Array2;
 fn main() {
     //let mut key:[u8;256]=[0;256];
@@ -1377,7 +1408,15 @@ fn main() {
     let i=Mix[1][2];
     println!("{:?} {}",iMix[Mix[1][2] as usize][2],i);
 
-
+    let mut m1: Array2<u8> = Array2::zeros((8, 8));
+    let mut m2: Array2<u8> = Array2::zeros((8, 8));
+    for i in 0..8{
+        for j in 0..8{
+            m1[[i,j]]=MDS8[i][j];
+            m2[[i,j]]=inv8[i][j];
+        }
+    }
+    mmat(m1,m2,8);
     //exit(1);
     /*
     println!("{:?}",sk3);
@@ -1402,7 +1441,12 @@ fn main() {
         println!("{}", rng.next());
     }
 
-
+    for i in 0..256{
+        if qinv(i)!=oinv(i){
+        println!("{},{}",qinv(i),oinv(i));
+        }
+    }
+//exit(1);
     //van2();
     //exit(1);
 
