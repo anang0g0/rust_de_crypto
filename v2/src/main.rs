@@ -373,6 +373,25 @@ fn mltn(mut n: u16, mut x: u16) -> u16 {
     ret
 }
 
+//有限体の元の逆数
+unsigned short
+qinv(unsigned short a)
+{
+    int i;
+
+    if (a == 0)
+        return 0;
+
+    for (i = 0; i < N; i++)
+    {
+        if (gf[mlt(fg[a], i)] == 1)
+            return (unsigned short)i;
+    }
+
+    printf("no return \n");
+    //  exit (1);
+}
+
 
 //有限体の元の逆数
 fn oinv(a: u16) -> u16 {
