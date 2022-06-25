@@ -1495,7 +1495,7 @@ fn main() {
     
     ttmp=b2v(ttmp);
     println!("{:?}",ttmp);
-    exit(1);
+    //exit(1);
     /*
        println!("{:?}",sk3);
        for i in 0..63{
