@@ -368,8 +368,18 @@ fn p2(a: &[u8]) -> [u8; 32] {
         }
         //println!("");
     }
-    //let mut o:&[u8]=&buf;
-    //println!("oh={:?}",o);
+    /*
+    let mut hasher = Keccak256::default();
+    hasher.update(K1);
+    let result: Vec<u8> = hasher.finalize().to_vec();
+    //let be:String=String::from_utf8(result).unwrap();
+    for x in &result {
+        print!("{:0x}", x);
+    }
+    println!();
+ */
+    let mut o:&[u8]=&buf;
+    //println!("oh={:x}",o);
 
     buf
 }
@@ -598,7 +608,7 @@ fn b2v(u:[u8;BIT])->[u8;BIT]{
     for i in 0..BIT{
         for j in 0..BIT{
             f=u[j];    
-        tmp[i]^=((((u[j]>>(BIT-i-1))&1))<<j);
+        tmp[i]^=(((u[j]>>(BIT-i-1)&1))<<j);
         //print!("`{}",(u[j]>>(4-i-1))&1);
     } 
 }
@@ -1334,6 +1344,23 @@ fn mkiv(nonce: &[u8], key: [u8; 32]) -> Vec<u8> {
     IV
 }
 
+
+fn aha(ss:String)->Vec<u8>{
+    let d=ss.as_bytes();
+    let mut hasher=Sha3_256::new();
+    let mut v:Vec<u8>=Vec::new();
+    hasher.update(d);
+    let result=hasher.finalize();
+    v.write(&result.to_vec()).unwrap();
+    for v in &result {
+        print!("{:0x}", &v);
+    }
+    println!();
+
+v
+}
+
+
 fn v2u(bytes: &[u8]) -> Vec<u8> {
     let bytes_owned: Vec<u8> = bytes.to_owned(); // &[u8] -> Vec<u8>
 
@@ -1494,6 +1521,16 @@ fn main() {
     }
     mmat(m1, m2, 4);
     //exit(1);
+    //seed=p2("kotobahairanai");
+   // println!("{:?}",seed);
+   let mut vk:Vec<u8>=Vec::new();
+   vk=aha("kotobahairanai".to_string());
+for i in 0..32{
+   print!("{:x}",vk[i]);
+}
+println!("");
+   exit(1);
+
     let mut ttmp=[1,2,3,4];
     ttmp=v2b(ttmp);
     println!("{:?}",ttmp);
