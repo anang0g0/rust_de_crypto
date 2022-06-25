@@ -128,7 +128,12 @@ const InvS: [[u8; 16]; 8] = [
 ];
 
 const MDS4: [[u8; 4]; 4] = [[1, 1, 1, 1], [2, 3, 4, 5], [4, 5, 16, 17], [8, 15, 64, 85]];
-const inv4:[[u8; 4]; 4] = [[208,230,157,192],[107, 38, 93,192],[104, 93, 39,192],[210,157,231,192]];
+const inv4: [[u8; 4]; 4] = [
+    [208, 230, 157, 192],
+    [107, 38, 93, 192],
+    [104, 93, 39, 192],
+    [210, 157, 231, 192],
+];
 const MDS8: [[u8; 8]; 8] = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [2, 3, 4, 5, 6, 7, 8, 9],
@@ -140,74 +145,88 @@ const MDS8: [[u8; 8]; 8] = [
     [128, 255, 19, 226, 98, 206, 117, 192],
 ];
 
-const inv8:[[u8;8];8]=[
-    [155,199,157, 23, 40,195, 56, 28],
-    [ 25, 15,174, 11,207,223, 36, 28],
-    [ 77, 99,255,181,252,124, 92, 23],
-    [175,189,  1,162,203,107, 75, 23],
-    [ 85, 57, 44,113,174, 78,149,183],
-    [243,177,127,198,194,249, 34,183],
-    [177,221,132,171,137,137,137,188],
-    [118, 67, 26, 23, 53, 53, 53,188]
-    ];
+const inv8: [[u8; 8]; 8] = [
+    [155, 199, 157, 23, 40, 195, 56, 28],
+    [25, 15, 174, 11, 207, 223, 36, 28],
+    [77, 99, 255, 181, 252, 124, 92, 23],
+    [175, 189, 1, 162, 203, 107, 75, 23],
+    [85, 57, 44, 113, 174, 78, 149, 183],
+    [243, 177, 127, 198, 194, 249, 34, 183],
+    [177, 221, 132, 171, 137, 137, 137, 188],
+    [118, 67, 26, 23, 53, 53, 53, 188],
+];
 
-    const van:[[u8;16];16] = [
-        [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-        [4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85, 29, 28],
-        [8, 15, 64, 85, 120, 107, 58, 115, 146, 221, 231, 186, 127, 36, 205, 193],
-        [16, 17, 29, 28, 13, 12, 205, 204, 221, 220, 208, 209, 192, 193, 76, 77],
-        [32, 51, 116, 108, 46, 36, 38, 226, 1, 215, 169, 116, 244, 59, 180, 233],
-        [
-            64, 85, 205, 193, 228, 252, 45, 161, 10, 146, 191, 62, 241, 100, 143, 223,
-        ],
-        [128, 255, 19, 226, 98, 206, 117, 192, 68, 79, 87, 43, 199, 38, 24, 174],
-        [29, 28, 76, 77, 81, 80, 143, 142, 146, 147, 195, 194, 222, 223, 157, 156],
-        [58, 36, 45, 100, 251, 173, 12, 138, 221, 68, 125, 179, 64, 145, 37, 169],
-        [116, 108, 180, 233, 32, 100, 96, 174, 1, 214, 38, 180, 167, 44, 106, 235],
-        [
-            232, 180, 234, 106, 192, 33, 39, 183, 10, 153, 181, 151, 164, 185, 238, 253,
-        ],
-        [205, 193, 143, 223, 186, 231, 37, 102, 68, 10, 47, 61, 182, 169, 70, 150],
-        [135, 94, 6, 132, 187, 143, 53, 113, 146, 78, 217, 60, 74, 89, 20, 3],
-        [19, 226, 24, 174, 189, 138, 181, 222, 221, 152, 197, 49, 203, 96, 93, 51],
-        [38, 59, 96, 44, 169, 145, 193, 96, 1, 1, 85, 96, 150, 26, 185, 36],
-        [76, 77, 157, 156, 209, 208, 70, 71, 10, 11, 219, 218, 151, 150, 95, 94],
-    ];
+const van: [[u8; 16]; 16] = [
+    [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    [4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85, 29, 28],
+    [8, 15, 64, 85, 120, 107, 58, 115, 146, 221, 231, 186, 127, 36, 205, 193],
+    [16, 17, 29, 28, 13, 12, 205, 204, 221, 220, 208, 209, 192, 193, 76, 77],
+    [32, 51, 116, 108, 46, 36, 38, 226, 1, 215, 169, 116, 244, 59, 180, 233],
+    [
+        64, 85, 205, 193, 228, 252, 45, 161, 10, 146, 191, 62, 241, 100, 143, 223,
+    ],
+    [128, 255, 19, 226, 98, 206, 117, 192, 68, 79, 87, 43, 199, 38, 24, 174],
+    [29, 28, 76, 77, 81, 80, 143, 142, 146, 147, 195, 194, 222, 223, 157, 156],
+    [58, 36, 45, 100, 251, 173, 12, 138, 221, 68, 125, 179, 64, 145, 37, 169],
+    [116, 108, 180, 233, 32, 100, 96, 174, 1, 214, 38, 180, 167, 44, 106, 235],
+    [
+        232, 180, 234, 106, 192, 33, 39, 183, 10, 153, 181, 151, 164, 185, 238, 253,
+    ],
+    [205, 193, 143, 223, 186, 231, 37, 102, 68, 10, 47, 61, 182, 169, 70, 150],
+    [135, 94, 6, 132, 187, 143, 53, 113, 146, 78, 217, 60, 74, 89, 20, 3],
+    [19, 226, 24, 174, 189, 138, 181, 222, 221, 152, 197, 49, 203, 96, 93, 51],
+    [38, 59, 96, 44, 169, 145, 193, 96, 1, 1, 85, 96, 150, 26, 185, 36],
+    [76, 77, 157, 156, 209, 208, 70, 71, 10, 11, 219, 218, 151, 150, 95, 94],
+];
 
-    const inv:[[u8;16];16] = [
-        [77, 240, 60, 82, 7, 193, 162, 86, 35, 152, 75, 172, 81, 161, 217, 226],
-        [175, 124, 143, 135, 174, 152, 138, 216, 17, 90, 99, 116, 121, 137, 217, 188],
-        [249, 217, 194, 104, 20, 211, 43, 14, 232, 247, 57, 132, 236, 246, 126, 145],
-        [199, 96, 228, 206, 231, 58, 3, 71, 21, 16, 17, 182, 196, 222, 126, 237],
-        [99, 142, 6, 79, 53, 201, 227, 150, 76, 42, 59, 178, 244, 30, 198, 33],
-        [137, 139, 245, 59, 9, 31, 203, 88, 171, 39, 19, 112, 220, 54, 198, 69],
-        [136, 31, 222, 168, 235, 141, 72, 237, 253, 216, 255, 159, 147, 28, 105, 160],
-        [246, 180, 58, 58, 99, 138, 96, 150, 185, 19, 215, 56, 187, 52, 105, 223],
-        [25, 100, 253, 111, 223, 106, 165, 81, 223, 250, 214, 129, 160, 223, 250, 25],
-        [137, 116, 204, 180, 152, 82, 141, 53, 129, 219, 254, 214, 136, 247, 250, 64],
-        [61, 23, 115, 62, 141, 81, 183, 90, 50, 120, 12, 7, 181, 32, 245, 221],
-        [137, 243, 215, 125, 144, 217, 159, 65, 163, 124, 36, 186, 157, 8, 245, 204],
-        [159, 110, 184, 222, 7, 245, 230, 69, 153, 17, 98, 141, 193, 164, 33, 50],
-        [53, 255, 201, 113, 213, 66, 206, 126, 18, 255, 74, 192, 233, 140, 33, 161],
-        [105, 105, 118, 120, 254, 254, 254, 165, 38, 38, 38, 38, 38, 38, 38, 232],
-        [118, 238, 118, 246, 254, 254, 254, 140, 38, 38, 38, 38, 38, 38, 38, 215],
-    ];
+const inv: [[u8; 16]; 16] = [
+    [77, 240, 60, 82, 7, 193, 162, 86, 35, 152, 75, 172, 81, 161, 217, 226],
+    [
+        175, 124, 143, 135, 174, 152, 138, 216, 17, 90, 99, 116, 121, 137, 217, 188,
+    ],
+    [
+        249, 217, 194, 104, 20, 211, 43, 14, 232, 247, 57, 132, 236, 246, 126, 145,
+    ],
+    [199, 96, 228, 206, 231, 58, 3, 71, 21, 16, 17, 182, 196, 222, 126, 237],
+    [99, 142, 6, 79, 53, 201, 227, 150, 76, 42, 59, 178, 244, 30, 198, 33],
+    [137, 139, 245, 59, 9, 31, 203, 88, 171, 39, 19, 112, 220, 54, 198, 69],
+    [
+        136, 31, 222, 168, 235, 141, 72, 237, 253, 216, 255, 159, 147, 28, 105, 160,
+    ],
+    [246, 180, 58, 58, 99, 138, 96, 150, 185, 19, 215, 56, 187, 52, 105, 223],
+    [
+        25, 100, 253, 111, 223, 106, 165, 81, 223, 250, 214, 129, 160, 223, 250, 25,
+    ],
+    [
+        137, 116, 204, 180, 152, 82, 141, 53, 129, 219, 254, 214, 136, 247, 250, 64,
+    ],
+    [61, 23, 115, 62, 141, 81, 183, 90, 50, 120, 12, 7, 181, 32, 245, 221],
+    [
+        137, 243, 215, 125, 144, 217, 159, 65, 163, 124, 36, 186, 157, 8, 245, 204,
+    ],
+    [159, 110, 184, 222, 7, 245, 230, 69, 153, 17, 98, 141, 193, 164, 33, 50],
+    [
+        53, 255, 201, 113, 213, 66, 206, 126, 18, 255, 74, 192, 233, 140, 33, 161,
+    ],
+    [105, 105, 118, 120, 254, 254, 254, 165, 38, 38, 38, 38, 38, 38, 38, 232],
+    [118, 238, 118, 246, 254, 254, 254, 140, 38, 38, 38, 38, 38, 38, 38, 215],
+];
 
-    const Mix:[[u8;4];4] = [
-        [0x2, 0x3, 0x1, 0x1],
-        [0x1, 0x2, 0x3, 0x1],
-        [0x1, 0x1, 0x2, 0x3],
-        [0x3, 0x1, 0x1, 0x2],
-    ];
+const Mix: [[u8; 4]; 4] = [
+    [0x2, 0x3, 0x1, 0x1],
+    [0x1, 0x2, 0x3, 0x1],
+    [0x1, 0x1, 0x2, 0x3],
+    [0x3, 0x1, 0x1, 0x2],
+];
 
-    const iMix:[[u8;4];4] = [
-        [0xe, 0xb, 0xd, 0x9],
-        [0x9, 0xe, 0xb, 0xd],
-        [0xd, 0x9, 0xe, 0xb],
-        [0xb, 0xd, 0x9, 0xe],
-    ];
+const iMix: [[u8; 4]; 4] = [
+    [0xe, 0xb, 0xd, 0x9],
+    [0x9, 0xe, 0xb, 0xd],
+    [0xd, 0x9, 0xe, 0xb],
+    [0xb, 0xd, 0x9, 0xe],
+];
 
-    const rcon: [u32; 11] = [
+const rcon: [u32; 11] = [
     0x00000000, /* invalid */
     0x00000001, /* x^0 */
     0x00000002, /* x^1 */
@@ -221,11 +240,10 @@ const inv8:[[u8;8];8]=[
     0x00000036, /* x^5 + x^4 + x^2 + x^1 */
 ];
 
-const Nb:usize = 64;
+const Nb: usize = 64;
 const K: usize = 8;
 const E: usize = 16;
-const N: usize = E*E;
-
+const N: usize = E * E;
 
 /*
     Fisher-Yates shuffle による方法
@@ -375,23 +393,20 @@ fn mltn(mut n: u16, mut x: u16) -> u16 {
 
 //有限体の元の逆数
 
-fn qinv(a:u16)->u16
-{
-let mut b:u16=0;
+fn qinv(a: u16) -> u16 {
+    let mut b: u16 = 0;
 
-    if (a == 0){
+    if (a == 0) {
         return 0 as u16;
     }
-    for i in 0..N
-    {
-        if gf[mlt(fg[a as usize] as u16, i as u16) as usize] == 1{
-            b=i as u16;
+    for i in 0..N {
+        if gf[mlt(fg[a as usize] as u16, i as u16) as usize] == 1 {
+            b = i as u16;
             //return i as u16;
         }
     }
-b
+    b
 }
-
 
 //有限体の元の逆数
 fn oinv(a: u16) -> u16 {
@@ -401,7 +416,7 @@ fn oinv(a: u16) -> u16 {
         return 0;
     }
 
-((N-fg[a as usize] as usize)%(N-1)+1) as u16
+    ((N - fg[a as usize] as usize) % (N - 1) + 1) as u16
 }
 
 // invert of integer
@@ -555,6 +570,82 @@ fn v2m(m: [u8; N]) -> Array2<u8> {
     mat
 }
 
+fn v2b(mut t: [u8; 4]) -> [u8; 4] {
+    let mut tmp: [u8; 4] = [0; 4];
+    let mut j = 0;
+
+    while j < 4 {
+        for i in 0..4 {
+            tmp[j] = (tmp[j] << 1);
+            tmp[j] ^= t[i] % 2;
+            t[i] = (t[i] >> 1);
+        }
+        j += 1;
+    }
+    tmp
+}
+
+
+fn b2v(u:[u8;4])->[u8;4]{
+    let mut tmp:[u8;4]=[0;4];
+    let mut f=0;
+
+    for i in 0..4{
+        for j in 0..4{
+            f=u[j];    
+        tmp[i]^=((((u[j]>>(4-i-1))&1))<<j);
+        //print!("`{}",(u[j]>>(4-i-1))&1);
+    } 
+}
+
+    tmp
+}
+
+
+fn mta(m: Array2<u8>) -> Array2<u8> {
+    let mut g: Array2<u8> = Array2::zeros((E, E));
+
+    for i in 0..4 {
+        for j in 0..4 {
+            for k in 0..4 {
+                g[[i, j]] = gf[mlt(fg[m[[i, k]] as usize] as u16, fg[Mix[k][j] as usize] as u16) as usize];
+            }
+        }
+    }
+    g
+}
+
+fn atm(m: Array2<u8>) -> Array2<u8> {
+    let mut g: Array2<u8> = Array2::zeros((E, E));
+
+    for i in 0..4 {
+        for j in 0..4 {
+            for k in 0..4 {
+                g[[i, j]] = gf[mlt(fg[m[[i, k]] as usize] as u16, fg[iMix[k][j] as usize] as u16) as usize];
+            }
+        }
+    }
+    g
+}
+
+fn m2b(m: Array2<u8>) -> Array2<u8> {
+    let mut mat: Array2<u8> = Array2::zeros((4, 4));
+    let mut tmp: [u8; 4] = [0; 4];
+
+    for jj in 0..4 {
+        for i in 0..4 {
+            tmp[i] = m[[i, jj]];
+        }
+        tmp = v2b(tmp);
+        for i in 0..4 {
+            mat[[jj, i]] = tmp[i];
+        }
+    }
+    mat=mta(mat);
+
+    mat
+}
+
 fn v2t(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
     for i in 0..E {
@@ -659,7 +750,7 @@ fn mulm(ma: Array2<u8>) -> Array2<u8> {
     for i in 0..E {
         for j in 0..E {
             for k in 0..E {
-                nn[[i, j]] ^= gf[mlt(fg[van[i][k] as usize] as u16, fg[ma[[k,j]] as usize] as u16) as usize];
+                nn[[i, j]] ^= gf[mlt(fg[van[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
             }
         }
     }
@@ -679,7 +770,7 @@ fn invm(ma: Array2<u8>) -> Array2<u8> {
     for i in 0..E {
         for j in 0..E {
             for k in 0..E {
-                nn[[i, j]] ^= gf[mlt(fg[inv[i][k] as usize] as u16, fg[ma[[k,j]] as usize] as u16) as usize];
+                nn[[i, j]] ^= gf[mlt(fg[inv[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
             }
         }
     }
@@ -912,7 +1003,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let j = byte.len();
     let mut be = seed.clone();
     let mut it: [u8; N] = [0; N];
- 
+
     for i in 0..N {
         it[i] = a[i];
     }
@@ -928,12 +1019,12 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
     }
 
     for i in 0..j {
-        buf[i]=byte[i];
-       /*
-               for k in 0..4{
-        buf[i] = gf[mlt(fg[&byte[i*4+k]] as u16,fg[Mix[i][k]])];
-        }
- */
+        buf[i] = byte[i];
+        /*
+                      for k in 0..4{
+               buf[i] = gf[mlt(fg[&byte[i*4+k]] as u16,fg[Mix[i][k]])];
+               }
+        */
         //buf[i]^=be[(i+1)%32];
     }
 
@@ -975,7 +1066,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
 
         buf = m2v(mat3);
 
-        for i in 0..N  {
+        for i in 0..N {
             buf[i] = bite(buf[i] as usize, _k);
         }
 
@@ -1113,7 +1204,8 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i] ^= ((w[i % 60] % N as u32) as u8) ^ be[ee[i % 32] as usize]; //
+            decoded[i] ^= ((w[i % 60] % N as u32) as u8) ^ be[ee[i % 32] as usize];
+            //
         }
 
         for ii in 0..N {
@@ -1121,7 +1213,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
             //t2[ii]=u2(t2[ii],j);
         }
         count += 1;
-        
+
         mat2 = v2m(t2);
 
         //
@@ -1139,7 +1231,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
         t2 = m2v(mat2);
 
         for ii in 0..l {
-            decoded[ii]=t2[ii];
+            decoded[ii] = t2[ii];
             /*
              */
         }
@@ -1164,29 +1256,13 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
     println!("plain text:");
     println!("decrypted = {:?}", &buf[0..om]);
 
-    /*
     match String::from_utf8(buf.to_vec()) {
         Err(_why) => {
             println!("復号できませんでした");
             "baka".to_string()
         }
-        Ok(str) => encode(&str[0..l])
+        Ok(str) => encode(&str[0..om]),
     }
-    */
-
-    /*
-    // \*let ret =/
-     match String::from_utf8(buf.to_vec()) {
-        Err(_why) => {
-        println!("復号できませんでした");
-        b"baka".to_vec()
-        }
-        Ok(str) => str.as_bytes().to_vec()
-        }
-        //ret
-        */
-    //buf.to_vec()
-    encode(&buf[0..om])
 }
 
 fn hmac(message: &[u8], key: [u8; 32]) -> Vec<u8> {
@@ -1320,7 +1396,7 @@ fn v2vs(src: Vec<u8>) -> Vec<String> {
     dst
 }
 use std::fs::File;
-use std::io::{Read, BufReader};
+use std::io::{BufReader, Read};
 
 fn fread() -> Result<(), Box<dyn std::error::Error>> {
     let mut reader = BufReader::new(File::open("./README.md")?);
@@ -1339,36 +1415,31 @@ fn fread() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-
-fn mmat(a:Array2<u8>,b:Array2<u8>,l:i32){
+fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
     let mut tmp: Array2<u8> = Array2::zeros((E, E));
-    let mut i:usize;
-    let mut j:usize;
-    let mut k:usize;
-    
-        //#pragma omp parallel for num_threads(4) // private(i,j,k)
-        for i in 0..l
-        {
-          for j in 0..l
-          {
-            for k in 0..l
-            {
-              tmp[[i as usize,j as usize]] ^= gf[mlt(fg[a[[i as usize,k as usize]] as usize] as u16, fg[b[[k as usize ,j as usize]] as usize] as u16) as usize] as u8;
+    let mut i: usize;
+    let mut j: usize;
+    let mut k: usize;
+
+    //#pragma omp parallel for num_threads(4) // private(i,j,k)
+    for i in 0..l {
+        for j in 0..l {
+            for k in 0..l {
+                tmp[[i as usize, j as usize]] ^= gf[mlt(
+                    fg[a[[i as usize, k as usize]] as usize] as u16,
+                    fg[b[[k as usize, j as usize]] as usize] as u16,
+                ) as usize] as u8;
             }
-          }
         }
-     
-    for i in 0..l
-    {
-      for j in 0..l
-      {
-      print!(" {},",tmp[[i as usize,j as usize]]);
-      }
-      println!("");
     }
-    
+
+    for i in 0..l {
+        for j in 0..l {
+            print!(" {},", tmp[[i as usize, j as usize]]);
+        }
+        println!("");
     }
-    
+}
 
 //use ndarray::Array2;
 fn main() {
@@ -1377,7 +1448,7 @@ fn main() {
     let mut mat: Array2<u8> = Array2::zeros((N, N));
     let mut sk: [u8; N] = [0; N];
     let mut mat2: Array2<u8> = Array2::zeros((N, N));
-    let mut buf:[u8;N]=[0;N];
+    let mut buf: [u8; N] = [0; N];
     let mut seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
     let seedA: u64 = 1234567890;
@@ -1404,54 +1475,60 @@ fn main() {
     tt = bite(0, 0);
     ss = u2(tt, 0);
     println!("{} , {}", tt, ss);
-    println!("{} {}", fg[tt as usize] as usize,gf[ss as usize] as usize);
-    let i=Mix[1][2];
-    println!("{:?} {}",iMix[Mix[1][2] as usize][2],i);
+    println!("{} {}", fg[tt as usize] as usize, gf[ss as usize] as usize);
+    let i = Mix[1][2];
+    println!("{:?} {}", iMix[Mix[1][2] as usize][2], i);
 
     let mut m1: Array2<u8> = Array2::zeros((8, 8));
     let mut m2: Array2<u8> = Array2::zeros((8, 8));
-    for i in 0..8{
-        for j in 0..8{
-            m1[[i,j]]=MDS8[i][j];
-            m2[[i,j]]=inv8[i][j];
+    for i in 0..4 {
+        for j in 0..4 {
+            m1[[i, j]] = Mix[i][j];
+            m2[[i, j]] = iMix[i][j];
         }
     }
-    mmat(m1,m2,8);
+    mmat(m1, m2, 4);
     //exit(1);
+    let mut ttmp=[1,2,3,4];
+    ttmp=v2b(ttmp);
+    println!("{:?}",ttmp);
+    
+    ttmp=b2v(ttmp);
+    println!("{:?}",ttmp);
+    exit(1);
     /*
-    println!("{:?}",sk3);
-    for i in 0..63{
-    for k in 0..4{
-            buf[i*4+k] = gf[mlt(fg[sk3[(i*4+k)] as usize] as u16,fg[Mix[i%4][k] as usize] as u16) as usize];
-        }
-    }
-    println!("{:?}",buf);
-    for ii in 0..63{
-        for k in 0..4{
-            inn[ii*4+k] = gf[mlt(fg[buf[(ii*4+k)] as usize] as u16,fg[iMix[(ii%4)][k] as usize] as u16) as usize];
-        }
-    }
-    println!("{:?}",inn);
-     */
- 
-    //exit(1);
+       println!("{:?}",sk3);
+       for i in 0..63{
+       for k in 0..4{
+               buf[i*4+k] = gf[mlt(fg[sk3[(i*4+k)] as usize] as u16,fg[Mix[i%4][k] as usize] as u16) as usize];
+           }
+       }
+       println!("{:?}",buf);
+       for ii in 0..63{
+           for k in 0..4{
+               inn[ii*4+k] = gf[mlt(fg[buf[(ii*4+k)] as usize] as u16,fg[iMix[(ii%4)][k] as usize] as u16) as usize];
+           }
+       }
+       println!("{:?}",inn);
+       exit(1);
+    */
 
     let mut rng = DummyRng::new(12123123);
     for _ in 0..10 {
         println!("{}", rng.next());
     }
 
-    for i in 0..256{
-        if qinv(i)!=oinv(i){
-        println!("{},{}",qinv(i),oinv(i));
+    for i in 0..256 {
+        if qinv(i) != oinv(i) {
+            println!("{},{}", qinv(i), oinv(i));
         }
     }
-//exit(1);
+    //exit(1);
     //van2();
     //exit(1);
 
     me = v2m(gf);
-    println!("{:?}",me);
+    println!("{:?}", me);
     for i in 0..1 {
         me = mulm(me);
         //}
@@ -1519,7 +1596,7 @@ fn main() {
         sk[_i] = _i as u8;
     }
     //let seed = rng2.gen::<u64>();
-    sk = random_shuffule(sk, N as u16,  &seed);
+    sk = random_shuffule(sk, N as u16, &seed);
 
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
