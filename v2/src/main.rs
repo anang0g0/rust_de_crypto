@@ -245,6 +245,11 @@ const K: usize = 8;
 const E: usize = 16;
 const N: usize = E * E;
 const BIT:usize = 4;
+
+fn testbit(bit:i32,i:i32)->bool{
+    
+    ((bit>>i) & 1) != 0 //as bool
+}
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
@@ -1495,6 +1500,8 @@ fn main() {
     
     ttmp=b2v(ttmp);
     println!("{:?}",ttmp);
+    //exit(1);
+    println!("{},{}",testbit(10 , 3),testbit(10,4) );
     //exit(1);
     /*
        println!("{:?}",sk3);
