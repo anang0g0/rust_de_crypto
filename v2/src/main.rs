@@ -244,7 +244,7 @@ const Nb: usize = 64;
 const K: usize = 8;
 const E: usize = 16;
 const N: usize = E * E;
-
+const BIT:usize = 4;
 /*
     Fisher-Yates shuffle による方法
     配列の要素をランダムシャッフルする
@@ -570,12 +570,12 @@ fn v2m(m: [u8; N]) -> Array2<u8> {
     mat
 }
 
-fn v2b(mut t: [u8; 4]) -> [u8; 4] {
-    let mut tmp: [u8; 4] = [0; 4];
+fn v2b(mut t: [u8; BIT]) -> [u8; BIT] {
+    let mut tmp: [u8; BIT] = [0; BIT];
     let mut j = 0;
 
-    while j < 4 {
-        for i in 0..4 {
+    while j < BIT {
+        for i in 0..BIT {
             tmp[j] = (tmp[j] << 1);
             tmp[j] ^= t[i] % 2;
             t[i] = (t[i] >> 1);
@@ -586,14 +586,14 @@ fn v2b(mut t: [u8; 4]) -> [u8; 4] {
 }
 
 
-fn b2v(u:[u8;4])->[u8;4]{
-    let mut tmp:[u8;4]=[0;4];
+fn b2v(u:[u8;BIT])->[u8;BIT]{
+    let mut tmp:[u8;BIT]=[0;BIT];
     let mut f=0;
 
-    for i in 0..4{
-        for j in 0..4{
+    for i in 0..BIT{
+        for j in 0..BIT{
             f=u[j];    
-        tmp[i]^=((((u[j]>>(4-i-1))&1))<<j);
+        tmp[i]^=((((u[j]>>(BIT-i-1))&1))<<j);
         //print!("`{}",(u[j]>>(4-i-1))&1);
     } 
 }
