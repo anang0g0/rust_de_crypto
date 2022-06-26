@@ -1707,9 +1707,9 @@ fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
     }
 }
 
-fn schedule(v: [u8; BIT]) -> Vec<u8> {
+fn schedule(v: [u8; BIT]) ->[u8;8] {
     let mut trim: [u8; 8] = [0; 8];
-    let mut s:[u8;64]=[0;64];
+    let mut s:[u8;8]=[0;8];
 
     trim = v2b(v);
     for i in 0..BIT {
@@ -1718,22 +1718,22 @@ fn schedule(v: [u8; BIT]) -> Vec<u8> {
 
     for i in 0..BIT {
         for j in 0..BIT {
-            s[i*BIT+j] ^= gf[mlt(fg[trim[j] as usize] as u16, fg[MDS8[j][i] as usize] as u16) as usize]
+            s[i] ^= gf[mlt(fg[trim[j] as usize] as u16, fg[MDS8[j][i] as usize] as u16) as usize]
         }
     }
 
-    s.to_vec()
+    s
 }
 
-fn expand(mut key:[u8;8])->[u8;64]{
+fn expand(mut key:[u8;8])->[u8;60]{
     let mut exkey:Vec<u8>=Vec::new();
-    let mut tmp:[u8;64]=[0;64];
+    let mut tmp:[u8;60]=[0;60];
     exkey=schedule(key).to_vec();
 
-    for j in 0..64/8{
+    for j in 0..60{
+        tmp[j]=0;
     for i in 0..8{
-    tmp[j*8+i]=exkey[i];
-    key[i]=exkey[j*8+i];
+        tmp[j]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
     }
     exkey=schedule(key).to_vec();
     }
@@ -1805,6 +1805,11 @@ fn main() {
 
     ttmp = b2v(ttmp);
     println!("{:?}", ttmp);
+    let mut ext:[u8;60]=[0;60];
+    let mut kkey:[u8;8]=[0;8];
+    kkey=schedule(kkey);
+    ext=expand(kkey);
+    println!("{:?}",ext);
     exit(1);
     println!("{},{}", testbit(10, 3), testbit(10, 4));
     //exit(1);
