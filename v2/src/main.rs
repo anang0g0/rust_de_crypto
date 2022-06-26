@@ -1447,6 +1447,20 @@ fn fread() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+
+fn vmul(a: Vec<u8>,ma:Array2<u8>,k:i32)->Vec<u8>{
+    let mut b:Vec<u8>=Vec::new();
+
+for i in 0..k{
+    for j in 0..k{
+        b[i as usize]^=gf[mlt(fg[ma[[i as usize,j as usize]] as usize] as u16, fg[a[j as usize] as usize] as u16) as usize] as u8;
+    }
+}
+
+b
+}
+
+
 fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
     let mut tmp: Array2<u8> = Array2::zeros((E, E));
     let mut i: usize;
@@ -1491,6 +1505,7 @@ fn main() {
     //let bytes: &[u8] = nonce.as_bytes();
     let mut seed = p2(nonce); //rng2.gen_range(1..256);
                               //seed=p2(&seed);
+    //let mut dim2:Vec<Vec<u8>>=Vec::new(); //(!vec[[1,2,3,4],[4,3,2,1],[5,6,7,8]])
     let sk3 = pappy(nonce);
     let sk2 = pappy(&seed2);
     let n2 = pappy(&sk3);
@@ -1529,7 +1544,7 @@ for i in 0..32{
    print!("{:x}",vk[i]);
 }
 println!("");
-   exit(1);
+   //exit(1);
 
     let mut ttmp=[1,2,3,4];
     ttmp=v2b(ttmp);
