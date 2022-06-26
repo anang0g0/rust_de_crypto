@@ -1290,11 +1290,26 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
 
     //result=pappy(result);
     //println!("{:?}",result);
-
+    let mut tty:[u8;8]=[0;8];
     //exit(1);
+    let mut ge:[u8;32]=[0;32];
+    let mut g:[u8;8]=[0;8];
+    for i in 0..1{
+    println!("gens={:?}", (tty));
+    g=v2b(tty);
+    //tty=schedule(tty);
+    println!("gey={:?}", g);
+        g=b2v(g);
+    tty=invsche(tty);
+    println!("genn={:?}",g);
+    }
+    exit(1);
+    ge=expand(tty);
 
     for _k in 0..16 {
         w = key_expansion(cie, w);
+        println!("ge={:?}",tty);
+        tty=schedule(tty);
         mat3 = v2m(buf);
 
         mat3 = shift(mat3);
@@ -1322,7 +1337,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
             //j{
             //j {
             //buf[_i]=bite(buf[_i] as usize,_k%8);
-            buf[_i] ^= ((w[_i % 60] % N as u32) as u8) ^ be[nk[_i % 32] as usize];
+            buf[_i] ^= /* ((w[_i % 60] % N as u32) as u8) ^ */ be[nk[_i % 32] as usize]^tty[_i%8];
             //=
             //
             //
@@ -1410,18 +1425,24 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
     }
     let mut w: [u32; 60] = [19; 60];
     let mut cie: [u32; 8] = [0; 8];
+    let mut tty:[u8;8]=[0;8];
+    let mut ge:[u8;32]=[0;32];
     for i in 0..8 {
         cie[i] = (i + 1) as u32;
     }
-    println!("{:?}", w);
+    println!("gens={:?}", tty);
+    tty=invsche(tty);
+    println!("gey={:?}", tty);
+    ge=expand(tty);
+
     //exit(1);
     for j in (0..16) {
         // read hash digest
         //be=p2(&be);
         w = key_expansion(cie, w);
         ee = rebirth(inv2, ee, 1);
-
-        println!("{:?}", w);
+        tty=invsche(tty);
+        println!("genn={:?}", tty);
         //exit(1);
         //ee=rot(ee);
 
@@ -1440,7 +1461,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i] ^= ((w[i % 60] % N as u32) as u8) ^ be[ee[i % 32] as usize];
+            decoded[i] ^=  /*((w[i % 60] % N as u32) as u8) ^*/  be[ee[i % 32] as usize]^tty[i%8];
             //
         }
 
@@ -1724,6 +1745,23 @@ fn schedule(v: [u8; BIT]) ->[u8;8] {
 
     s
 }
+fn invsche(v: [u8; BIT]) ->[u8;8] {
+    let mut trim: [u8; 8] = [0; 8];
+    let mut s:[u8;8]=[0;8];
+
+    trim = b2v(v);
+    for i in 0..BIT {
+        trim[i] = INV_S_BOX[(((trim[i] % 16)as usize + ((trim[i] >> 4) * 16) as usize) as usize)];
+    }
+
+    for i in 0..BIT {
+        for j in 0..BIT {
+            s[i] ^= gf[mlt(fg[trim[j] as usize] as u16, fg[inv8[j][i] as usize] as u16) as usize]
+        }
+    }
+
+    s
+}
 
 fn expand(mut key:[u8;8])->[u8;32]{
     let mut exkey:Vec<u8>=Vec::new();
@@ -1798,12 +1836,14 @@ fn main() {
     println!("");
     //exit(1);
 
-    let mut ttmp: [u8; BIT] = [1, 2, 3, 4, 5, 6, 7, 8];
+    let mut ttmp: [u8; BIT] = [111, 222, 32, 42, 52, 26, 7, 8];
+    println!("{:?}", ttmp);
     ttmp = v2b(ttmp);
     println!("{:?}", ttmp);
 
     ttmp = b2v(ttmp);
     println!("{:?}", ttmp);
+    exit(1);
     let mut ext:[u8;32]=[0;32];
     let mut kkey:[u8;8]=[0;8];
     kkey=schedule(kkey);
