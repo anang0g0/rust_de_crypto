@@ -1735,7 +1735,6 @@ fn expand(mut key:[u8;8])->[u8;60]{
     for i in 0..8{
         tmp[j]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
     }
-    exkey=schedule(key).to_vec();
     }
 tmp
 }
