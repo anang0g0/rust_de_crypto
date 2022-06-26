@@ -1707,18 +1707,19 @@ fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
     }
 }
 
-fn schedulev(v: [u8; BIT]) -> [u8; BIT] {
-    let mut s: [u8; BIT] = [0; BIT];
-    let mut trim: [u8; BIT] = [0; BIT];
+fn schedulev(v: [u8; BIT]) -> [u8; 60] {
+    let mut trim: [u8; 8] = [0; 8];
+    let mut s:[u8;60]=[0;60];
 
     trim = v2b(v);
-    for i in 0..60 {
-        for j in 0..8 {
-            trim[i] ^= gf[mlt(fg[trim[j]], fg[MDS8[j][i]])]
-        }
-    }
     for i in 0..BIT {
-        s[i] = S_BOX[(((trim[i] % 16) + (trim[i] >> 4) * 16) as usize)];
+        trim[i] = S_BOX[(((trim[i] % 16)as usize + ((trim[i] >> 4) * 16) as usize) as usize)];
+    }
+
+    for i in 0..BIT {
+        for j in 0..BIT {
+            s[i] ^= gf[mlt(fg[trim[j] as usize] as u16, fg[MDS8[j][i] as usize] as u16) as usize]
+        }
     }
 
     s
