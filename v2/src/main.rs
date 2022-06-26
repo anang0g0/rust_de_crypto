@@ -1725,15 +1725,15 @@ fn schedule(v: [u8; BIT]) ->[u8;8] {
     s
 }
 
-fn expand(mut key:[u8;8])->[u8;60]{
+fn expand(mut key:[u8;8])->[u8;32]{
     let mut exkey:Vec<u8>=Vec::new();
-    let mut tmp:[u8;60]=[0;60];
+    let mut tmp:[u8;32]=[0;32];
     exkey=schedule(key).to_vec();
 
-    for j in 0..60{
-        tmp[j]=0;
+    for j in 18..50{
+        tmp[j-18]=0;
     for i in 0..8{
-        tmp[j]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
+        tmp[j-18]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
     }
     }
 tmp
@@ -1804,7 +1804,7 @@ fn main() {
 
     ttmp = b2v(ttmp);
     println!("{:?}", ttmp);
-    let mut ext:[u8;60]=[0;60];
+    let mut ext:[u8;32]=[0;32];
     let mut kkey:[u8;8]=[0;8];
     kkey=schedule(kkey);
     ext=expand(kkey);
