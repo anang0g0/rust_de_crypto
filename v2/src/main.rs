@@ -1172,17 +1172,17 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
 
-    let mut seed: [u8; 32] = [0; 32];
+    let mut seed=seed2.clone();
     let mut bb:[u8;8]=[17;8];
     //seed=p2(&seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
     println!("origin: {}", str::from_utf8(data.as_bytes()).unwrap());
     let mut mat3: Array2<u8> = Array2::zeros((E, E));
-    let mut aia: Array2<u8> = Array2::zeros((E, E));
+    //let mut aia: Array2<u8> = Array2::zeros((E, E));
     let mut mat2: Array2<u8> = Array2::zeros((E, E));
 
-    let mut me: [u8; N] = [11; N];
+    //let mut me: [u8; N] = [11; N];
     let cycle = rng2.gen_range(1..N);
     let mut count = 0;
     let j = byte.len();
@@ -1211,25 +1211,13 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     let mut trim:[u8;8]=[0;8];
 
 
-    for i in 0..N/8{
-        for j in 0..8{
-            trim[j]=buf[i*8+j];
-            trim[j]=bite(trim[j] as usize,i);
-        }
-        trim=v2b(trim);
-        trim=schedule(trim);
-        for j in 0..8{
-            buf[i*8+j]=trim[j];
-        }
-    }
-println!("{:?}",buf);
 
     let mut nk: [u8; 32] = [0; 32];
     for i in 0..32 {
         nk[i] = i as u8;
     }
 
-    let mut w: [u32; 60] = [0; 60];
+    let mut w: [u32; 60] = [17; 60];
     let mut cie: [u32; 8] = [0; 8];
     for i in 0..8 {
         cie[i] = (i + 1) as u32;
@@ -1242,8 +1230,21 @@ println!("{:?}",buf);
     
     let mut beef:[u8;64]=[0;64];
     for _k in 0..16 {
-        w = key_expansion(cie, w);
-
+        //w = key_expansion(cie, w);
+        //buf=add_round_key(buf, w);
+        for i in 0..N/8{
+            for j in 0..8{
+                trim[j]=buf[i*8+j];
+                trim[j]=bite(trim[j] as usize,i);
+            }
+            trim=v2b(trim);
+            trim=schedule(trim);
+            for j in 0..8{
+                buf[i*8+j]=trim[j];
+            }
+        }
+    println!("{:?}",buf);
+    
         mat3 = v2m(buf);
 
         mat3 = shift(mat3);
@@ -1251,13 +1252,6 @@ println!("{:?}",buf);
         //mat3 = m2b(mat3);
         buf = m2v(mat3);
 
-        for kk in 0..N/64{
-            beef=expand(bb);
-            for ff in 0..64{
-            buf[kk*64+ff]^=beef[kk];
-            //bb[kk%8]=beef[kk];
-        }
-    }
 
         //buf=b2b(buf,(_k as i32)%8);
         for i in 0..N {
@@ -1295,20 +1289,20 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
 
     let mut decoded = decode(&encoded).unwrap();
     let mut inv_P: [usize; N] = [0; N];
-    let mut tmp: [u8; N] = [11; N];
+    //let mut tmp: [u8; N] = [11; N];
     //let mut seed2=b"kotobahairanai";
     let mut t2: [u8; N] = [0; N];
-    let mut seed: [u8; 32] = [0; 32];
+    let mut seed=seed2.clone();
     let mut bb:[u8;8]=[17;8];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
-    let aa: String = "kotobahairanai".to_string();
+    //let aa: String = "kotobahairanai".to_string();
     //let v:Vec<u8>=aa.to_vec();
     let mut count = 0;
     let cycle = rng2.gen_range(1..N);
     let mut it: [u8; N] = [0; N];
     let mut mat2: Array2<u8> = Array2::zeros((16, 16));
-    let mut xount: i32 = 0;
+    //let mut xount: i32 = 0;
 
     println!("len = {}, {}", decoded.len(), cycle);
 
@@ -1369,9 +1363,9 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
     for j in (0..16) {
         // read hash digest
         //be=p2(&be);
-        w = key_expansion(cie, w);
+
         ee = rebirth(inv2, ee, 1);
-        tty=invsche(tty);
+        //tty=invsche(tty);
         println!("genn={:?}", tty);
         //exit(1);
         //ee=rot(ee);
@@ -1397,13 +1391,6 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         //exit(1);
         count += 1;
 
-        for kk in 0..N/64{
-            beef=expand(bb);
-            for ff in 0..64{
-            t2[kk*64+ff]^=beef[kk];
-            //bb[kk%8]=beef[kk];
-            }
-        }
 
         mat2 = v2m(t2);
 
@@ -1425,23 +1412,25 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
             decoded[ii] = t2[ii];
         }
         println!("~~~{:?}", decoded);
+        
+        let mut trim:[u8;8]=[0;8];
+        for i in 0..N/8{
+            for j in 0..8{
+                trim[j]=decoded[i*8+j];
+            }
+            trim=invsche(trim);
+            trim=b2v(trim);
+    
+            for j in 0..8{
+                trim[j]=u2(trim[j],i);
+                decoded[i*8+j]=trim[j];
+            }
+        }
+    
 
     }
 
 
-    let mut trim:[u8;8]=[0;8];
-    for i in 0..N/8{
-        for j in 0..8{
-            trim[j]=decoded[i*8+j];
-        }
-        trim=invsche(trim);
-        trim=b2v(trim);
-
-        for j in 0..8{
-            trim[j]=u2(trim[j],i);
-            decoded[i*8+j]=trim[j];
-        }
-    }
   
     //println!("{:?}",decoded);
     //exit(1);
@@ -1768,162 +1757,14 @@ fn main() {
     let mut mat: Array2<u8> = Array2::zeros((N, N));
     let mut sk: [u8; N] = [0; N];
     let mut mat2: Array2<u8> = Array2::zeros((N, N));
-    let mut buf: [u8; N] = [0; N];
+    //let mut buf: [u8; N] = [0; N];
     let mut seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    let seedA: u64 = 1234567890;
-    let seedB: u64 = 1234567890;
-    let mut _rngA = rand_chacha::ChaCha20Rng::seed_from_u64(seedA);
-    let mut _rngB = rand_chacha::ChaCha20Rng::seed_from_u64(seedB);
     let nonce: &[u8] = ("kotobahairanai").as_bytes();
     //let bytes: &[u8] = nonce.as_bytes();
     let mut seed = p2(nonce); //rng2.gen_range(1..256);
-                              //seed=p2(&seed);
-                              //let mut dim2:Vec<Vec<u8>>=Vec::new(); //(!vec[[1,2,3,4],[4,3,2,1],[5,6,7,8]])
-    let sk3 = pappy(nonce);
-    let sk2 = pappy(&seed2);
-    let n2 = pappy(&sk3);
-    let n3 = pappy(&n2);
-    let mut nk: [u8; 32] = [0; 32];
-    let mut nk2: [u8; 32] = [0; 32];
-    let mut tmp: [u8; 32] = [0; 32];
-    let mut me: Array2<u8> = Array2::zeros((16, 16));
-    let mut inn: [u8; N] = [0; N];
-
-    println!("{} = {} ?", InvS[0][Sbox[0][5] as usize], 5);
-    let mut tt = 0;
-    let mut ss = 0;
-    tt = bite(0, 0);
-    ss = u2(tt, 0);
-    println!("{} , {}", tt, ss);
-    println!("{} {}", fg[tt as usize] as usize, gf[ss as usize] as usize);
-    let i = Mix[1][2];
-    println!("{:?} {}", iMix[Mix[1][2] as usize][2], i);
-
-    let mut m1: Array2<u8> = Array2::zeros((8, 8));
-    let mut m2: Array2<u8> = Array2::zeros((8, 8));
-    for i in 0..4 {
-        for j in 0..4 {
-            m1[[i, j]] = Mix[i][j];
-            m2[[i, j]] = iMix[i][j];
-        }
-    }
-    mmat(m1, m2, 4);
-    //exit(1);
-    //seed=p2("kotobahairanai");
-    // println!("{:?}",seed);
-    let mut vk: Vec<u8> = Vec::new();
-    vk = aha("kotobahairanai".to_string());
-    for i in 0..32 {
-        print!("{:x}", vk[i]);
-    }
-    println!("");
-    //exit(1);
-    let mut bee:Array2<u8>=Array2::zeros((BIT,BIT));
-    for i in 0..BIT{
-        for j in 0..BIT{
-            bee[[i,j]]=MDS8[i][j];
-        }
-    }
-    println!("{:?}",bee);
-    //exit(1);
-    bee=m2b(bee);
-    println!("{:?}",bee);
-    bee=b2m(bee);
-    println!("{:?}",bee);
-    //exit(1);
 
 
-    let mut ttmp: [u8; BIT] = [111, 222, 32, 42, 52, 26, 7, 8];
-    println!("{:?}", ttmp);
-    ttmp = v2b(ttmp);
-    println!("{:?}", ttmp);
-
-    ttmp = b2v(ttmp);
-    println!("{:?}", ttmp);
-    //exit(1);
-    let mut ext:[u8;32]=[0;32];
-    let mut kkey:[u8;8]=[0;8];
-    kkey=schedule(kkey);
-    //ext=expand(kkey);
-    //println!("{:?}",ext);
-    //exit(1);
-    println!("{},{}", testbit(10, 3), testbit(10, 4));
-    //exit(1);
-    /*
-       println!("{:?}",sk3);
-       for i in 0..63{
-       for k in 0..4{
-               buf[i*4+k] = gf[mlt(fg[sk3[(i*4+k)] as usize] as u16,fg[Mix[i%4][k] as usize] as u16) as usize];
-           }
-       }
-       println!("{:?}",buf);
-       for ii in 0..63{
-           for k in 0..4{
-               inn[ii*4+k] = gf[mlt(fg[buf[(ii*4+k)] as usize] as u16,fg[iMix[(ii%4)][k] as usize] as u16) as usize];
-           }
-       }
-       println!("{:?}",inn);
-       exit(1);
-    */
-
-    
-
-    let mut rng = DummyRng::new(12123123);
-    for _ in 0..10 {
-        println!("{}", rng.next());
-    }
-
-    for i in 0..256 {
-        if qinv(i) != oinv(i) {
-            println!("{},{}", qinv(i), oinv(i));
-        }
-    }
-    //exit(1);
-    //van2();
-    //exit(1);
-/*
-    me = v2m(gf);
-    println!("{:?}", me);
-    for i in 0..1 {
-        me = mulm(me);
-        //}
-        //for i in 0..10{
-        me = invm(me);
-        //van=tenchi(van);
-    }
-    println!("{:?}", me);
-    //exit(1);
-
-    me = v2m(inn);
-    println!("{:?}", me);
- */
-    //exit(1);
-
-    for i in 0..32 {
-        nk[i] = i as u8;
-    }
-    nk = shuffule(nk, 32, &seed);
-    println!("ntt={:?}", nk);
-
-    for i in 0..32 {
-        nk2[nk[i] as usize] = i as u8;
-    }
-    for i in 0..32 {
-        tmp[i] = i as u8;
-    }
-    //tmp=nk.clone();
-    for i in 0..3 {
-        tmp = permute(nk, tmp, 1);
-        println!("nec={:?}", tmp);
-    }
-    //exit(1);
-    //tmp=nk;
-    for i in 0..3 {
-        tmp = rebirth(nk2, tmp, 1);
-        println!("inv={:?}", tmp);
-    }
-    //exit(1);
 
     for _j in 0..N {
         for _i in 0..N {
