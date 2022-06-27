@@ -1244,19 +1244,16 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
                 buf[i*8+j]=trim[j];
             }
         }
-
+        
         for o in 0..8{
-            bb[o]=seed2[(_k^o)%32]; // beef[o];
+            bb[o]=seed2[(_k^o)%32];
         }
+        /*
         bb=aha(bb);
         beef=expand(bb);
-        //for o in 0..N/64{
-        //    for p in 0..64{
-        //    buf[o*64+p]^=beef[p];
-        //    }
-        //}
-    
-    println!("{:?}",buf);
+        */
+
+        println!("{:?}",buf);
     
         mat3 = v2m(buf);
 
@@ -1279,11 +1276,22 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
             buf[_i] = mat[[it[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
-            buf[_i]^=beef[_i%64];
+            //buf[_i]^=beef[_i%64];
         }
         //seed=lot(seed);
         nk = permute(seed, nk, 1);
         println!("{:?}", nk);
+        
+        for o in 0..N/64{
+            bb=aha(bb);
+            beef=expand(bb);
+        
+                for p in 0..64{
+                buf[o*64+p]^=beef[p];
+                }
+            }
+         
+
     }
     //exit(1);
 
@@ -1377,12 +1385,24 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
     for j in (0..16) {
         // read hash digest
         //be=p2(&be);
-
+        
         for o in 0..8{
             bb[o]= seed2[((15-j)^o)%32]; //beef[o];
         }
+        /*
         bb=aha(bb);
         beef=expand(bb);
+         */
+        
+        for o in 0..N/64{
+            bb=aha(bb);
+            beef=expand(bb);
+        
+                for p in 0..64{
+                decoded[o*64+p]^=beef[p];
+                }
+            }
+         
         ee = rebirth(inv2, ee, 1);
         //tty=invsche(tty);
         println!("genn={:?}", tty);
@@ -1390,7 +1410,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         //ee=rot(ee);
 
         for i in (0..l) {
-            decoded[i]^=beef[i%64];
+            //decoded[i]^=beef[i%64];
             decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
 
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
