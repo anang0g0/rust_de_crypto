@@ -1229,6 +1229,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     //println!("{:?}",result);
     
     let mut beef:[u8;64]=[0;64];
+
     for _k in 0..16 {
         //w = key_expansion(cie, w);
         //buf=add_round_key(buf, w);
@@ -1243,6 +1244,17 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
                 buf[i*8+j]=trim[j];
             }
         }
+
+        for o in 0..8{
+            bb[o]=(seed2[o])^_k as u8;// beef[o];
+        }
+        beef=expand(bb);
+        //for o in 0..N/64{
+        //    for p in 0..64{
+        //    buf[o*64+p]^=beef[p];
+        //    }
+        //}
+    
     println!("{:?}",buf);
     
         mat3 = v2m(buf);
@@ -1266,6 +1278,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
             buf[_i] = mat[[it[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
+            buf[_i]^=beef[_i%64];
         }
         //seed=lot(seed);
         nk = permute(seed, nk, 1);
@@ -1364,6 +1377,10 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         // read hash digest
         //be=p2(&be);
 
+        for o in 0..8{
+            bb[o]= (seed2[o])^(15-j) as u8; //beef[o];
+        }
+        beef=expand(bb);
         ee = rebirth(inv2, ee, 1);
         //tty=invsche(tty);
         println!("genn={:?}", tty);
@@ -1371,6 +1388,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         //ee=rot(ee);
 
         for i in (0..l) {
+            decoded[i]^=beef[i%64];
             decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
 
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
@@ -1383,6 +1401,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         }
         let mut buff:[u8;N]=[0;N];
         for ii in 0..N {
+
             //buff[ii]=decoded[ii];
             t2[ii] = u2(decoded[ii] as u8, 7 - (j % 8));
         }
@@ -1426,8 +1445,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
                 decoded[i*8+j]=trim[j];
             }
         }
-    
-
+        
     }
 
 
