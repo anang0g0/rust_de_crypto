@@ -352,7 +352,7 @@ fn pappy(a: &[u8]) -> [u8; N] {
 
         for _i in 0..32 {
             buf[_i] ^= result[_i];
-            u2[count%N] = result[_i];
+            u2[count % N] = result[_i];
             //print!("{},",result[i]);
             count = count + 1;
         }
@@ -637,6 +637,37 @@ fn atm(m: Array2<u8>) -> Array2<u8> {
     g
 }
 
+fn a2b(mut a:[u8;8])->[u8;8]{
+    let mut g:[u8;BIT]=[0;BIT];
+
+    a=v2b(a);
+    for k in 0..BIT {
+    a[k] = bite(a[k] as usize, k);
+    }
+    for j in 0..BIT {
+        for k in 0..BIT {
+            g[j] ^= gf[mlt(fg[a[k] as usize] as u16, fg[MDS8[k][j] as usize] as u16) as usize];
+        }
+    }
+g
+}
+
+fn b2a(mut a:[u8;8])->[u8;8]{
+    let mut g:[u8;BIT]=[0;BIT];
+
+    a=b2v(a);
+    for k in 0..BIT {
+    a[k] = u2(a[k] as u8, k);
+    }
+    for j in 0..BIT {
+        for k in 0..BIT {
+            g[j] ^= gf[mlt(fg[a[k] as usize] as u16, fg[inv8[k][j] as usize] as u16) as usize];
+        }
+    }
+g
+}
+
+
 fn m2b(m: Array2<u8>) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -646,8 +677,8 @@ fn m2b(m: Array2<u8>) -> Array2<u8> {
             tmp[i] = m[[jj, i]];
         }
         tmp = v2b(tmp);
-        for k in 0..BIT{
-            tmp[k]=bite(tmp[k] as usize,jj);
+        for k in 0..BIT {
+            tmp[k] = bite(tmp[k] as usize, jj);
         }
         for i in 0..BIT {
             mat[[jj, i]] = tmp[i];
@@ -664,16 +695,16 @@ fn m2b(m: Array2<u8>) -> Array2<u8> {
 fn b2m(m: Array2<u8>) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
     let mut tmp: [u8; BIT] = [0; BIT];
-    let mut tmp2:[u8;N]=[0;N];
-    
+    let mut tmp2: [u8; N] = [0; N];
+
     mat = atm(m);
 
     for jj in 0..BIT {
         for i in 0..BIT {
             tmp[i] = mat[[jj, i]];
         }
-        for k in 0..BIT{
-            tmp[k]=u2(tmp[k],jj);
+        for k in 0..BIT {
+            tmp[k] = u2(tmp[k], jj);
         }
         tmp = b2v(tmp);
         for i in 0..BIT {
@@ -1161,7 +1192,7 @@ fn u3(a:[u8;256])->[u8;512]{
 }
  */
 
-fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
+fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
     /*
      * S-box transformation table
      */
@@ -1172,8 +1203,8 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     let mut byte = decode(&data).unwrap();
     //let seed2 = "kotobahairanai".as_bytes();
 
-    let mut seed=seed2.clone();
-    let mut bb:[u8;8]=[17;8];
+    let mut seed = seed2.clone();
+    let mut bb: [u8; 8] = [17; 8];
     //seed=p2(&seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
@@ -1205,12 +1236,9 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
 
     for i in 0..j {
         buf[i] = byte[i];
-
     }
 
-    let mut trim:[u8;8]=[0;8];
-
-
+    let mut trim: [u8; 8] = [0; 8];
 
     let mut nk: [u8; 32] = [0; 32];
     for i in 0..32 {
@@ -1227,34 +1255,31 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
 
     //result=pappy(result);
     //println!("{:?}",result);
-    
-    let mut beef:[u8;64]=[0;64];
+
+    let mut beef: [u8; 64] = [0; 64];
     //let mut _k:usize;
     for _k in 0..16 {
         //w = key_expansion(cie, w);
         //buf=add_round_key(buf, w);
-        for i in 0..N/8{
-            for j in 0..8{
-                trim[j]=buf[i*8+j];
-                trim[j]=bite(trim[j] as usize,i);
+        for i in 0..N / 8 {
+            for j in 0..8 {
+                trim[j] = buf[i * 8 + j];
+                trim[j] = bite(trim[j] as usize, i);
             }
-            trim=v2b(trim);
-            trim=schedule(trim);
-            for j in 0..8{
-                buf[i*8+j]=trim[j];
+            //trim = v2b(trim);
+            trim = schedule(trim);
+            for j in 0..8 {
+                buf[i * 8 + j] = trim[j];
             }
         }
-        
-        for o in 0..8{
-            bb[o]=seed2[(_k^o)%32];
-        }
+
         /*
         bb=aha(bb);
         beef=expand(bb);
         */
 
-        println!("{:?}",buf);
-    
+        println!("{:?}", buf);
+
         mat3 = v2m(buf);
 
         mat3 = shift(mat3);
@@ -1262,17 +1287,16 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
         //mat3 = m2b(mat3);
         buf = m2v(mat3);
 
-
         //buf=b2b(buf,(_k as i32)%8);
         for i in 0..N {
             buf[i] = bite(buf[i] as usize, _k as usize);
         }
         println!("{:?}", buf);
 
-        let mut trim:[u8;8]=[0;8];
+        let mut trim: [u8; 8] = [0; 8];
 
         for _i in 0..N {
-            buf[_i] ^=  be[nk[_i % 32] as usize];
+            buf[_i] ^= be[nk[_i % 32] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
             buf[_i] = mat[[it[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
@@ -1281,17 +1305,18 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
         //seed=lot(seed);
         nk = permute(seed, nk, 1);
         println!("{:?}", nk);
-        
-        for o in 0..N/64{
-            bb=aha(bb);
-            beef=expand(bb);
-        
-                for p in 0..64{
-                buf[o*64+p]^=beef[p];
-                }
-            }
-         
 
+        for o in 0..8 {
+            bb[o] = seed2[(_k + o) % 32];
+        }
+        for o in 0..N / 64 {
+            bb = aha(bb);
+            beef = expand(bb);
+
+            for p in 0..64 {
+                buf[o * 64 + p] ^= beef[p];
+            }
+        }
     }
     //exit(1);
 
@@ -1306,7 +1331,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     encoded
 }
 
-fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
+fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
     let mut buf: [u8; N] = [0; N];
 
     let mut decoded = decode(&encoded).unwrap();
@@ -1314,8 +1339,8 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
     //let mut tmp: [u8; N] = [11; N];
     //let mut seed2=b"kotobahairanai";
     let mut t2: [u8; N] = [0; N];
-    let mut seed=seed2.clone();
-    let mut bb:[u8;8]=[17;8];
+    let mut seed = seed2.clone();
+    let mut bb: [u8; 8] = [17; 8];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     //let aa: String = "kotobahairanai".to_string();
@@ -1341,7 +1366,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
     for i in 0..32 {
         seed[i] = i as u8;
     }
-    let mut be=seed2.clone();
+    let mut be = seed2.clone();
     seed = shuffule(seed, 32, &be);
 
     let mut inv2: [u8; 32] = [0; 32];
@@ -1369,40 +1394,35 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
     }
     let mut w: [u32; 60] = [19; 60];
     let mut cie: [u32; 8] = [0; 8];
-    let mut tty:[u8;8]=[0;8];
-    let mut ge:[u8;32]=[0;32];
+    let mut tty: [u8; 8] = [0; 8];
+    let mut ge: [u8; 32] = [0; 32];
     for i in 0..8 {
         cie[i] = (i + 1) as u32;
     }
-    println!("gens={:?}", tty);
-    tty=invsche(tty);
-    println!("gey={:?}", tty);
+    //println!("gens={:?}", tty);
+    //tty = invsche(tty);
+    //println!("gey={:?}", tty);
     //ge=expand(tty);
 
-    let mut trim:[u8;8]=[0;8];
-    let mut beef:[u8;64]=[0;64];
+    let mut trim: [u8; 8] = [0; 8];
+    let mut beef: [u8; 64] = [0; 64];
     //exit(1);
     for j in (0..16) {
         // read hash digest
         //be=p2(&be);
-        
-        for o in 0..8{
-            bb[o]= seed2[((15-j)^o)%32]; //beef[o];
+
+        for o in 0..8 {
+            bb[o] = seed2[((15 - j) + o) % 32]; //beef[o];
         }
-        /*
-        bb=aha(bb);
-        beef=expand(bb);
-         */
-        
-        for o in 0..N/64{
-            bb=aha(bb);
-            beef=expand(bb);
-        
-                for p in 0..64{
-                decoded[o*64+p]^=beef[p];
-                }
+        for o in 0..N / 64 {
+            bb = aha(bb);
+            beef = expand(bb);
+
+            for p in 0..64 {
+                decoded[o * 64 + p] ^= beef[p];
             }
-         
+        }
+
         ee = rebirth(inv2, ee, 1);
         //tty=invsche(tty);
         println!("genn={:?}", tty);
@@ -1418,12 +1438,11 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i] ^=   be[ee[i % 32] as usize];
+            decoded[i] ^= be[ee[i % 32] as usize];
             //
         }
-        let mut buff:[u8;N]=[0;N];
+        let mut buff: [u8; N] = [0; N];
         for ii in 0..N {
-
             //buff[ii]=decoded[ii];
             t2[ii] = u2(decoded[ii] as u8, 7 - (j % 8));
         }
@@ -1431,7 +1450,6 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
 
         //exit(1);
         count += 1;
-
 
         mat2 = v2m(t2);
 
@@ -1453,25 +1471,22 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
             decoded[ii] = t2[ii];
         }
         println!("~~~{:?}", decoded);
-        
-        let mut trim:[u8;8]=[0;8];
-        for i in 0..N/8{
-            for j in 0..8{
-                trim[j]=decoded[i*8+j];
+
+        let mut trim: [u8; 8] = [0; 8];
+        for i in 0..N / 8 {
+            for j in 0..8 {
+                trim[j] = decoded[i * 8 + j];
             }
-            trim=invsche(trim);
-            trim=b2v(trim);
-    
-            for j in 0..8{
-                trim[j]=u2(trim[j],i);
-                decoded[i*8+j]=trim[j];
+            trim = invsche(trim);
+            //trim = b2v(trim);
+
+            for j in 0..8 {
+                trim[j] = u2(trim[j], i);
+                decoded[i * 8 + j] = trim[j];
             }
         }
-        
     }
 
-
-  
     //println!("{:?}",decoded);
     //exit(1);
     let mut om = 0;
@@ -1563,15 +1578,14 @@ fn mkiv(nonce: &[u8], key: [u8; 32]) -> Vec<u8> {
     IV
 }
 
-fn aha(d:[u8;8]) -> [u8;8] {
-    
+fn aha(d: [u8; 8]) -> [u8; 8] {
     let mut hasher = Sha3_256::new();
-    let mut v:[u8;8] = [0;8];
+    let mut v: [u8; 8] = [0; 8];
     hasher.update(d);
     let result = hasher.finalize();
     //v.write(&result.to_vec()).unwrap();
     for i in 0..8 {
-        v[i]=result[i];
+        v[i] = result[i];
         print!("{:0x}", v[i]);
     }
     println!();
@@ -1706,17 +1720,17 @@ fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
     }
 }
 
-fn schedule(v: [u8; BIT]) ->[u8;8] {
+fn schedule(v: [u8; BIT]) -> [u8; 8] {
     let mut trim: [u8; 8] = [0; 8];
-    let mut s:[u8;8]=[0;8];
+    let mut s: [u8; 8] = [0; 8];
 
     trim = v2b(v);
     for i in 0..BIT {
-        trim[i] = S_BOX[(((trim[i] % 16)as usize + ((trim[i] >> 4) * 16) as usize) as usize)];
+        trim[i] = S_BOX[(((trim[i] % 16) as usize + ((trim[i] >> 4) * 16) as usize) as usize)];
     }
 
     for i in 0..BIT {
-        s[i]=0;
+        s[i] = 0;
         for j in 0..BIT {
             s[i] ^= gf[mlt(fg[trim[j] as usize] as u16, fg[MDS8[j][i] as usize] as u16) as usize]
         }
@@ -1725,70 +1739,69 @@ fn schedule(v: [u8; BIT]) ->[u8;8] {
     s
 }
 
-fn b2b(mut buff:[u8;N],ii:i32)->[u8;N]{
-    let mut buf:[u8;8]=[0;8];
-    
-        for i in 0..N/8{
-            for j in 0..8{
-                buf[j]=buff[i*8+j]
-            }
-            buf=v2b(buf);
-            for j in 0..8{
-                buff[i*8+j]=bite(buf[j] as usize,ii as usize);
-            }
-        }
-        
-        buff
-    }
-    
-    fn bb2(mut buff:[u8;N],ii:i32)->[u8;N]{
-        let mut buf:[u8;8]=[0;8];
-        
-            for i in 0..N/8{
-                for j in 0..8{
-                    buf[j]=u2(buff[i*8+j],ii as usize);
-                }
-                buf=b2v(buf);
-                for j in 0..8{
-                    buff[i*8+j]=buf[j];
-                }
-            }
-            
-            buff
-        }
-            
+fn b2b(mut buff: [u8; N], ii: i32) -> [u8; N] {
+    let mut buf: [u8; 8] = [0; 8];
 
-fn invsche(v: [u8; BIT]) ->[u8;8] {
+    for i in 0..N / 8 {
+        for j in 0..8 {
+            buf[j] = buff[i * 8 + j]
+        }
+        buf = v2b(buf);
+        for j in 0..8 {
+            buff[i * 8 + j] = bite(buf[j] as usize, ii as usize);
+        }
+    }
+
+    buff
+}
+
+fn bb2(mut buff: [u8; N], ii: i32) -> [u8; N] {
+    let mut buf: [u8; 8] = [0; 8];
+
+    for i in 0..N / 8 {
+        for j in 0..8 {
+            buf[j] = u2(buff[i * 8 + j], ii as usize);
+        }
+        buf = b2v(buf);
+        for j in 0..8 {
+            buff[i * 8 + j] = buf[j];
+        }
+    }
+
+    buff
+}
+
+fn invsche(v: [u8; BIT]) -> [u8; 8] {
     let mut trim: [u8; 8] = [0; 8];
-    let mut s:[u8;8]=[0;8];
+    let mut s: [u8; 8] = [0; 8];
 
     for i in 0..BIT {
-        s[i]=0;
+        s[i] = 0;
         for j in 0..BIT {
             s[i] ^= gf[mlt(fg[v[j] as usize] as u16, fg[inv8[j][i] as usize] as u16) as usize]
         }
     }
 
     for i in 0..BIT {
-        trim[i] = INV_S_BOX[(((s[i] % 16)as usize + ((s[i] >> 4) * 16) as usize) as usize)];
+        trim[i] = INV_S_BOX[(((s[i] % 16) as usize + ((s[i] >> 4) * 16) as usize) as usize)];
     }
     trim = b2v(trim);
 
     trim
 }
 
-fn expand(mut key:[u8;8])->[u8;64]{
-    let mut exkey:Vec<u8>=Vec::new();
-    let mut tmp:[u8;64]=[0;64];
-    exkey=schedule(key).to_vec();
+fn expand(mut key: [u8; 8]) -> [u8; 64] {
+    let mut exkey: Vec<u8> = Vec::new();
+    let mut tmp: [u8; 64] = [0; 64];
+    exkey = schedule(key).to_vec();
 
-    for j in 0..64{
-        tmp[j]=0;
-    for i in 0..8{
-        tmp[j]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
+    for j in 0..64 {
+        tmp[j] = 0;
+        for i in 0..8 {
+            tmp[j] ^= gf[mlt(fg[exkey[i] as usize] as u16, fg[rs[i][j] as usize] as u16) as usize];
+        }
     }
-    }
-tmp
+    tmp
 }
 
 //use ndarray::Array2;
@@ -1804,8 +1817,6 @@ fn main() {
     let nonce: &[u8] = ("kotobahairanai").as_bytes();
     //let bytes: &[u8] = nonce.as_bytes();
     let mut seed = p2(nonce); //rng2.gen_range(1..256);
-
-
 
     for _j in 0..N {
         for _i in 0..N {
