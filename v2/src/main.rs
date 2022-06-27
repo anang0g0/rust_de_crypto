@@ -1229,7 +1229,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     //println!("{:?}",result);
     
     let mut beef:[u8;64]=[0;64];
-
+    //let mut _k:usize;
     for _k in 0..16 {
         //w = key_expansion(cie, w);
         //buf=add_round_key(buf, w);
@@ -1246,8 +1246,9 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
         }
 
         for o in 0..8{
-            bb[o]=(seed2[o])^_k as u8;// beef[o];
+            bb[o]=seed2[(_k^o)%32]; // beef[o];
         }
+        bb=aha(bb);
         beef=expand(bb);
         //for o in 0..N/64{
         //    for p in 0..64{
@@ -1267,7 +1268,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
 
         //buf=b2b(buf,(_k as i32)%8);
         for i in 0..N {
-            buf[i] = bite(buf[i] as usize, _k);
+            buf[i] = bite(buf[i] as usize, _k as usize);
         }
         println!("{:?}", buf);
 
@@ -1378,8 +1379,9 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> Strin
         //be=p2(&be);
 
         for o in 0..8{
-            bb[o]= (seed2[o])^(15-j) as u8; //beef[o];
+            bb[o]= seed2[((15-j)^o)%32]; //beef[o];
         }
+        bb=aha(bb);
         beef=expand(bb);
         ee = rebirth(inv2, ee, 1);
         //tty=invsche(tty);
@@ -1541,15 +1543,16 @@ fn mkiv(nonce: &[u8], key: [u8; 32]) -> Vec<u8> {
     IV
 }
 
-fn aha(ss: String) -> Vec<u8> {
-    let d = ss.as_bytes();
+fn aha(d:[u8;8]) -> [u8;8] {
+    
     let mut hasher = Sha3_256::new();
-    let mut v: Vec<u8> = Vec::new();
+    let mut v:[u8;8] = [0;8];
     hasher.update(d);
     let result = hasher.finalize();
-    v.write(&result.to_vec()).unwrap();
-    for v in &result {
-        print!("{:0x}", &v);
+    //v.write(&result.to_vec()).unwrap();
+    for i in 0..8 {
+        v[i]=result[i];
+        print!("{:0x}", v[i]);
     }
     println!();
 
