@@ -143,43 +143,6 @@ const rs: [[u8; 64]; 8] = [
     ],
 ];
 
-const qq: [[u8; 256]; 2] = [
-    /* q0 */
-    [
-        0xa9, 0x67, 0xb3, 0xe8, 0x4, 0xfd, 0xa3, 0x76, 0x9a, 0x92, 0x80, 0x78, 0xe4, 0xdd, 0xd1, 0x38, 0xd, 0xc6, 0x35,
-        0x98, 0x18, 0xf7, 0xec, 0x6c, 0x43, 0x75, 0x37, 0x26, 0xfa, 0x13, 0x94, 0x48, 0xf2, 0xd0, 0x8b, 0x30, 0x84,
-        0x54, 0xdf, 0x23, 0x19, 0x5b, 0x3d, 0x59, 0xf3, 0xae, 0xa2, 0x82, 0x63, 0x1, 0x83, 0x2e, 0xd9, 0x51, 0x9b,
-        0x7c, 0xa6, 0xeb, 0xa5, 0xbe, 0x16, 0xc, 0xe3, 0x61, 0xc0, 0x8c, 0x3a, 0xf5, 0x73, 0x2c, 0x25, 0xb, 0xbb, 0x4e,
-        0x89, 0x6b, 0x53, 0x6a, 0xb4, 0xf1, 0xe1, 0xe6, 0xbd, 0x45, 0xe2, 0xf4, 0xb6, 0x66, 0xcc, 0x95, 0x3, 0x56,
-        0xd4, 0x1c, 0x1e, 0xd7, 0xfb, 0xc3, 0x8e, 0xb5, 0xe9, 0xcf, 0xbf, 0xba, 0xea, 0x77, 0x39, 0xaf, 0x33, 0xc9,
-        0x62, 0x71, 0x81, 0x79, 0x9, 0xad, 0x24, 0xcd, 0xf9, 0xd8, 0xe5, 0xc5, 0xb9, 0x4d, 0x44, 0x8, 0x86, 0xe7, 0xa1,
-        0x1d, 0xaa, 0xed, 0x6, 0x70, 0xb2, 0xd2, 0x41, 0x7b, 0xa0, 0x11, 0x31, 0xc2, 0x27, 0x90, 0x20, 0xf6, 0x60,
-        0xff, 0x96, 0x5c, 0xb1, 0xab, 0x9e, 0x9c, 0x52, 0x1b, 0x5f, 0x93, 0xa, 0xef, 0x91, 0x85, 0x49, 0xee, 0x2d,
-        0x4f, 0x8f, 0x3b, 0x47, 0x87, 0x6d, 0x46, 0xd6, 0x3e, 0x69, 0x64, 0x2a, 0xce, 0xcb, 0x2f, 0xfc, 0x97, 0x5,
-        0x7a, 0xac, 0x7f, 0xd5, 0x1a, 0x4b, 0xe, 0xa7, 0x5a, 0x28, 0x14, 0x3f, 0x29, 0x88, 0x3c, 0x4c, 0x2, 0xb8, 0xda,
-        0xb0, 0x17, 0x55, 0x1f, 0x8a, 0x7d, 0x57, 0xc7, 0x8d, 0x74, 0xb7, 0xc4, 0x9f, 0x72, 0x7e, 0x15, 0x22, 0x12,
-        0x58, 0x7, 0x99, 0x34, 0x6e, 0x50, 0xde, 0x68, 0x65, 0xbc, 0xdb, 0xf8, 0xc8, 0xa8, 0x2b, 0x40, 0xdc, 0xfe,
-        0x32, 0xa4, 0xca, 0x10, 0x21, 0xf0, 0xd3, 0x5d, 0xf, 0x0, 0x6f, 0x9d, 0x36, 0x42, 0x4a, 0x5e, 0xc1, 0xe0,
-    ],
-    /* q1 */
-    [
-        0x75, 0xf3, 0xc6, 0xf4, 0xdb, 0x7b, 0xfb, 0xc8, 0x4a, 0xd3, 0xe6, 0x6b, 0x45, 0x7d, 0xe8, 0x4b, 0xd6, 0x32,
-        0xd8, 0xfd, 0x37, 0x71, 0xf1, 0xe1, 0x30, 0xf, 0xf8, 0x1b, 0x87, 0xfa, 0x6, 0x3f, 0x5e, 0xba, 0xae, 0x5b, 0x8a,
-        0x0, 0xbc, 0x9d, 0x6d, 0xc1, 0xb1, 0xe, 0x80, 0x5d, 0xd2, 0xd5, 0xa0, 0x84, 0x7, 0x14, 0xb5, 0x90, 0x2c, 0xa3,
-        0xb2, 0x73, 0x4c, 0x54, 0x92, 0x74, 0x36, 0x51, 0x38, 0xb0, 0xbd, 0x5a, 0xfc, 0x60, 0x62, 0x96, 0x6c, 0x42,
-        0xf7, 0x10, 0x7c, 0x28, 0x27, 0x8c, 0x13, 0x95, 0x9c, 0xc7, 0x24, 0x46, 0x3b, 0x70, 0xca, 0xe3, 0x85, 0xcb,
-        0x11, 0xd0, 0x93, 0xb8, 0xa6, 0x83, 0x20, 0xff, 0x9f, 0x77, 0xc3, 0xcc, 0x3, 0x6f, 0x8, 0xbf, 0x40, 0xe7, 0x2b,
-        0xe2, 0x79, 0xc, 0xaa, 0x82, 0x41, 0x3a, 0xea, 0xb9, 0xe4, 0x9a, 0xa4, 0x97, 0x7e, 0xda, 0x7a, 0x17, 0x66,
-        0x94, 0xa1, 0x1d, 0x3d, 0xf0, 0xde, 0xb3, 0xb, 0x72, 0xa7, 0x1c, 0xef, 0xd1, 0x53, 0x3e, 0x8f, 0x33, 0x26,
-        0x5f, 0xec, 0x76, 0x2a, 0x49, 0x81, 0x88, 0xee, 0x21, 0xc4, 0x1a, 0xeb, 0xd9, 0xc5, 0x39, 0x99, 0xcd, 0xad,
-        0x31, 0x8b, 0x1, 0x18, 0x23, 0xdd, 0x1f, 0x4e, 0x2d, 0xf9, 0x48, 0x4f, 0xf2, 0x65, 0x8e, 0x78, 0x5c, 0x58,
-        0x19, 0x8d, 0xe5, 0x98, 0x57, 0x67, 0x7f, 0x5, 0x64, 0xaf, 0x63, 0xb6, 0xfe, 0xf5, 0xb7, 0x3c, 0xa5, 0xce,
-        0xe9, 0x68, 0x44, 0xe0, 0x4d, 0x43, 0x69, 0x29, 0x2e, 0xac, 0x15, 0x59, 0xa8, 0xa, 0x9e, 0x6e, 0x47, 0xdf,
-        0x34, 0x35, 0x6a, 0xcf, 0xdc, 0x22, 0xc9, 0xc0, 0x9b, 0x89, 0xd4, 0xed, 0xab, 0x12, 0xa2, 0xd, 0x52, 0xbb, 0x2,
-        0x2f, 0xa9, 0xd7, 0x61, 0x1e, 0xb4, 0x50, 0x4, 0xf6, 0xc2, 0x16, 0x25, 0x86, 0x56, 0x55, 0x9, 0xbe, 0x91,
-    ],
-];
-
 const MDS4: [[u8; 4]; 4] = [[1, 1, 1, 1], [2, 3, 4, 5], [4, 5, 16, 17], [8, 15, 64, 85]];
 const inv4: [[u8; 4]; 4] = [
     [208, 230, 157, 192],
@@ -209,7 +172,7 @@ const inv8: [[u8; 8]; 8] = [
     [118, 67, 26, 23, 53, 53, 53, 188],
 ];
 
-const van: [[u8; 16]; 16] = [
+const MDS16: [[u8; 16]; 16] = [
     [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
     [4, 5, 16, 17, 20, 21, 64, 65, 68, 69, 80, 81, 84, 85, 29, 28],
     [8, 15, 64, 85, 120, 107, 58, 115, 146, 221, 231, 186, 127, 36, 205, 193],
@@ -232,7 +195,7 @@ const van: [[u8; 16]; 16] = [
     [76, 77, 157, 156, 209, 208, 70, 71, 10, 11, 219, 218, 151, 150, 95, 94],
 ];
 
-const inv: [[u8; 16]; 16] = [
+const inv16: [[u8; 16]; 16] = [
     [77, 240, 60, 82, 7, 193, 162, 86, 35, 152, 75, 172, 81, 161, 217, 226],
     [
         175, 124, 143, 135, 174, 152, 138, 216, 17, 90, 99, 116, 121, 137, 217, 188,
@@ -296,7 +259,7 @@ const rcon: [u32; 11] = [
 const Nb: usize = 64;
 const K: usize = 8;
 const E: usize = 16;
-const N: usize = E * E;
+const N: usize = 256;
 const BIT: usize = 8;
 
 fn testbit(bit: i32, i: i32) -> bool {
@@ -389,7 +352,7 @@ fn pappy(a: &[u8]) -> [u8; N] {
 
         for _i in 0..32 {
             buf[_i] ^= result[_i];
-            u2[count] = result[_i];
+            u2[count%N] = result[_i];
             //print!("{},",result[i]);
             count = count + 1;
         }
@@ -604,28 +567,6 @@ fn Rot(mut z: [u8; N]) -> [u8; N] {
     z
 }
 
-fn tenchi(m2: Array2<u8>) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((E, E));
-    for i in 0..E {
-        for j in 0..E {
-            mat[[i, j]] = m2[[j, i]];
-        }
-    }
-
-    mat
-}
-
-fn rev_tenchi(m2: Array2<u8>) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((E, E));
-    for i in 0..E {
-        for j in 0..E {
-            mat[[j, i]] = m2[[i, j]];
-        }
-    }
-
-    mat
-}
-
 fn v2m(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
     for i in 0..E {
@@ -668,25 +609,28 @@ fn b2v(u: [u8; BIT]) -> [u8; BIT] {
 }
 
 fn mta(m: Array2<u8>) -> Array2<u8> {
-    let mut g: Array2<u8> = Array2::zeros((E, E));
+    let mut g: Array2<u8> = Array2::zeros((BIT, BIT));
 
-    for i in 0..4 {
-        for j in 0..4 {
-            for k in 0..4 {
-                g[[i, j]] = gf[mlt(fg[m[[i, k]] as usize] as u16, fg[Mix[k][j] as usize] as u16) as usize];
+    for i in 0..BIT {
+        for j in 0..BIT {
+            for k in 0..BIT {
+                g[[i, j]] ^= gf[mlt(fg[m[[i, k]] as usize] as u16, fg[MDS8[k][j] as usize] as u16) as usize];
             }
         }
     }
+    //println!("{:?}",g);
+    //exit(1);
+
     g
 }
 
 fn atm(m: Array2<u8>) -> Array2<u8> {
-    let mut g: Array2<u8> = Array2::zeros((E, E));
+    let mut g: Array2<u8> = Array2::zeros((BIT, BIT));
 
-    for i in 0..4 {
-        for j in 0..4 {
-            for k in 0..4 {
-                g[[i, j]] = gf[mlt(fg[m[[i, k]] as usize] as u16, fg[iMix[k][j] as usize] as u16) as usize];
+    for i in 0..BIT {
+        for j in 0..BIT {
+            for k in 0..BIT {
+                g[[i, j]] ^= gf[mlt(fg[m[[i, k]] as usize] as u16, fg[inv8[k][j] as usize] as u16) as usize];
             }
         }
     }
@@ -694,20 +638,50 @@ fn atm(m: Array2<u8>) -> Array2<u8> {
 }
 
 fn m2b(m: Array2<u8>) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((4, 4));
+    let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
     let mut tmp: [u8; BIT] = [0; BIT];
 
-    for jj in 0..4 {
-        for i in 0..4 {
-            tmp[i] = m[[i, jj]];
+    for jj in 0..BIT {
+        for i in 0..BIT {
+            tmp[i] = m[[jj, i]];
         }
         tmp = v2b(tmp);
-        for i in 0..4 {
+        for k in 0..BIT{
+            tmp[k]=bite(tmp[k] as usize,jj);
+        }
+        for i in 0..BIT {
             mat[[jj, i]] = tmp[i];
         }
     }
+    //
     mat = mta(mat);
+    //println!("{:?}",mat);
+    //exit(1);
 
+    mat
+}
+
+fn b2m(m: Array2<u8>) -> Array2<u8> {
+    let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
+    let mut tmp: [u8; BIT] = [0; BIT];
+    let mut tmp2:[u8;N]=[0;N];
+    
+    mat = atm(m);
+
+    for jj in 0..BIT {
+        for i in 0..BIT {
+            tmp[i] = mat[[jj, i]];
+        }
+        for k in 0..BIT{
+            tmp[k]=u2(tmp[k],jj);
+        }
+        tmp = b2v(tmp);
+        for i in 0..BIT {
+            mat[[jj, i]] = tmp[i];
+        }
+    }
+    //println!("{:?}",mat);
+    //exit(1);
     mat
 }
 
@@ -816,7 +790,7 @@ fn mulm(ma: Array2<u8>) -> Array2<u8> {
     for i in 0..E {
         for j in 0..E {
             for k in 0..E {
-                nn[[i, j]] ^= gf[mlt(fg[van[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
+                nn[[i, j]] ^= gf[mlt(fg[MDS16[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
             }
         }
     }
@@ -836,7 +810,7 @@ fn invm(ma: Array2<u8>) -> Array2<u8> {
     for i in 0..E {
         for j in 0..E {
             for k in 0..E {
-                nn[[i, j]] ^= gf[mlt(fg[inv[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
+                nn[[i, j]] ^= gf[mlt(fg[inv16[i][k] as usize] as u16, fg[ma[[k, j]] as usize] as u16) as usize];
             }
         }
     }
@@ -1187,7 +1161,7 @@ fn u3(a:[u8;256])->[u8;512]{
 }
  */
 
-fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
+fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     /*
      * S-box transformation table
      */
@@ -1199,6 +1173,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
     //let seed2 = "kotobahairanai".as_bytes();
 
     let mut seed: [u8; 32] = [0; 32];
+    let mut bb:[u8;8]=[17;8];
     //seed=p2(&seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     println!("len = {}", byte.len());
@@ -1211,7 +1186,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let cycle = rng2.gen_range(1..N);
     let mut count = 0;
     let j = byte.len();
-    let mut be = seed.clone();
+    let mut be = seed2.clone();
     let mut it: [u8; N] = [0; N];
 
     for i in 0..N {
@@ -1236,16 +1211,17 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
     let mut trim:[u8;8]=[0;8];
 
 
-for i in 0..N/8{
-    for j in 0..8{
-        trim[j]=buf[i*8+j];
+    for i in 0..N/8{
+        for j in 0..8{
+            trim[j]=buf[i*8+j];
+            trim[j]=bite(trim[j] as usize,i);
+        }
+        trim=v2b(trim);
+        trim=schedule(trim);
+        for j in 0..8{
+            buf[i*8+j]=trim[j];
+        }
     }
-    trim=v2b(trim);
-    trim=schedule(trim);
-    for j in 0..8{
-        buf[i*8+j]=trim[j];
-    }
-}
 println!("{:?}",buf);
 
     let mut nk: [u8; 32] = [0; 32];
@@ -1263,7 +1239,8 @@ println!("{:?}",buf);
 
     //result=pappy(result);
     //println!("{:?}",result);
-
+    
+    let mut beef:[u8;64]=[0;64];
     for _k in 0..16 {
         w = key_expansion(cie, w);
 
@@ -1271,38 +1248,27 @@ println!("{:?}",buf);
 
         mat3 = shift(mat3);
         mat3 = mulm(mat3);
-
+        //mat3 = m2b(mat3);
         buf = m2v(mat3);
-        
+
+        for kk in 0..N/64{
+            beef=expand(bb);
+            for ff in 0..64{
+            buf[kk*64+ff]^=beef[kk];
+            //bb[kk%8]=beef[kk];
+        }
+    }
+
         //buf=b2b(buf,(_k as i32)%8);
         for i in 0..N {
             buf[i] = bite(buf[i] as usize, _k);
         }
-
-        //for i in j..256{
-        //    buf[i]=0;
-        //}
         println!("{:?}", buf);
-        //exit(1);
-
-        //let k2:[u32;6]=(addround(be, _k)>>32);
-        //it=pappy(&it);
-        //be=p2(&be);
-        // buf[_k]^=be[_k];
-        //println!("ii={:?}",&buf[0..j]);
-
 
         let mut trim:[u8;8]=[0;8];
 
         for _i in 0..N {
-            //j{
-            //j {
-            //buf[_i]=bite(buf[_i] as usize,_k%8);
-            buf[_i] ^= /* ((w[_i % 60] % N as u32) as u8) ^ */ be[nk[_i % 32] as usize]; //^tty[_i%8];
-            //=
-            //
-            //
-            //buf[_i]=gf[buf[_i] as usize];
+            buf[_i] ^=  be[nk[_i % 32] as usize];
             buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
             buf[_i] = a[buf[_i] as usize] as u8;
             buf[_i] = mat[[it[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
@@ -1324,7 +1290,7 @@ println!("{:?}",buf);
     encoded
 }
 
-fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String {
+fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8;32]) -> String {
     let mut buf: [u8; N] = [0; N];
 
     let mut decoded = decode(&encoded).unwrap();
@@ -1333,6 +1299,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
     //let mut seed2=b"kotobahairanai";
     let mut t2: [u8; N] = [0; N];
     let mut seed: [u8; 32] = [0; 32];
+    let mut bb:[u8;8]=[17;8];
     //seed=p2(seed2);
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed);
     let aa: String = "kotobahairanai".to_string();
@@ -1358,7 +1325,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
     for i in 0..32 {
         seed[i] = i as u8;
     }
-    let mut be: [u8; 32] = [0; 32]; ////seed.clone();
+    let mut be=seed2.clone();
     seed = shuffule(seed, 32, &be);
 
     let mut inv2: [u8; 32] = [0; 32];
@@ -1394,8 +1361,10 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
     println!("gens={:?}", tty);
     tty=invsche(tty);
     println!("gey={:?}", tty);
-    ge=expand(tty);
+    //ge=expand(tty);
 
+    let mut trim:[u8;8]=[0;8];
+    let mut beef:[u8;64]=[0;64];
     //exit(1);
     for j in (0..16) {
         // read hash digest
@@ -1415,7 +1384,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
             //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
             //decoded[i]^=fg[decoded[i] as usize];
-            decoded[i] ^=  /*((w[i % 60] % N as u32) as u8) ^*/  be[ee[i % 32] as usize]; //^tty[i%8];
+            decoded[i] ^=   be[ee[i % 32] as usize];
             //
         }
         let mut buff:[u8;N]=[0;N];
@@ -1428,13 +1397,21 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
         //exit(1);
         count += 1;
 
+        for kk in 0..N/64{
+            beef=expand(bb);
+            for ff in 0..64{
+            t2[kk*64+ff]^=beef[kk];
+            //bb[kk%8]=beef[kk];
+            }
+        }
+
         mat2 = v2m(t2);
 
         //
 
         println!("ppp{:?}", mat2);
         //exit(1);
-
+        //mat2=b2m(mat2);
         mat2 = invm(mat2);
 
         println!("xxx{:?}", mat2);
@@ -1459,7 +1436,9 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: &[u8]) -> String 
         }
         trim=invsche(trim);
         trim=b2v(trim);
+
         for j in 0..8{
+            trim[j]=u2(trim[j],i);
             decoded[i*8+j]=trim[j];
         }
     }
@@ -1768,15 +1747,15 @@ fn invsche(v: [u8; BIT]) ->[u8;8] {
     trim
 }
 
-fn expand(mut key:[u8;8])->[u8;32]{
+fn expand(mut key:[u8;8])->[u8;64]{
     let mut exkey:Vec<u8>=Vec::new();
-    let mut tmp:[u8;32]=[0;32];
+    let mut tmp:[u8;64]=[0;64];
     exkey=schedule(key).to_vec();
 
-    for j in 18..50{
-        tmp[j-18]=0;
+    for j in 0..64{
+        tmp[j]=0;
     for i in 0..8{
-        tmp[j-18]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
+        tmp[j]^=gf[mlt(fg[exkey[i] as usize] as u16,fg[rs[i][j] as usize] as u16) as usize];
     }
     }
 tmp
@@ -1840,6 +1819,20 @@ fn main() {
     }
     println!("");
     //exit(1);
+    let mut bee:Array2<u8>=Array2::zeros((BIT,BIT));
+    for i in 0..BIT{
+        for j in 0..BIT{
+            bee[[i,j]]=MDS8[i][j];
+        }
+    }
+    println!("{:?}",bee);
+    //exit(1);
+    bee=m2b(bee);
+    println!("{:?}",bee);
+    bee=b2m(bee);
+    println!("{:?}",bee);
+    //exit(1);
+
 
     let mut ttmp: [u8; BIT] = [111, 222, 32, 42, 52, 26, 7, 8];
     println!("{:?}", ttmp);
@@ -1852,8 +1845,8 @@ fn main() {
     let mut ext:[u8;32]=[0;32];
     let mut kkey:[u8;8]=[0;8];
     kkey=schedule(kkey);
-    ext=expand(kkey);
-    println!("{:?}",ext);
+    //ext=expand(kkey);
+    //println!("{:?}",ext);
     //exit(1);
     println!("{},{}", testbit(10, 3), testbit(10, 4));
     //exit(1);
@@ -1889,7 +1882,7 @@ fn main() {
     //exit(1);
     //van2();
     //exit(1);
-
+/*
     me = v2m(gf);
     println!("{:?}", me);
     for i in 0..1 {
@@ -1904,7 +1897,7 @@ fn main() {
 
     me = v2m(inn);
     println!("{:?}", me);
-
+ */
     //exit(1);
 
     for i in 0..32 {
@@ -1974,14 +1967,14 @@ fn main() {
 
     // encoded below
     for i in 0..1 {
-        cc = enc(&data, &sk, &mat, nonce);
+        cc = enc(&data, &sk, &mat, seed);
     }
 
     println!(" ");
 
     // encoded above
     for i in 0..1 {
-        l = dec(&cc, &sk, &mat2, nonce);
+        l = dec(&cc, &sk, &mat2, seed);
     }
 
     let code = decode(&l).unwrap();
