@@ -308,16 +308,6 @@ fn shuffule(mut array: [u8; 32], size: u16, seed: &[u8]) -> [u8; 32] {
     array
 }
 
-fn s2b(test: &str) -> &[u8] {
-    //    let test: &str = "Test";
-    let bytes: &[u8] = test.as_bytes();
-    // convert bytes => str
-
-    //println!("{}", test);
-    println!("{:?}", bytes);
-
-    bytes
-}
 
 fn b2s(bytes: &[u8]) -> String {
     //let res = bytes.iter().map(|&s| s as char).collect::<String>();
@@ -421,22 +411,6 @@ fn mltn(mut n: u16, mut x: u16) -> u16 {
     ret
 }
 
-//有限体の元の逆数
-
-fn qinv(a: u16) -> u16 {
-    let mut b: u16 = 0;
-
-    if (a == 0) {
-        return 0 as u16;
-    }
-    for i in 0..N {
-        if gf[mlt(fg[a as usize] as u16, i as u16) as usize] == 1 {
-            b = i as u16;
-            //return i as u16;
-        }
-    }
-    b
-}
 
 //有限体の元の逆数
 fn oinv(a: u16) -> u16 {
@@ -1222,6 +1196,25 @@ fn u3(a:[u8;256])->[u8;512]{
 }
  */
 
+fn sub(mut buf:[u8;N],be:[u8;32],a:&[u8;N],mut nk: [u8; 32],mat: &Array2<u8>,_k:usize)->[u8;N]{
+
+    for _i in 0..N {
+        buf[_i] ^= be[nk[_i % 32] as usize];
+        buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+        buf[_i] = a[buf[_i] as usize] as u8;
+        buf[_i] = mat[[a[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
+    }
+buf
+}
+
+fn invs(decoded:&[u8]){
+    let mut buf:[u8;N]=[0;N];
+
+    for i in 0..N{
+        buf[i]=decoded[i];
+    }
+}
+
 fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
     /*
      * S-box transformation table
@@ -1313,17 +1306,11 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
             buf[i] = bite(buf[i] as usize, _k as usize);
         }
          */
+        buf=sub(buf,be,a,nk, &mat,_k);
         println!("{:?}", buf);
 
         let mut trim: [u8; 8] = [0; 8];
 
-        for _i in 0..N {
-            buf[_i] ^= be[nk[_i % 32] as usize];
-            buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-            buf[_i] = a[buf[_i] as usize] as u8;
-            buf[_i] = mat[[it[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
-            //buf[_i]^=beef[_i%64];
-        }
         //seed=lot(seed);
         nk = permute(seed, nk, 1);
         println!("{:?}", nk);
@@ -1436,30 +1423,17 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
 
         ee = rebirth(inv2, ee, 1);
 
+        //t2=invs(decoded);
         for i in (0..l) {
-            //decoded[i]^=beef[i%64];
             decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
-
             decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
-
-            //println!("dec {}", (decoded[i] % 16));
             decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
-            //decoded[i]^=fg[decoded[i] as usize];
             decoded[i] ^= be[ee[i % 32] as usize];
-            //
             t2[i]=decoded[i];
         }
         let mut buff: [u8; N] = [0; N];
         t2=b2a(t2);
-        /*
-        for ii in 0..N {
-            //buff[ii]=decoded[ii];
-            t2[ii] = u2(decoded[ii] as u8, 7 - (j % 8));
-        }
-         */
-        //t2=bb2(buff,(7-(j%8)) as i32);
 
-        //exit(1);
         count += 1;
 
         mat2 = v2m(t2);
@@ -1845,6 +1819,7 @@ fn main() {
     let IV = mkiv(nonce, seed);
     println!("{:?},{}", IV, IV.len());
     //exit(1);
+    
     for i in 0..N{
         sk[i]=(i+1) as u8;
     }
