@@ -637,36 +637,66 @@ fn atm(m: Array2<u8>) -> Array2<u8> {
     g
 }
 
-fn a2b(mut a:[u8;8])->[u8;8]{
-    let mut g:[u8;BIT]=[0;BIT];
+fn a2b(mut a: [u8; N]) -> [u8; N] {
+    let mut g: [u8; BIT] = [0; BIT];
+    let mut tmp: [u8; BIT] = [0; BIT];
+    let mut f: [u8; N] = [0; N];
 
-    a=v2b(a);
-    for k in 0..BIT {
-    a[k] = bite(a[k] as usize, k);
-    }
-    for j in 0..BIT {
+    for i in 0..N / BIT {
+        for j in 0..BIT {
+            tmp[j] = a[i * BIT + j];
+        }
+        println!("tmp={:?}",tmp);
+        tmp = v2b(tmp);
+        println!("tmp={:?}",tmp);
         for k in 0..BIT {
-            g[j] ^= gf[mlt(fg[a[k] as usize] as u16, fg[MDS8[k][j] as usize] as u16) as usize];
+            tmp[k] = bite(tmp[k] as usize, k);
+        }
+        println!("tmp={:?}",tmp);
+        
+        for j in 0..BIT {
+        //    g[j] = 0;
+            for k in 0..BIT {
+                g[j] ^= gf[mlt(fg[tmp[k] as usize] as u16, fg[MDS8[k][j] as usize] as u16) as usize];
+            }
+        }
+          
+        for j in 0..BIT {
+            f[i * BIT + j] = tmp[j];
         }
     }
-g
+    f
 }
 
-fn b2a(mut a:[u8;8])->[u8;8]{
-    let mut g:[u8;BIT]=[0;BIT];
+fn b2a(mut a: [u8; N]) -> [u8; N] {
+    let mut g: [u8; BIT] = [0; BIT];
+    let mut tmp: [u8; BIT] = [0;BIT];
+    let mut f: [u8; N] = [0; N];
 
-    a=b2v(a);
-    for k in 0..BIT {
-    a[k] = u2(a[k] as u8, k);
-    }
-    for j in 0..BIT {
+    for i in 0..N / BIT {
+        for j in 0..BIT {
+            tmp[j] = a[i * BIT + j];
+        }
+        
+        for j in 0..BIT {
+            //g[j] = 0;
+            for k in 0..BIT {
+                g[j] ^= gf[mlt(fg[tmp[k] as usize] as u16, fg[inv8[k][j] as usize] as u16) as usize];
+            }
+        }
+        
         for k in 0..BIT {
-            g[j] ^= gf[mlt(fg[a[k] as usize] as u16, fg[inv8[k][j] as usize] as u16) as usize];
+            tmp[k] = u2(tmp[k] as u8, k);
+        }
+        tmp = b2v(tmp);
+        println!("inV={:?}",tmp);
+        //exit(1);
+        for j in 0..BIT {
+            f[i * BIT + j] = tmp[j];
         }
     }
-g
+    f
 }
-
 
 fn m2b(m: Array2<u8>) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
@@ -1245,17 +1275,6 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
         nk[i] = i as u8;
     }
 
-    let mut w: [u32; 60] = [17; 60];
-    let mut cie: [u32; 8] = [0; 8];
-    for i in 0..8 {
-        cie[i] = (i + 1) as u32;
-    }
-    println!("{:?}", w);
-    //exit(1);
-
-    //result=pappy(result);
-    //println!("{:?}",result);
-
     let mut beef: [u8; 64] = [0; 64];
     //let mut _k:usize;
     for _k in 0..16 {
@@ -1288,9 +1307,12 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
         buf = m2v(mat3);
 
         //buf=b2b(buf,(_k as i32)%8);
+        buf=a2b(buf);
+        /*
         for i in 0..N {
             buf[i] = bite(buf[i] as usize, _k as usize);
         }
+         */
         println!("{:?}", buf);
 
         let mut trim: [u8; 8] = [0; 8];
@@ -1392,17 +1414,6 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
     for i in 0..N {
         it[i] = a[i];
     }
-    let mut w: [u32; 60] = [19; 60];
-    let mut cie: [u32; 8] = [0; 8];
-    let mut tty: [u8; 8] = [0; 8];
-    let mut ge: [u8; 32] = [0; 32];
-    for i in 0..8 {
-        cie[i] = (i + 1) as u32;
-    }
-    //println!("gens={:?}", tty);
-    //tty = invsche(tty);
-    //println!("gey={:?}", tty);
-    //ge=expand(tty);
 
     let mut trim: [u8; 8] = [0; 8];
     let mut beef: [u8; 64] = [0; 64];
@@ -1424,10 +1435,6 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
         }
 
         ee = rebirth(inv2, ee, 1);
-        //tty=invsche(tty);
-        println!("genn={:?}", tty);
-        //exit(1);
-        //ee=rot(ee);
 
         for i in (0..l) {
             //decoded[i]^=beef[i%64];
@@ -1440,12 +1447,16 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
             //decoded[i]^=fg[decoded[i] as usize];
             decoded[i] ^= be[ee[i % 32] as usize];
             //
+            t2[i]=decoded[i];
         }
         let mut buff: [u8; N] = [0; N];
+        t2=b2a(t2);
+        /*
         for ii in 0..N {
             //buff[ii]=decoded[ii];
             t2[ii] = u2(decoded[ii] as u8, 7 - (j % 8));
         }
+         */
         //t2=bb2(buff,(7-(j%8)) as i32);
 
         //exit(1);
@@ -1834,6 +1845,9 @@ fn main() {
     let IV = mkiv(nonce, seed);
     println!("{:?},{}", IV, IV.len());
     //exit(1);
+    for i in 0..N{
+        sk[i]=(i+1) as u8;
+    }
 
     for _i in 0..N {
         for _j in 0..N {
