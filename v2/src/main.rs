@@ -542,6 +542,32 @@ fn Rot(mut z: [u8; N]) -> [u8; N] {
 fn v2m(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
     let mut kt:[u8;32]=[0;32]; //xorshift256();
+    let mut n:u8=0;
+    unsafe{
+        xx = 0x180ec6d33cfd0aba;
+        yy = 0xd5a61266f0c9392c;
+        zz = 0xa9582618e03fc9aa;
+        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
+        }
+    for i in 0..E {
+        kt=xorshift256();
+        for j in 0..E {
+            n=m[i * E + j]^kt[j];
+            mat[[i, j]] = n; 
+            
+
+        }
+    }
+
+    mat
+}
+
+
+fn m2v(m2: Array2<u8>) -> [u8; N] {
+    let mut r1: [u8; N] = [0; N];
+    let mut kt:[u8;32]=[0;32]; //xorshift256();
+    let mut n:u8=0;
+    let mut m:u8=0;
     unsafe{
         xx = 0x180ec6d33cfd0aba;
         yy = 0xd5a61266f0c9392c;
@@ -550,13 +576,16 @@ fn v2m(m: [u8; N]) -> Array2<u8> {
         }    
     for i in 0..E {
         kt=xorshift256();
+        //println!("{:?}",kt);
         for j in 0..E {
-            mat[[i, j]] = m[i * E + j]^kt[j];
+            n=m2[[i, j]]^kt[j];
+            r1[i * E + j] = n; //
         }
     }
 
-    mat
+    r1
 }
+
 
 fn v2b(mut t: [u8; BIT]) -> [u8; BIT] {
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -735,26 +764,6 @@ fn v2t(m: [u8; N]) -> Array2<u8> {
     }
 
     mat
-}
-
-fn m2v(m2: Array2<u8>) -> [u8; N] {
-    let mut r1: [u8; N] = [0; N];
-    let mut kt:[u8;32]=[0;32]; //xorshift256();
-
-    unsafe{
-        xx = 0x180ec6d33cfd0aba;
-        yy = 0xd5a61266f0c9392c;
-        zz = 0xa9582618e03fc9aa;
-        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-        }    
-    for i in 0..E {
-        kt=xorshift256();
-        for j in 0..E {
-            r1[i * E + j] = m2[[i, j]]^kt[j];
-        }
-    }
-
-    r1
 }
 
 fn shift(sf: Array2<u8>) -> Array2<u8> {
@@ -1231,7 +1240,7 @@ fn invs(decoded: Vec<u8>) {
 static mut xx:u64 = 0x180ec6d33cfd0aba;
 static mut yy:u64 = 0xd5a61266f0c9392c;
 static mut zz:u64 = 0xa9582618e03fc9aa;
-static mut ww:u64 = 0x39abdc4529b1661c;  // 全ゼロ以外の値。種。
+static mut ww:u64 = 0x39abdc4529b1661c;  // 全ゼロ以外の値
 fn xorshift256()->[u8;32] {
     
     let mut w:u64=0;
@@ -1271,6 +1280,8 @@ for i in 0..8{
     u
   }
   
+  
+
 // 変数はすべて64ビット整数とする
 fn xorshift128plus()->[u8;16]{
   let mut state0:u64 = 123456789;
@@ -1360,6 +1371,12 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
 
         mat3 = shift(mat3);
         mat3 = mulm(mat3);
+        unsafe{
+            xx = 0x180ec6d33cfd0aba;
+            yy = 0xd5a61266f0c9392c;
+            zz = 0xa9582618e03fc9aa;
+            ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
+            }    
         buf = m2v(mat3);
         buf = a2b(buf);
         nk = permute(seed, nk, 1);
@@ -1508,7 +1525,12 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
 
         t2 = b2a(t2);
   
-
+        unsafe{
+            xx = 0x180ec6d33cfd0aba;
+            yy = 0xd5a61266f0c9392c;
+            zz = 0xa9582618e03fc9aa;
+            ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
+            }    
         mat2 = v2m(t2);
 
         //
@@ -1867,26 +1889,6 @@ fn main() {
     let iv: &[u8] = "aaaaaa".as_bytes();
     let mut kt:[u8;32]=[0;32];
 
-    unsafe{
-        xx = 0x180ec6d33cfd0aba;
-        yy = 0xd5a61266f0c9392c;
-        zz = 0xa9582618e03fc9aa;
-        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-        }    
-    for i in 0..10{
-        kt=xorshift256();
-        println!("{:?}",kt);
-    }
-    unsafe{
-        xx = 0x180ec6d33cfd0aba;
-        yy = 0xd5a61266f0c9392c;
-        zz = 0xa9582618e03fc9aa;
-        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-        }
-        for i in 0..10{
-        kt=xorshift256();
-        println!("{:?}",kt);
-    }
     //exit(1);
 
     //van2();
@@ -1922,7 +1924,8 @@ fn main() {
     println!("{}", data);
 
     data = encode(data); //attention !!
-                         // encoded below
+ 
+    // encoded below
     cc = enc(&data, &sk, &mat, seed);
     // encoded above
     l = dec(&cc, &sk, &mat2, seed);
