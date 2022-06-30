@@ -553,7 +553,7 @@ fn v2m(m: [u8; N]) -> Array2<u8> {
         kt=xorshift256();
         for j in 0..E {
             n=m[i * E + j]^kt[j];
-            mat[[i, j]] = n; 
+            mat[[i, j]] = bite(n as usize,i); //S_BOX[((n%16)+(n>>4)*16) as usize]; //n; 
             
 
         }
@@ -578,8 +578,8 @@ fn m2v(m2: Array2<u8>) -> [u8; N] {
         kt=xorshift256();
         //println!("{:?}",kt);
         for j in 0..E {
-            n=m2[[i, j]]^kt[j];
-            r1[i * E + j] = n; //
+            n=m2[[i, j]];
+            r1[i * E + j] = u2(n,i)^kt[j]; //INV_S_BOX[((n%16)+(n>>4)*16) as usize]^kt[j];
         }
     }
 
