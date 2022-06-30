@@ -541,7 +541,7 @@ fn Rot(mut z: [u8; N]) -> [u8; N] {
 
 fn v2m(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
-    let mut kt:[u8;E]=[0;E]; //xorshift256();
+    let mut kt:[u8;32]=[0;32]; //xorshift256();
     unsafe{
         xx = 0x180ec6d33cfd0aba;
         yy = 0xd5a61266f0c9392c;
@@ -739,7 +739,7 @@ fn v2t(m: [u8; N]) -> Array2<u8> {
 
 fn m2v(m2: Array2<u8>) -> [u8; N] {
     let mut r1: [u8; N] = [0; N];
-    let mut kt:[u8;E]=[0;E]; //xorshift256();
+    let mut kt:[u8;32]=[0;32]; //xorshift256();
 
     unsafe{
         xx = 0x180ec6d33cfd0aba;
@@ -796,13 +796,13 @@ fn rev_shift(sf: Array2<u8>) -> Array2<u8> {
 }
 
 struct DummyRng {
-    state: u128,
+    state: u64,
 }
 impl DummyRng {
-    fn new(seed: u128) -> Self {
+    fn new(seed: u64) -> Self {
         DummyRng { state: seed }
     }
-    fn next(&mut self) -> u128 {
+    fn next(&mut self) -> u64 {
         let mut x = self.state;
         x ^= x << 2;
         self.state = x;
@@ -1228,23 +1228,44 @@ fn invs(decoded: Vec<u8>) {
     }
 }
 
-static mut xx:u128 = 0x180ec6d33cfd0aba;
-static mut yy:u128 = 0xd5a61266f0c9392c;
-static mut zz:u128 = 0xa9582618e03fc9aa;
-static mut ww:u128 = 0x39abdc4529b1661c;  // 全ゼロ以外の値。種。
-fn xorshift256()->[u8;16] {
+static mut xx:u64 = 0x180ec6d33cfd0aba;
+static mut yy:u64 = 0xd5a61266f0c9392c;
+static mut zz:u64 = 0xa9582618e03fc9aa;
+static mut ww:u64 = 0x39abdc4529b1661c;  // 全ゼロ以外の値。種。
+fn xorshift256()->[u8;32] {
     
-    let mut w:u128=0;
+    let mut w:u64=0;
+    let mut x:u64=0;
+    let mut y:u64=0;
+    let mut z:u64=0;
     unsafe{
-    let mut t:u128 = xx ^ (xx << 11);
+    let mut t:u64 = xx ^ (xx << 11);
     xx = yy; yy = zz; zz = ww;
     ww = (ww ^ (ww >> 19)) ^ (t ^ (t >> 8));
     w=ww;
+    z=zz;
+    y=yy;
+    x=xx;
 }
-let mut u:[u8;16]=[0;16];
-for i in 0..16{
-    u[i]=(w%(256 as u128)) as u8;
+//println!("{:?},{:?},{:?},{:?}",x,y,z,w);
+//exit(1);
+let mut u:[u8;32]=[0;32];
+for i in 0..8{
+    u[i]=(w%(256 as u64)) as u8;
     w=(w>>8);
+}
+
+for i in 0..8{
+    u[i+8]=(x%(256 as u64)) as u8;
+    x=(x>>8);
+}
+for i in 0..8{
+    u[i+16]=(y%(256 as u64)) as u8;
+    y=(y>>8);
+}
+for i in 0..8{
+    u[i+24]=(z%(256 as u64)) as u8;
+    z=(z>>8);
 }
 
     u
@@ -1255,12 +1276,12 @@ fn xorshift128plus()->[u8;16]{
   let mut state0:u64 = 123456789;
   let mut state1:u64 = 362436069;    
   let mut buf:[u8;16]=[0;16];
-  let mut tt:u128=0;
-  let mut x:u128=123456789;
-  let mut y:u128=362436069;
-  let mut z:u128=521288629;
-  let  w:u128=88675123;
-  let  t:u128=(x^(x<<11));
+  let mut tt:u64=0;
+  let mut x:u64=123456789;
+  let mut y:u64=362436069;
+  let mut z:u64=521288629;
+  let  w:u64=88675123;
+  let  t:u64=(x^(x<<11));
   x=y;
   y=z;
   z=w;
@@ -1844,7 +1865,7 @@ fn main() {
     let mut cc: String = String::new();
     let mut l: String = String::new();
     let iv: &[u8] = "aaaaaa".as_bytes();
-    let mut kt:[u8;16]=[0;16];
+    let mut kt:[u8;32]=[0;32];
 
     unsafe{
         xx = 0x180ec6d33cfd0aba;
