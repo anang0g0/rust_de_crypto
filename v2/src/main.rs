@@ -553,7 +553,7 @@ fn v2m(m: [u8; N]) -> Array2<u8> {
         kt=xorshift256();
         for j in 0..E {
             n=m[i * E + j]^kt[j];
-            mat[[i, j]] = bite(n as usize,i); //S_BOX[((n%16)+(n>>4)*16) as usize]; //n; 
+            mat[[i, j]] = S_BOX[((n%16)+(n>>4)*16) as usize]; //n; 
             
 
         }
@@ -579,7 +579,7 @@ fn m2v(m2: Array2<u8>) -> [u8; N] {
         //println!("{:?}",kt);
         for j in 0..E {
             n=m2[[i, j]];
-            r1[i * E + j] = u2(n,i)^kt[j]; //INV_S_BOX[((n%16)+(n>>4)*16) as usize]^kt[j];
+            r1[i * E + j] = INV_S_BOX[((n%16)+(n>>4)*16) as usize]^kt[j];
         }
     }
 
@@ -653,7 +653,8 @@ fn a2b(mut a: [u8; N]) -> [u8; N] {
 
     for i in 0..N / BIT {
         for j in 0..BIT {
-            tmp[j] = a[i * BIT + j];
+            tmp[j] = S_BOX[((a[i * BIT + j] % 16) + (a[i*BIT+j]>>4)*16) as usize];
+            //decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
         }
         println!("tmp={:?}", tmp);
         tmp = v2b(tmp);
@@ -701,7 +702,7 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
         println!("inV={:?}", tmp);
         //exit(1);
         for j in 0..BIT {
-            f[i * BIT + j] = tmp[j];
+            f[i * BIT + j] = INV_S_BOX[(tmp[j]%16 + (tmp[j]>>4)*16) as usize];
         }
     }
     f
