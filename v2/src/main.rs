@@ -228,6 +228,7 @@ const inv16: [[u8; 16]; 16] = [
     [118, 238, 118, 246, 254, 254, 254, 140, 38, 38, 38, 38, 38, 38, 38, 215],
 ];
 
+
 const Mix: [[u8; 4]; 4] = [
     [0x2, 0x3, 0x1, 0x1],
     [0x1, 0x2, 0x3, 0x1],
@@ -1425,15 +1426,6 @@ fn aha(d: [u8; 8]) -> [u8; 8] {
     v
 }
 
-fn v2u(bytes: &[u8]) -> Vec<u8> {
-    let bytes_owned: Vec<u8> = bytes.to_owned(); // &[u8] -> Vec<u8>
-
-    bytes_owned
-}
-
-fn hex(bytes: &[u8]) -> String {
-    bytes.iter().fold("".to_owned(), |s, b| s + &format!("{:x}", b))
-}
 
 fn v2s(a: Vec<u8>) -> String {
     let b: String = String::from_utf8(a).unwrap();
@@ -1511,47 +1503,6 @@ fn fread() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn vmul(a: Vec<u8>, ma: Array2<u8>, k: i32) -> Vec<u8> {
-    let mut b: Vec<u8> = Vec::new();
-
-    for i in 0..k {
-        for j in 0..k {
-            b[i as usize] ^= gf[mlt(
-                fg[ma[[i as usize, j as usize]] as usize] as u16,
-                fg[a[j as usize] as usize] as u16,
-            ) as usize] as u8;
-        }
-    }
-
-    b
-}
-
-fn mmat(a: Array2<u8>, b: Array2<u8>, l: i32) {
-    let mut tmp: Array2<u8> = Array2::zeros((E, E));
-    let mut i: usize;
-    let mut j: usize;
-    let mut k: usize;
-
-    //#pragma omp parallel for num_threads(4) // private(i,j,k)
-    for i in 0..l {
-        for j in 0..l {
-            for k in 0..l {
-                tmp[[i as usize, j as usize]] ^= gf[mlt(
-                    fg[a[[i as usize, k as usize]] as usize] as u16,
-                    fg[b[[k as usize, j as usize]] as usize] as u16,
-                ) as usize] as u8;
-            }
-        }
-    }
-
-    for i in 0..l {
-        for j in 0..l {
-            print!(" {},", tmp[[i as usize, j as usize]]);
-        }
-        println!("");
-    }
-}
-
 fn schedule(v: [u8; BIT]) -> [u8; 8] {
     let mut trim: [u8; 8] = [0; 8];
     let mut s: [u8; 8] = [0; 8];
@@ -1571,37 +1522,6 @@ fn schedule(v: [u8; BIT]) -> [u8; 8] {
     s
 }
 
-fn b2b(mut buff: [u8; N], ii: i32) -> [u8; N] {
-    let mut buf: [u8; 8] = [0; 8];
-
-    for i in 0..N / 8 {
-        for j in 0..8 {
-            buf[j] = buff[i * 8 + j]
-        }
-        buf = v2b(buf);
-        for j in 0..8 {
-            buff[i * 8 + j] = bite(buf[j] as usize, ii as usize);
-        }
-    }
-
-    buff
-}
-
-fn bb2(mut buff: [u8; N], ii: i32) -> [u8; N] {
-    let mut buf: [u8; 8] = [0; 8];
-
-    for i in 0..N / 8 {
-        for j in 0..8 {
-            buf[j] = u2(buff[i * 8 + j], ii as usize);
-        }
-        buf = b2v(buf);
-        for j in 0..8 {
-            buff[i * 8 + j] = buf[j];
-        }
-    }
-
-    buff
-}
 
 fn invsche(v: [u8; BIT]) -> [u8; 8] {
     let mut trim: [u8; 8] = [0; 8];
