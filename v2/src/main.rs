@@ -332,10 +332,10 @@ fn perm_32(a: &[u8]) -> [u8; 32] {
         //println!("");
     }
     
-       let mut hasher = Keccak256::default();
-       hasher.update("kotobahairanai");
-       let result: Vec<u8> = hasher.finalize().to_vec();
-       //let be:String=String::from_utf8(result).unwrap();
+    let mut hasher = Keccak256::default();
+    hasher.update("kotobahairanai");
+    let result: Vec<u8> = hasher.finalize().to_vec();
+    //let be:String=String::from_utf8(result).unwrap();
        for x in &result {
            print!("{:0x}", x);
        }
@@ -1015,7 +1015,7 @@ fn xorshift128plus()->[u8;16]{
 }
 
 
-fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
+fn enc(data: &String, a: &[u8], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
     /*
      * S-box transformation table
      */
@@ -1109,7 +1109,7 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
     encoded
 }
 
-fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
+fn dec(encoded: &String, a: &[u8], mat: &Array2<u8>, seed2: [u8; 32]) -> String {
     let mut buf: [u8; N] = [0; N];
 
     let mut decoded = decode(&encoded).unwrap();
@@ -1132,7 +1132,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
     println!("len = {}, {}", decoded.len(), cycle);
 
     for i in 0..N {
-        inv_P[a[i as usize] as usize] = i as usize;
+        inv_P[a[i%32 as usize] as usize] = i as usize;
     }
     let l = decoded.len();
     println!("{}", l);
@@ -1470,7 +1470,7 @@ fn main() {
     //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力"svan());
     let mut mat: Array2<u8> = Array2::zeros((N, N));
-    let mut sk: [u8; N] = [0; N];
+    let mut sk: [u8; 32] = [0; 32];
     let mut mat2: Array2<u8> = Array2::zeros((N, N));
     //let mut buf: [u8; N] = [0; N];
     let mut seed2: [u8; 32] = [17; 32];
@@ -1485,33 +1485,13 @@ fn main() {
 
     //exit(1);
 
-    //van2();
-    //exit(1);
-    for _j in 0..N {
-        for _i in 0..N {
-            sk[_i] = _i as u8;
-        }
-        sk = random_shuffule(sk, N as u16, &seed2);
-        for _k in 0..N {
-            mat[[_j, _k]] = sk[_k];
-        }
-    }
-    //秘密鍵
-    for i in 0..N {
-        sk[i] = (i + 1) as u8;
-    }
-
-    for _i in 0..N {
-        for _j in 0..N {
-            mat2[[_i, mat[[_i, _j]] as usize]] = _j as u8;
-        }
-    }
-
-    for _i in 0..N {
-        sk[_i] = _i as u8;
-    }
-    sk = random_shuffule(sk, N as u16, &seed);
-
+    let mut hasher = Keccak256::default();
+    hasher.update("サテュロス群島");
+    let result = hasher.finalize();
+ //秘密鍵
+ for i in 0..32{
+    sk[i] = result[i]; //random_shuffule(sk, 32 as u16, &seed);
+ }
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
