@@ -228,7 +228,6 @@ const inv16: [[u8; 16]; 16] = [
     [118, 238, 118, 246, 254, 254, 254, 140, 38, 38, 38, 38, 38, 38, 38, 215],
 ];
 
-
 const Mix: [[u8; 4]; 4] = [
     [0x2, 0x3, 0x1, 0x1],
     [0x1, 0x2, 0x3, 0x1],
@@ -309,7 +308,6 @@ fn shuffule(mut array: [u8; 32], size: u16, seed: &[u8]) -> [u8; 32] {
     array
 }
 
-
 fn perm_32(a: &[u8]) -> [u8; 32] {
     // create a SHA3-256 object
     let mut count = a.len();
@@ -331,22 +329,21 @@ fn perm_32(a: &[u8]) -> [u8; 32] {
         }
         //println!("");
     }
-    
+
     let mut hasher = Keccak256::default();
     hasher.update("kotobahairanai");
     let result: Vec<u8> = hasher.finalize().to_vec();
     //let be:String=String::from_utf8(result).unwrap();
-       for x in &result {
-           print!("{:0x}", x);
-       }
-       println!();
-    
+    for x in &result {
+        print!("{:0x}", x);
+    }
+    println!();
+
     let mut o: &[u8] = &buf;
     //println!("oh={:x}",o);
 
     buf
 }
- 
 
 fn mlt(x: u16, y: u16) -> u16 {
     if x == 0 || y == 0 {
@@ -501,51 +498,47 @@ fn Rot(mut z: [u8; N]) -> [u8; N] {
 
 fn v2m(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
-    let mut kt:[u8;32]=[0;32]; //xorshift256();
-    let mut n:u8=0;
-    unsafe{
+    let mut kt: [u8; 32] = [0; 32]; //xorshift256();
+    let mut n: u8 = 0;
+    unsafe {
         xx = 0x180ec6d33cfd0aba;
         yy = 0xd5a61266f0c9392c;
         zz = 0xa9582618e03fc9aa;
-        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-        }
+        ww = 0x39abdc4529b1661c; // 全ゼロ以外の値
+    }
     for i in 0..E {
-        kt=xorshift256();
+        kt = xorshift256();
         for j in 0..E {
-            n=m[i * E + j]^kt[j];
-            mat[[i, j]] = S_BOX[((n%16)+(n>>4)*16) as usize]; //n; 
-            
-
+            n = m[i * E + j] ^ kt[j];
+            mat[[i, j]] = S_BOX[((n % 16) + (n >> 4) * 16) as usize]; //n;
         }
     }
 
     mat
 }
 
-
 fn m2v(m2: Array2<u8>) -> [u8; N] {
     let mut r1: [u8; N] = [0; N];
-    let mut kt:[u8;32]=[0;32]; //xorshift256();
-    let mut n:u8=0;
-    let mut m:u8=0;
-    unsafe{
+    let mut kt: [u8; 32] = [0; 32]; //xorshift256();
+    let mut n: u8 = 0;
+    let mut m: u8 = 0;
+    unsafe {
         xx = 0x180ec6d33cfd0aba;
         yy = 0xd5a61266f0c9392c;
         zz = 0xa9582618e03fc9aa;
-        ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-        }    
+        ww = 0x39abdc4529b1661c; // 全ゼロ以外の値
+    }
     for i in 0..E {
-        kt=xorshift256();
+        kt = xorshift256();
         //println!("{:?}",kt);
         for j in 0..E {
-            n=m2[[i, j]];
-            r1[i * E + j] = INV_S_BOX[((n%16)+(n>>4)*16) as usize]^kt[j];
+            n = m2[[i, j]];
+            r1[i * E + j] = INV_S_BOX[((n % 16) + (n >> 4) * 16) as usize] ^ kt[j];
         }
     }
 
     r1
 }
-
 
 fn v2b(mut t: [u8; BIT]) -> [u8; BIT] {
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -583,7 +576,7 @@ fn a2b(mut a: [u8; N]) -> [u8; N] {
 
     for i in 0..N / BIT {
         for j in 0..BIT {
-            tmp[j] = S_BOX[((a[i * BIT + j] % 16) + (a[i*BIT+j]>>4)*16) as usize];
+            tmp[j] = S_BOX[((a[i * BIT + j] % 16) + (a[i * BIT + j] >> 4) * 16) as usize];
             //decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
         }
         println!("tmp={:?}", tmp);
@@ -601,7 +594,6 @@ fn a2b(mut a: [u8; N]) -> [u8; N] {
         }
         println!("tmp={:?}", tmp);
 
-      
         for j in 0..BIT {
             f[i * BIT + j] = tmp[j];
         }
@@ -634,7 +626,7 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
 
         //exit(1);
         for j in 0..BIT {
-            f[i * BIT + j] = INV_S_BOX[(tmp[j]%16 + (tmp[j]>>4)*16) as usize];
+            f[i * BIT + j] = INV_S_BOX[(tmp[j] % 16 + (tmp[j] >> 4) * 16) as usize];
         }
     }
     f
@@ -935,8 +927,6 @@ fn u2(ua: u8, i: usize) -> u8 {
     e
 }
 
-
-
 fn invs(decoded: Vec<u8>) {
     let mut buf: [u8; N] = [0; N];
 
@@ -945,75 +935,73 @@ fn invs(decoded: Vec<u8>) {
     }
 }
 
-static mut xx:u64 = 0x180ec6d33cfd0aba;
-static mut yy:u64 = 0xd5a61266f0c9392c;
-static mut zz:u64 = 0xa9582618e03fc9aa;
-static mut ww:u64 = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-fn xorshift256()->[u8;32] {
-    
-    let mut w:u64=0;
-    let mut x:u64=0;
-    let mut y:u64=0;
-    let mut z:u64=0;
-    unsafe{
-    let mut t:u64 = xx ^ (xx << 11);
-    xx = yy; yy = zz; zz = ww;
-    ww = (ww ^ (ww >> 19)) ^ (t ^ (t >> 8));
-    w=ww;
-    z=zz;
-    y=yy;
-    x=xx;
-}
-//println!("{:?},{:?},{:?},{:?}",x,y,z,w);
-//exit(1);
-let mut u:[u8;32]=[0;32];
-for i in 0..8{
-    u[i]=(w%(256 as u64)) as u8;
-    w=(w>>8);
-}
+static mut xx: u64 = 0x180ec6d33cfd0aba;
+static mut yy: u64 = 0xd5a61266f0c9392c;
+static mut zz: u64 = 0xa9582618e03fc9aa;
+static mut ww: u64 = 0x39abdc4529b1661c; // 全ゼロ以外の値
+fn xorshift256() -> [u8; 32] {
+    let mut w: u64 = 0;
+    let mut x: u64 = 0;
+    let mut y: u64 = 0;
+    let mut z: u64 = 0;
+    unsafe {
+        let mut t: u64 = xx ^ (xx << 11);
+        xx = yy;
+        yy = zz;
+        zz = ww;
+        ww = (ww ^ (ww >> 19)) ^ (t ^ (t >> 8));
+        w = ww;
+        z = zz;
+        y = yy;
+        x = xx;
+    }
+    //println!("{:?},{:?},{:?},{:?}",x,y,z,w);
+    //exit(1);
+    let mut u: [u8; 32] = [0; 32];
+    for i in 0..8 {
+        u[i] = (w % (256 as u64)) as u8;
+        w = (w >> 8);
+    }
 
-for i in 0..8{
-    u[i+8]=(x%(256 as u64)) as u8;
-    x=(x>>8);
-}
-for i in 0..8{
-    u[i+16]=(y%(256 as u64)) as u8;
-    y=(y>>8);
-}
-for i in 0..8{
-    u[i+24]=(z%(256 as u64)) as u8;
-    z=(z>>8);
-}
+    for i in 0..8 {
+        u[i + 8] = (x % (256 as u64)) as u8;
+        x = (x >> 8);
+    }
+    for i in 0..8 {
+        u[i + 16] = (y % (256 as u64)) as u8;
+        y = (y >> 8);
+    }
+    for i in 0..8 {
+        u[i + 24] = (z % (256 as u64)) as u8;
+        z = (z >> 8);
+    }
 
     u
-  }
-  
-  
-
-// 変数はすべて64ビット整数とする
-fn xorshift128plus()->[u8;16]{
-  let mut state0:u64 = 123456789;
-  let mut state1:u64 = 362436069;    
-  let mut buf:[u8;16]=[0;16];
-  let mut tt:u64=0;
-  let mut x:u64=123456789;
-  let mut y:u64=362436069;
-  let mut z:u64=521288629;
-  let  w:u64=88675123;
-  let  t:u64=(x^(x<<11));
-  x=y;
-  y=z;
-  z=w;
- tt= (w^(w>>19))^(t^(t>>8));
- println!("tt={:?}",tt);
- for i in 0..16{
-    buf[i]=(tt%256) as u8;
-    tt=(tt>>8);
- }
-
- buf
 }
 
+// 変数はすべて64ビット整数とする
+fn xorshift128plus() -> [u8; 16] {
+    let mut state0: u64 = 123456789;
+    let mut state1: u64 = 362436069;
+    let mut buf: [u8; 16] = [0; 16];
+    let mut tt: u64 = 0;
+    let mut x: u64 = 123456789;
+    let mut y: u64 = 362436069;
+    let mut z: u64 = 521288629;
+    let w: u64 = 88675123;
+    let t: u64 = (x ^ (x << 11));
+    x = y;
+    y = z;
+    z = w;
+    tt = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
+    println!("tt={:?}", tt);
+    for i in 0..16 {
+        buf[i] = (tt % 256) as u8;
+        tt = (tt >> 8);
+    }
+
+    buf
+}
 
 fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
     /*
@@ -1043,24 +1031,21 @@ fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
     let mut be = seed2.clone();
     let mut it: [u8; N] = [0; N];
 
-
-
     for i in 0..32 {
         seed[i] = i as u8;
     }
     seed = shuffule(seed, 32, &be);
-    
+
     //byteは参照型なので配列に置き換える
     for i in 0..j {
         buf[i] = byte[i];
     }
 
     let mut trim: [u8; 8] = [0; 8];
-    let mut kt:[u8;16]=[0;16];
+    let mut kt: [u8; 16] = [0; 16];
     let mut beef: [u8; 64] = [0; 64];
     //let mut _k:usize;
     for _k in 0..16 {
-    
         mat3 = v2m(buf);
         mat3 = shift(mat3);
         mat3 = mulm(mat3);
@@ -1082,7 +1067,6 @@ fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
         }
 
         println!("{:?}", buf);
-
 
         for o in 0..8 {
             bb[o] = seed2[(_k + o) % 32];
@@ -1132,7 +1116,7 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
     println!("len = {}, {}", decoded.len(), cycle);
 
     for i in 0..N {
-        inv_P[a[i%32 as usize] as usize] = i as usize;
+        inv_P[a[i % 32 as usize] as usize] = i as usize;
     }
     let l = decoded.len();
     println!("{}", l);
@@ -1158,7 +1142,6 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
     }
     ee = permute(seed, ee, 16);
 
- 
     let mut trim: [u8; 8] = [0; 8];
     let mut beef: [u8; 64] = [0; 64];
     //exit(1);
@@ -1193,7 +1176,7 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
         }
         //t2=invs(decoded);
         //fn revr(mut decode: [u8; N], inv_P: [u8; 32], it: &[u8; N], mut : [u8; 32], mat: &Array2<u8>, _k: usize) -> [u8; N] {
-            
+
         for i in (0..l) {
             //decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
             //decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
@@ -1203,7 +1186,6 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
         }
         let mut buff: [u8; N] = [0; N];
         ee = rebirth(inv2, ee, 1);
-
 
         t2 = b2a(t2);
 
@@ -1222,14 +1204,12 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
         mat2 = rev_shift(mat2);
 
         t2 = m2v(mat2);
-    
+
         for ii in 0..l {
             decoded[ii] = t2[ii];
         }
         println!("~~~{:?}", decoded);
-
     }
-
 
     let mut om = 0;
     for i in 0..l {
@@ -1335,7 +1315,6 @@ fn aha(d: [u8; 8]) -> [u8; 8] {
     v
 }
 
-
 fn v2s(a: Vec<u8>) -> String {
     let b: String = String::from_utf8(a).unwrap();
     //assert_eq!("0".to_string(), b);
@@ -1431,7 +1410,6 @@ fn schedule(v: [u8; BIT]) -> [u8; 8] {
     s
 }
 
-
 fn invsche(v: [u8; BIT]) -> [u8; 8] {
     let mut trim: [u8; 8] = [0; 8];
     let mut s: [u8; 8] = [0; 8];
@@ -1465,7 +1443,6 @@ fn expand(mut key: [u8; 8]) -> [u8; 64] {
     tmp
 }
 
-
 fn main() {
     //let mut key:[u8;256]=[0;256];
     let mut data = String::new(); //from("日本語入力"svan());
@@ -1475,17 +1452,17 @@ fn main() {
     //let mut buf: [u8; N] = [0; N];
     let mut seed2: [u8; 32] = [17; 32];
     let mut rng2: rand::rngs::StdRng = rand::SeedableRng::from_seed(seed2);
-    let mut nonce: [u8;32] = [0;32];
+    let mut nonce: [u8; 32] = [0; 32];
     //let bytes: &[u8] = nonce.as_bytes();
     let mut seed = perm_32(&nonce); //rng2.gen_range(1..256);
     let mut cc: String = String::new();
     let mut l: String = String::new();
     let iv: &[u8] = "aaaaaa".as_bytes();
-    let mut kt:[u8;32]=[0;32];
+    let mut kt: [u8; 32] = [0; 32];
 
     //exit(1);
 
- //秘密鍵    
+    //秘密鍵
     let mut hasher = Keccak256::default();
     hasher.update("サテュロス群島");
     let result = hasher.finalize();
@@ -1494,22 +1471,21 @@ fn main() {
     hasher.update("korobahaieanai");
     let result2 = hasher.finalize();
 
- for i in 0..32{
-    key[i] = result[i]; 
-    nonce[i]=result2[i];
- }
+    for i in 0..32 {
+        key[i] = result[i];
+        nonce[i] = result2[i];
+    }
     println!("何か入力を");
     std::io::stdin().read_line(&mut data).ok();
     data = data.trim_end().to_owned();
     println!("{}", data);
 
     data = encode(data); //attention !!
- 
+
     // encoded below
     cc = enc(&data, &key, nonce);
     // encoded above
     l = dec(&cc, &key, nonce);
-
 
     let code = decode(&l).unwrap();
 
