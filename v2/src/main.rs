@@ -308,48 +308,6 @@ fn shuffule(mut array: [u8; 32], size: u16, seed: &[u8]) -> [u8; 32] {
     array
 }
 
-fn b2s(bytes: &[u8]) -> String {
-    //let res = bytes.iter().map(|&s| s as char).collect::<String>();
-    let _converted: String = String::from_utf8(bytes.to_vec()).unwrap();
-
-    _converted
-}
-
-fn S2str(data: &String) -> &str {
-    let v = &data[0..data.len()];
-    //println!("{:?}",v);
-
-    return v;
-}
-
-fn any_length_hash(a: &[u8]) -> [u8; N] {
-    // create a SHA3-256 object
-    let mut count = 0;
-    let mut buf: [u8; 32] = [0; 32];
-    let mut u2: [u8; N] = [0; N];
-
-    for _i in 0..a.len() {
-        buf[_i % 32] ^= a[_i];
-    }
-
-    for _i in 0..8 {
-        let mut hasher = Sha3_256::default();
-        //me=hasher.clone();
-        hasher.update(buf);
-        // read hash digest
-        let mut result = hasher.finalize();
-
-        for _i in 0..32 {
-            buf[_i] ^= result[_i];
-            u2[count % N] = result[_i];
-            //print!("{},",result[i]);
-            count = count + 1;
-        }
-        //println!("");
-    }
-
-    u2
-}
 
 fn perm_32(a: &[u8]) -> [u8; 32] {
     // create a SHA3-256 object
@@ -372,21 +330,22 @@ fn perm_32(a: &[u8]) -> [u8; 32] {
         }
         //println!("");
     }
-    /*
+    
        let mut hasher = Keccak256::default();
-       hasher.update(K1);
+       hasher.update("kotobahairanai");
        let result: Vec<u8> = hasher.finalize().to_vec();
        //let be:String=String::from_utf8(result).unwrap();
        for x in &result {
            print!("{:0x}", x);
        }
        println!();
-    */
+    
     let mut o: &[u8] = &buf;
     //println!("oh={:x}",o);
 
     buf
 }
+ 
 
 fn mlt(x: u16, y: u16) -> u16 {
     if x == 0 || y == 0 {
@@ -616,7 +575,7 @@ fn b2v(u: [u8; BIT]) -> [u8; BIT] {
 
     tmp
 }
-
+/*
 fn mta(m: Array2<u8>) -> Array2<u8> {
     let mut g: Array2<u8> = Array2::zeros((BIT, BIT));
 
@@ -645,7 +604,7 @@ fn atm(m: Array2<u8>) -> Array2<u8> {
     }
     g
 }
-
+*/
 fn a2b(mut a: [u8; N]) -> [u8; N] {
     let mut g: [u8; BIT] = [0; BIT];
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -710,6 +669,7 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
     f
 }
 
+/*
 fn m2b(m: Array2<u8>) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -758,6 +718,7 @@ fn b2m(m: Array2<u8>) -> Array2<u8> {
     mat
 }
 
+
 fn v2t(m: [u8; N]) -> Array2<u8> {
     let mut mat: Array2<u8> = Array2::zeros((E, E));
     for i in 0..E {
@@ -768,7 +729,7 @@ fn v2t(m: [u8; N]) -> Array2<u8> {
 
     mat
 }
-
+*/
 fn shift(sf: Array2<u8>) -> Array2<u8> {
     let mut v: [u8; E] = [0; E];
     let mut mat: Array2<u8> = Array2::zeros((E, E));
@@ -1064,182 +1025,7 @@ fn u2(ua: u8, i: usize) -> u8 {
     e
 }
 
-// inverse matrix
-/*
-fn matinv(za:Array2<u8>, en:i32)
-{
 
-  // unsigned short a[F][F];     //={{1,2,0,1},{1,1,2,0},{2,0,1,1},{1,2,1,1}}; //入力用の配列
-  let mut inv_a:Array2<u8>=Array2::zeros(N,N); //[N][N]={0};   //ここに逆行列が入る
-  let mut buf:i32=0;           //一時的なデータを蓄える
- let count=0;           //カウンタ
-  // MTX a={0};
-  unsigned short c[N][N] = {0};
-  MTX z = {0};
-  // unsigned short cc[N][N] = {0};
-
- unsigned short bb[N][N]={0};
-
-
-for(i=0;i<8;i++){
-  for(j=0;j<8;j++){
-  bb[i][j]=za.x[i][j];
-    printf("%d,",bb[i][j]);
-  }
-  printf("\n");
-}
-//exit(1);
-
-
-printf("n=%d\n",en);
- en=8;
-lab:
-  for (i = 0; i < en; i++)
-  {
-    for (j = 0; j < en; j++)
-      c[i][j] = bb[i][j]; //=b[i][j];
-  }
-
-  //memcpy(bb,bb[,sizeof(bb));
-
-  //単位行列を作る
-  for (i = 0; i < en; i++)
-  {
-    for (j = 0; j < en; j++)
-    {
-      inv_a[i][j] = (i == j) ? 1 : 0;
-    }
-  }
-  //掃き出し法
-  //#pragma omp parallel for num_threads(omp_get_max_threads()) //private(i,j,k)
-  for (i = 0; i < en; i++)
-  {
-    buf = gf[oinv(bb[i][i])];
-    for (j = 0; j < en; j++)
-    {
-      bb[i][j] = gf[mlt(fg[buf], fg[bb[i][j]])];
-      inv_a[i][j] = gf[mlt(fg[buf], fg[inv_a[i][j]])];
-    }
-    for (j = 0; j < en; j++)
-    {
-      if (i != j)
-      {
-        buf = bb[j][i];
-        for (k = 0; k < en; k++)
-        {
-          bb[j][k] ^= gf[mlt(fg[bb[i][k]], fg[buf])];
-          inv_a[j][k] ^= gf[mlt(fg[inv_a[i][k]], fg[buf])];
-        }
-      }
-    }
-  }
-for(i=0;i<en;i++){
-  for(j=0;j<en;j++)
-  printf("%3d,",inv_a[i][j]);
-  printf("\n");
-}
-  memset(bb, 0, sizeof(bb));
-  //検算
-  //  #pragma omp parallel for num_threads(omp_get_max_threads()) //private(i,j,k)
-  for (i = 0; i < en; i++)
-  {
-    for (j = 0; j < en; j++)
-    {
-      for (k = 0; k < en; k++)
-        bb[i][j] ^= gf[mlt(fg[c[i][k]], fg[inv_a[k][j]])];
-
-      printf("^%d,", bb[i][j]);
-    }
-    printf("\n");
-  }
-
-  int flg = 0;
-  for (i = 0; i < en; i++)
-  {
-    //   printf("%d",b[i][i]);
-    // printf("==\n");
-    if (bb[i][i] == 1)
-    {
-      // printf("baka");
-      //    exit(1);
-      flg++;
-    }
-  }
-
-printf("flg==%d\n",flg);
-//exit(1);
-  // printf("\n\n逆行列を出力\n");
-  for (i = 0; i < en; i++)
-  {
-    count = 0;
-    for (j = 0; j < en; j++)
-    {
-      if (inv_a[i][j] == 0)
-        count++;
-      if (count == en)
-      {
-        printf("\nbaka\n\n");
-        goto lab;
-      }
-      printf(" %d", inv_a[i][j]);
-      z.x[i][j] = inv_a[i][j];
-    }
-     printf("\n");
-  }
-
-if(flg==en){
-  count = 0;
-
-  for (i = 0; i < en; i++)
-  {
-    for (j = 0; j < en; j++)
-    {
-      if (bb[i][j] == 0 && i != j)
-        count++;
-    }
-  }
-  if (flg == en && (en * en - en) == count){
-    return z;
-  }
-    //
-}
-
-}
- */
-
-/*
-fn u3(a:[u8;256])->[u8;512]{
-    let uu:[u8;512]=[0;512];
-    let t:[u8;2]=[0;2];
-    i=0;
-    while i < 256 {
-        t=bite(a[i]);
-        uu[i]=t[0];
-        uu[i+1]=t[1];
-        i+=2;
-    }
-    uu
-}
- */
-
-fn round(mut buf: [u8; N], be: [u8; 32], a: &[u8; N], mut nk: [u8; 32], mat: &Array2<u8>, _k: usize) -> [u8; N] {
-    for _i in 0..N {
-        buf[_i] ^= be[nk[_i % 32] as usize];
-        buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-        buf[_i] = a[buf[_i] as usize] as u8;
-        buf[_i] = mat[[a[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
-    }
-    buf
-}
-fn revr(mut buf: [u8; N], be: [u8; 32], a: &[u8; N], mut nk: [u8; 32], mat: &Array2<u8>, _k: usize) -> [u8; N] {
-    for _i in 0..N {
-        buf[_i] = mat[[a[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
-        buf[_i] = a[buf[_i] as usize] as u8;
-        buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
-        buf[_i] ^= be[nk[_i % 32] as usize];
-    }
-    buf
-}
 
 fn invs(decoded: Vec<u8>) {
     let mut buf: [u8; N] = [0; N];
