@@ -576,36 +576,6 @@ fn b2v(u: [u8; BIT]) -> [u8; BIT] {
 
     tmp
 }
-/*
-fn mta(m: Array2<u8>) -> Array2<u8> {
-    let mut g: Array2<u8> = Array2::zeros((BIT, BIT));
-
-    for i in 0..BIT {
-        for j in 0..BIT {
-            for k in 0..BIT {
-                g[[i, j]] ^= gf[mlt(fg[m[[i, k]] as usize] as u16, fg[MDS8[k][j] as usize] as u16) as usize];
-            }
-        }
-    }
-    //println!("{:?}",g);
-    //exit(1);
-
-    g
-}
-
-fn atm(m: Array2<u8>) -> Array2<u8> {
-    let mut g: Array2<u8> = Array2::zeros((BIT, BIT));
-
-    for i in 0..BIT {
-        for j in 0..BIT {
-            for k in 0..BIT {
-                g[[i, j]] ^= gf[mlt(fg[m[[i, k]] as usize] as u16, fg[inv8[k][j] as usize] as u16) as usize];
-            }
-        }
-    }
-    g
-}
-*/
 fn a2b(mut a: [u8; N]) -> [u8; N] {
     let mut g: [u8; BIT] = [0; BIT];
     let mut tmp: [u8; BIT] = [0; BIT];
@@ -670,67 +640,6 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
     f
 }
 
-/*
-fn m2b(m: Array2<u8>) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
-    let mut tmp: [u8; BIT] = [0; BIT];
-
-    for jj in 0..BIT {
-        for i in 0..BIT {
-            tmp[i] = m[[jj, i]];
-        }
-        tmp = v2b(tmp);
-        for k in 0..BIT {
-            tmp[k] = bite(tmp[k] as usize, jj);
-        }
-        for i in 0..BIT {
-            mat[[jj, i]] = tmp[i];
-        }
-    }
-    //
-    mat = mta(mat);
-    //println!("{:?}",mat);
-    //exit(1);
-
-    mat
-}
-
-fn b2m(m: Array2<u8>) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((BIT, BIT));
-    let mut tmp: [u8; BIT] = [0; BIT];
-    let mut tmp2: [u8; N] = [0; N];
-
-    mat = atm(m);
-
-    for jj in 0..BIT {
-        for i in 0..BIT {
-            tmp[i] = mat[[jj, i]];
-        }
-        for k in 0..BIT {
-            tmp[k] = u2(tmp[k], jj);
-        }
-        tmp = b2v(tmp);
-        for i in 0..BIT {
-            mat[[jj, i]] = tmp[i];
-        }
-    }
-    //println!("{:?}",mat);
-    //exit(1);
-    mat
-}
-
-
-fn v2t(m: [u8; N]) -> Array2<u8> {
-    let mut mat: Array2<u8> = Array2::zeros((E, E));
-    for i in 0..E {
-        for j in 0..E {
-            mat[[j, i]] = m[i * E + j];
-        }
-    }
-
-    mat
-}
-*/
 fn shift(sf: Array2<u8>) -> Array2<u8> {
     let mut v: [u8; E] = [0; E];
     let mut mat: Array2<u8> = Array2::zeros((E, E));
