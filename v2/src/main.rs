@@ -1003,7 +1003,7 @@ fn xorshift128plus() -> [u8; 16] {
     buf
 }
 
-fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
+fn enc(data: &String, a: &[u8], seed2: [u8; 32],perm:[u8;32]) -> String {
     /*
      * S-box transformation table
      */
@@ -1031,14 +1031,10 @@ fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
     let mut be = seed2.clone();
     let mut it: [u8; N] = [0; N];
 
-    for i in 0..32 {
-        seed[i] = i as u8;
-    }
-    seed = shuffule(seed, 32, &be);
-
+ 
     //byteは参照型なので配列に置き換える
     for i in 0..j {
-        buf[i] = byte[i];
+        buf[i] = byte[i]; //[(perm[i]%j as u8) as usize];
     }
 
     let mut trim: [u8; 8] = [0; 8];
@@ -1093,7 +1089,7 @@ fn enc(data: &String, a: &[u8], seed2: [u8; 32]) -> String {
     encoded
 }
 
-fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
+fn dec(encoded: &String, a: &[u8], seed2: [u8; 32],inv_P:[u8;32]) -> String {
     let mut buf: [u8; N] = [0; N];
 
     let mut decoded = decode(&encoded).unwrap();
@@ -1115,9 +1111,9 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
 
     println!("len = {}, {}", decoded.len(), cycle);
 
-    for i in 0..N {
-        inv_P[a[i % 32 as usize] as usize] = i as usize;
-    }
+    //for i in 0..N {
+    //    inv_P[a[i % 32 as usize] as usize] = i as usize;
+    //}
     let l = decoded.len();
     println!("{}", l);
     //exit(1);
@@ -1130,7 +1126,7 @@ fn dec(encoded: &String, a: &[u8], seed2: [u8; 32]) -> String {
         seed[i] = i as u8;
     }
     let mut be = seed2.clone();
-    seed = shuffule(seed, 32, &be);
+    //seed = shuffule(seed, 32, &be);
 
     let mut inv2: [u8; 32] = [0; 32];
     for i in 0..32 {
@@ -1459,9 +1455,22 @@ fn main() {
     let mut l: String = String::new();
     let iv: &[u8] = "aaaaaa".as_bytes();
     let mut kt: [u8; 32] = [0; 32];
-
+    let mut see:[u8;32]=[0;32];
+    let mut inv_P:[u8;32]=[0;32];
+    
+    for i in 0..32 {
+        see[i] = i as u8;
+    }
+    see = shuffule(see, 32, &iv);
+    for i in 0..32{
+    inv_P[see[i] as usize]=i as u8;
+    }
+    println!("{:?}",see);
+    println!("{:?}",inv_P);
     //exit(1);
 
+    let mut permut:[u8;32]=[0;32];
+    //exit(1);
     //秘密鍵
     let mut hasher = Keccak256::default();
     hasher.update("サテュロス群島");
@@ -1483,9 +1492,9 @@ fn main() {
     data = encode(data); //attention !!
 
     // encoded below
-    cc = enc(&data, &key, nonce);
+    cc = enc(&data, &key, nonce,see);
     // encoded above
-    l = dec(&cc, &key, nonce);
+    l = dec(&cc, &key, nonce,inv_P);
 
     let code = decode(&l).unwrap();
 
