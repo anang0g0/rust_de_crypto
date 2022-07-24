@@ -1229,6 +1229,15 @@ fn round(mut buf: [u8; N], be: [u8; 32], a: &[u8; N], mut nk: [u8; 32], mat: &Ar
     }
     buf
 }
+fn revr(mut buf: [u8; N], be: [u8; 32], a: &[u8; N], mut nk: [u8; 32], mat: &Array2<u8>, _k: usize) -> [u8; N] {
+    for _i in 0..N {
+        buf[_i] = mat[[a[(16 * _k + _i) % N as usize] as usize, (buf[_i as usize]) as usize]];
+        buf[_i] = a[buf[_i] as usize] as u8;
+        buf[_i] = S_BOX[((buf[_i] % 16) + (buf[_i] >> 4) * 16) as usize];
+        buf[_i] ^= be[nk[_i % 32] as usize];
+    }
+    buf
+}
 
 fn invs(decoded: Vec<u8>) {
     let mut buf: [u8; N] = [0; N];
@@ -1338,19 +1347,10 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
 
 
 
-    //for i in 0..N {
-    //    it[i] = a[i];
-    //}
     for i in 0..32 {
         seed[i] = i as u8;
     }
     seed = shuffule(seed, 32, &be);
-    //println!("{:?}",mat);
-    //exit(1);
-    for _i in 0..3 {
-        be = perm_32(&be);
-        println!("{:?}", be);
-    }
     
     //byteは参照型なので配列に置き換える
     for i in 0..j {
@@ -1358,11 +1358,6 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
     }
 
     let mut trim: [u8; 8] = [0; 8];
-
-    let mut nk: [u8; 32] = [0; 32];
-    for i in 0..32 {
-        nk[i] = i as u8;
-    }
     let mut kt:[u8;16]=[0;16];
     let mut beef: [u8; 64] = [0; 64];
     //let mut _k:usize;
@@ -1372,17 +1367,11 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
 
         mat3 = shift(mat3);
         mat3 = mulm(mat3);
-        unsafe{
-            xx = 0x180ec6d33cfd0aba;
-            yy = 0xd5a61266f0c9392c;
-            zz = 0xa9582618e03fc9aa;
-            ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-            }    
         buf = m2v(mat3);
         buf = a2b(buf);
-        nk = permute(seed, nk, 1);
-        println!("{:?}", nk);
-        buf = round(buf, be, a, nk, &mat, _k);
+        //nk = permute(seed, nk, 1);
+        //println!("{:?}", nk);
+        //buf = round(buf, be, a, nk, &mat, _k);
         for i in 0..N / 8 {
             for j in 0..8 {
                 trim[j] = buf[i * 8 + j];
@@ -1455,6 +1444,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
     let _size: usize = 32;
     //let mut result:[u8;256]=[0;256];
 
+    /* */
     for i in 0..32 {
         seed[i] = i as u8;
     }
@@ -1465,21 +1455,13 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
     for i in 0..32 {
         inv2[seed[i] as usize] = i as u8;
     }
-    /*
-    for i in 0..16{
-        seed=lot(seed);
-    }
-    */
     let mut ee: [u8; 32] = [0; 32];
     for i in 0..32 {
         ee[i] = i as u8;
     }
     ee = permute(seed, ee, 16);
 
-    for i in 0..3 {
-        be = perm_32(&be);
-    }
-
+ 
     let mut trim: [u8; 8] = [0; 8];
     let mut beef: [u8; 64] = [0; 64];
     //exit(1);
@@ -1513,11 +1495,13 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
             }
         }
         //t2=invs(decoded);
+        //fn revr(mut decode: [u8; N], inv_P: [u8; 32], it: &[u8; N], mut : [u8; 32], mat: &Array2<u8>, _k: usize) -> [u8; N] {
+            
         for i in (0..l) {
-            decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
-            decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
-            decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
-            decoded[i] ^= be[ee[i % 32] as usize];
+            //decoded[i] = mat[[it[(16 * j + i) % N as usize] as usize, (decoded[i as usize]) as usize]];
+            //decoded[i] = (inv_P[decoded[i] as usize] as usize) as u8;
+            //decoded[i] = INV_S_BOX[(((decoded[i] % 16) + (decoded[i] >> 4) * 16) as usize)];
+            //decoded[i] ^= be[ee[i % 32] as usize];
             t2[i] = decoded[i];
         }
         let mut buff: [u8; N] = [0; N];
@@ -1525,13 +1509,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
 
 
         t2 = b2a(t2);
-  
-        unsafe{
-            xx = 0x180ec6d33cfd0aba;
-            yy = 0xd5a61266f0c9392c;
-            zz = 0xa9582618e03fc9aa;
-            ww = 0x39abdc4529b1661c;  // 全ゼロ以外の値
-            }    
+
         mat2 = v2m(t2);
 
         //
@@ -1555,8 +1533,7 @@ fn dec(encoded: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> Stri
 
     }
 
-    //println!("{:?}",decoded);
-    //exit(1);
+
     let mut om = 0;
     for i in 0..l {
         buf[i] = decoded[i];
