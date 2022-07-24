@@ -659,11 +659,6 @@ fn a2b(mut a: [u8; N]) -> [u8; N] {
         println!("tmp={:?}", tmp);
         tmp = v2b(tmp);
         println!("tmp={:?}", tmp);
-        for k in 0..BIT {
-            tmp[k] = bite(tmp[k] as usize, k);
-        }
-        println!("tmp={:?}", tmp);
-
         for j in 0..BIT {
             //    g[j] = 0;
             for k in 0..BIT {
@@ -671,6 +666,12 @@ fn a2b(mut a: [u8; N]) -> [u8; N] {
             }
         }
 
+        for k in 0..BIT {
+            tmp[k] = bite(tmp[k] as usize, k);
+        }
+        println!("tmp={:?}", tmp);
+
+      
         for j in 0..BIT {
             f[i * BIT + j] = tmp[j];
         }
@@ -688,6 +689,12 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
             tmp[j] = a[i * BIT + j];
         }
 
+        for k in 0..BIT {
+            tmp[k] = u2(tmp[k] as u8, k);
+        }
+        tmp = b2v(tmp);
+        println!("inV={:?}", tmp);
+
         for j in 0..BIT {
             //g[j] = 0;
             for k in 0..BIT {
@@ -695,11 +702,6 @@ fn b2a(mut a: [u8; N]) -> [u8; N] {
             }
         }
 
-        for k in 0..BIT {
-            tmp[k] = u2(tmp[k] as u8, k);
-        }
-        tmp = b2v(tmp);
-        println!("inV={:?}", tmp);
         //exit(1);
         for j in 0..BIT {
             f[i * BIT + j] = INV_S_BOX[(tmp[j]%16 + (tmp[j]>>4)*16) as usize];
@@ -1364,7 +1366,6 @@ fn enc(data: &String, a: &[u8; N], mat: &Array2<u8>, seed2: [u8; 32]) -> String 
     for _k in 0..16 {
     
         mat3 = v2m(buf);
-
         mat3 = shift(mat3);
         mat3 = mulm(mat3);
         buf = m2v(mat3);
